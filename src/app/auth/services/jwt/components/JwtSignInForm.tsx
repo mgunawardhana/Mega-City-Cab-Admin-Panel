@@ -35,6 +35,7 @@ const defaultValues = {
 	remember: true
 };
 
+
 function JwtSignInForm() {
 	const { signIn } = useJwtAuth();
 
@@ -57,8 +58,8 @@ function JwtSignInForm() {
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
 		width: 400,
-		// bgcolor: 'background.paper',
-		// border: '2px solid #000',
+		bgcolor: 'background.paper',
+		border: '2px solid #000',
 		boxShadow: 24
 		// p: 4,
 	};
@@ -203,7 +204,7 @@ function JwtSignInForm() {
 
 				<Button
 					variant="contained"
-					className="w-full text-white text-lg mt-16 rounded-[6px] bg-primaryBlue hover:bg-primaryBlueLight"
+					className="w-full text-white text-lg mt-16 rounded-[6px] bg-yellow-800 hover:bg-yellow-700"
 					aria-label="Sign in"
 					disabled={_.isEmpty(dirtyFields) || !isValid}
 					type="submit"

@@ -43,7 +43,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
 	const { className = '' } = props;
 
 	return (
-		<Root className={clsx('flex h-full flex-auto flex-col overflow-hidden bg-primaryBlueDark', className)}>
+		<Root className={clsx('flex h-full flex-auto flex-col overflow-hidden bg-blue-gray-900', className)}>
 			<div className="flex h-48 shrink-0 flex-row items-center px-20 md:h-72">
 				<div className="mx-4 flex flex-1">
 					<Logo />

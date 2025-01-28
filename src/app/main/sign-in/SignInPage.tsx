@@ -8,6 +8,8 @@ import CardContent from '@mui/material/CardContent';
 import JwtLoginTab from './tabs/JwtSignInTab';
 import FirebaseSignInTab from './tabs/FirebaseSignInTab';
 import AwsSignInTab from './tabs/AwsSignInTab';
+import image from '../../assets/Flux_Schnell_A_highly_detailed_and_realistic_scene_of_a_vibran_0.jpeg';
+
 
 const tabs = [
 	{
@@ -29,7 +31,7 @@ function SignInPage() {
 	}
 
 	return (
-		<div className="flex min-w-0 flex-auto flex-col items-center sm:justify-center md:p-32">
+		<div className="flex min-w-0 flex-auto flex-col items-center sm:justify-center md:p-40">
 			<Paper className="flex min-h-full w-full overflow-hidden rounded-0 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:shadow md:w-full md:max-w-6xl">
 				<div className="w-full px-16 py-32 ltr:border-r-1 rtl:border-l-1 sm:w-auto sm:p-48 md:p-64">
 					<CardContent className="mx-auto w-full max-w-320 sm:mx-0 sm:w-320">
@@ -83,35 +85,15 @@ function SignInPage() {
 						{selectedTabId === 'aws' && <AwsSignInTab />}
 					</CardContent>
 				</div>
-				<Box className="relative hidden h-full flex-auto items-center justify-center overflow-hidden p-64 md:flex lg:px-112 bg-primaryBlueDark">
-					<svg
-						className="pointer-events-none absolute inset-0"
-						viewBox="0 0 960 540"
-						width="100%"
-						height="100%"
-						preserveAspectRatio="xMidYMax slice"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<Box
-							component="g"
-							sx={{ color: 'primary.light' }}
-							className="opacity-20"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="100"
-						>
-							<circle
-								r="234"
-								cx="196"
-								cy="23"
-							/>
-							<circle
-								r="234"
-								cx="790"
-								cy="491"
-							/>
-						</Box>
-					</svg>
+				<Box
+					className="relative hidden h-full flex-auto items-center justify-center overflow-hidden p-64 md:flex lg:px-112"
+					sx={{
+						backgroundImage: `url(${image})`,
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+						filter: 'brightness(0.9)'
+					}}
+				>
 					<Box
 						component="svg"
 						className="absolute -right-64 -top-64 opacity-20"
@@ -142,36 +124,18 @@ function SignInPage() {
 						<rect
 							width="220"
 							height="192"
-							fill="url(#523e836f-6c3a-44e6-8854-cc48c737b659)"
+							fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)"
 						/>
 					</Box>
 
 					<div className="relative z-10 w-full max-w-2xl">
-						<div className="text-7xl font-bold leading-none text-gray-100">
-							<div>Welcome to LiveAquaria</div>
+						<div className="text-7xl font-bold leading-none text-white">
+							<div>Welcome to Mega City Cab Service</div>
 						</div>
-						<div className="mt-24 text-lg leading-6 tracking-tight text-gray-300">
-							Welcome to the LiveAquaria Admin Portal, your centralized hub for streamlined management and
-							efficient operations.
+						<div className="mt-24 text-lg leading-6 tracking-tight text-white">
+							Committed to enhancing lives by providing safe, reliable, and innovative transportation
+							solutions today for a smoother tomorrow.
 						</div>
-						{/* <div className="mt-32 flex items-center">
-							<AvatarGroup
-								sx={{
-									'& .MuiAvatar-root': {
-										borderColor: 'primary.main'
-									}
-								}}
-							>
-								<Avatar src="assets/images/avatars/female-18.jpg" />
-								<Avatar src="assets/images/avatars/female-11.jpg" />
-								<Avatar src="assets/images/avatars/male-09.jpg" />
-								<Avatar src="assets/images/avatars/male-16.jpg" />
-							</AvatarGroup>
-
-							<div className="ml-16 font-medium tracking-tight text-gray-400">
-								More than 17k people joined us, it's your turn
-							</div>
-						</div> */}
 					</div>
 				</Box>
 			</Paper>

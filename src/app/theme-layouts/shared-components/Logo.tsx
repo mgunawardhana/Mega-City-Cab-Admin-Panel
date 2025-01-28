@@ -26,7 +26,7 @@ function Logo() {
 				className="logo-icon h-32 "
 				variant="h6"
 			>
-				LiveAquaria
+				Mega City Cab
 			</Typography>
 			{/* <img
 				className="logo-icon h-32 w-32"

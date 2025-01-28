@@ -70,69 +70,7 @@ function AccountBalanceWidget() {
 		}
 	};
 
-	return (
-		<Paper className="flex flex-col flex-auto shadow rounded-2xl overflow-hidden">
-			<div className="flex flex-col p-24 pb-16">
-				<div className="flex items-start justify-between">
-					<div className="flex flex-col">
-						<Typography className="mr-16 text-lg font-medium tracking-tight leading-6 truncate">
-							Account Balance
-						</Typography>
-						<Typography
-							className="font-medium"
-							color="text.secondary"
-						>
-							Monthly balance growth and avg. monthly income
-						</Typography>
-					</div>
-
-					<div>
-						<Chip
-							size="small"
-							className="font-medium text-sm"
-							label="12 months"
-						/>
-					</div>
-				</div>
-				<div className="flex items-start mt-24 mr-8">
-					<div className="flex flex-col">
-						<Typography className="font-semibold text-3xl md:text-5xl tracking-tighter">
-							{growRate}%
-						</Typography>
-						<Typography
-							className="font-medium text-sm leading-none"
-							color="text.secondary"
-						>
-							Average Monthly Growth
-						</Typography>
-					</div>
-					<div className="flex flex-col ml-32 md:ml-64">
-						<Typography className="font-semibold text-3xl md:text-5xl tracking-tighter">
-							{ami.toLocaleString('en-US', {
-								style: 'currency',
-								currency: 'USD'
-							})}
-						</Typography>
-						<Typography
-							className="font-medium text-sm leading-none"
-							color="text.secondary"
-						>
-							Average Monthly Income
-						</Typography>
-					</div>
-				</div>
-			</div>
-			<div className="flex flex-col flex-auto">
-				<ReactApexChart
-					className="flex-auto w-full h-full"
-					options={chartOptions}
-					series={series}
-					type={chartOptions?.chart?.type}
-					height={chartOptions?.chart?.height}
-				/>
-			</div>
-		</Paper>
-	);
+	return <div />;
 }
 
 export default AccountBalanceWidget;

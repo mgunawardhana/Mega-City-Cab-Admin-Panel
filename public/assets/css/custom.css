@@ -89,7 +89,7 @@
 
 .custom-table thead tr th.MuiTableCell-root {
   color: var(--white) !important;
-  background: var(--primaryBlueLight) !important;
+  background: var(--primaryOrangeLight) !important;
 }
 
 .custom-table thead tr th.MuiTableCell-root * {
