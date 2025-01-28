@@ -93,7 +93,7 @@ const navigationConfig: FuseNavItemType[] = [
 		title: 'Website',
 		type: 'item',
 		icon: 'heroicons-outline:globe-alt',
-		url: '/apps/website',
+		url: '/web/web-site-management',
 		end: true,
 		translate: 'Website'
 	},

@@ -13,86 +13,18 @@ interface AdvanceFilteringTypes {
 	mobile: string;
 }
 
-interface Link {
-	url: string | null;
-	label: string;
-	active: boolean;
-}
-
-interface Meta {
-	current_page: number;
-	from: number;
-	last_page: number;
-	links: Link[];
-	path: string;
-	per_page: number;
-	to: number;
-	total: number;
-}
-
 export type UserInterface = {
 	id: string;
-	title: string;
-	first_name: string;
-	last_name: string;
-	user_name: string;
+	firstName: string;
+	lastName: string;
 	email: string;
-	mobile: string;
-	nic: string;
-	is_active: number;
-	role_id?: string;
-	password?: string;
-	passwordConfirm?: string;
-	roles: {
-		id: number;
-		name: string;
-		description: string;
-		is_active: number;
-	}[];
+	password: string;
+	role: string;
+	address:string;
+	nic:string;
+	phone_number:string;
+	passwordConfirm: string;
 };
-
-interface Role {
-	id: number;
-	name: string;
-	description: string | null;
-	is_active: number;
-}
-
-interface Link {
-	url: string | null;
-	label: string;
-	active: boolean;
-}
-
-interface Links {
-	first: string;
-	last: string;
-	prev: string | null;
-	next: string | null;
-}
-
-interface Meta {
-	current_page: number;
-	from: number;
-	last_page: number;
-	links: Link[];
-	path: string;
-	per_page: number;
-	to: number;
-	total: number;
-}
-
-interface GetRoleResponse {
-	data: Role[];
-	links: Links;
-	meta: Meta;
-}
-
-interface GetUsersResponse {
-	data: UserInterface[];
-	links: Links;
-	meta: Meta;
-}
 
 function UsersApp() {
 	const [pageNo, setPageNo] = useState<number>(0);
@@ -125,16 +57,16 @@ function UsersApp() {
 
 	const tableColumns = [
 		{
-			title: 'User Name',
-			field: 'user_name'
+			title: 'User Id',
+			field: 'id'
 		},
 		{
 			title: 'First Name',
-			field: 'first_name'
+			field: 'firstName'
 		},
 		{
 			title: 'Last Name',
-			field: 'last_name'
+			field: 'lastName'
 		},
 		{
 			title: 'Email',
@@ -145,14 +77,14 @@ function UsersApp() {
 			field: 'mobile'
 		},
 		{
-			title: 'Employee ID',
-			field: 'nic'
+			title: 'Role',
+			field: 'role'
 		},
-		{
-			title: 'Status',
-			field: 'is_active',
-			render: (data: UserInterface) => (data.is_active === 1 ? 'Active' : 'Inactive')
-		}
+		// {
+		// 	title: 'Status',
+		// 	field: 'is_active',
+		// 	render: (data: UserInterface) => (data.is_active === 1 ? 'Active' : 'Inactive')
+		// }
 	];
 
 	const handleFormModelOpen = (isNew: boolean, isEdit: boolean, isView: boolean, seletedData: any) => {
@@ -173,7 +105,6 @@ function UsersApp() {
 
 	const onCloseHandler = () => {
 		setIsModelOpen(false);
-		filterUsers(filteredValues);
 	};
 
 	return (

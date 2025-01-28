@@ -34,9 +34,8 @@ function FinanceDashboardAppHeader() {
 						Settings
 					</Button>
 					<Button
-						className="whitespace-nowrap"
+						className="whitespace-nowrap bg-yellow-800"
 						variant="contained"
-						color="secondary"
 						startIcon={<FuseSvgIcon size={20}>heroicons-solid:save</FuseSvgIcon>}
 					>
 						Export

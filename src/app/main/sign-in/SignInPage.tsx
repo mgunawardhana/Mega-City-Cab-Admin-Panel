@@ -130,12 +130,12 @@ function SignInPage() {
 
 					<div className="relative z-10 w-full max-w-2xl">
 						<div className="text-7xl font-bold leading-none text-white">
-							<div>Welcome to Mega City Cab Service</div>
+							{/*<div>Welcome to Mega City Cab Service</div>*/}
 						</div>
-						<div className="mt-24 text-lg leading-6 tracking-tight text-white">
-							Committed to enhancing lives by providing safe, reliable, and innovative transportation
-							solutions today for a smoother tomorrow.
-						</div>
+						{/*<div className="mt-24 text-lg leading-6 tracking-tight text-white">*/}
+						{/*	Committed to enhancing lives by providing safe, reliable, and innovative transportation*/}
+						{/*	solutions today for a smoother tomorrow.*/}
+						{/*</div>*/}
 					</div>
 				</Box>
 			</Paper>

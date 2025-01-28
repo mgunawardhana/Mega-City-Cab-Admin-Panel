@@ -265,6 +265,7 @@ export type GeneralAdvMainObject = {
 	is_advertisement?: number;
 	is_active?: number;
 	role_id: string;
+	vehicle_assigned?:boolean;
 	average_product_rating?: number;
 	average_delivery_rating?: number;
 	item_selection?: GeneralAdvItemSelection[];
@@ -325,6 +326,7 @@ export type GeneralAdvModifiedDataType = {
 	category?: string;
 	description?: string;
 	active?: boolean;
+	vehicle_assigned?:boolean;
 };
 
 export type GeneralAdvGeneralViewSubmitDataType = {

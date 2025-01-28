@@ -35,7 +35,7 @@
         "aws-amplify": "^6.0.25",
         "axios": "^1.6.5",
         "axios-mock-adapter": "1.21.5",
-        "bootstrap": "^4.6.2",
+        "bootstrap": "^5.3.3",
         "clsx": "2.1.0",
         "core-js": "3.35.0",
         "cors": "^2.8.5",
