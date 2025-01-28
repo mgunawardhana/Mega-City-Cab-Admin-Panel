@@ -38,7 +38,7 @@ export type SignUpPayload = {
 export type JwtAuthContextType = {
 	user?: User;
 	updateUser: (U: User) => void;
-	signIn?: (credentials: SignInPayload) => Promise<User | AxiosError>;
+	signIn?: (credentials: { email: string; password: string }) => Promise<User | AxiosError>;
 	signUp?: (U: SignUpPayload) => Promise<User | AxiosError>;
 	signOut?: () => void;
 	refreshToken?: () => void;
@@ -202,8 +202,8 @@ function JwtAuthProvider(props: JwtAuthProviderProps) {
 						uid: 'XgbuVEXBU5gtSKdbQRP1Zbbby1i1',
 						role: 'admin',
 						data: {
-							displayName: 'Live Aquaria Admin',
-							photoURL: 'assets/images/avatars/demo-admin.png',
+							displayName: 'Mega City Admin',
+							photoURL: 'assets/images/avatars/123.jpeg',
 							email: 'admin@nlb.com',
 							settings: {
 								layout: {},
@@ -261,7 +261,7 @@ function JwtAuthProvider(props: JwtAuthProviderProps) {
 				uid: 'XgbuVEXBU5gtSKdbQRP1Zbbby1i1',
 				role: 'admin',
 				data: {
-					displayName: 'Live Aquaria Admin',
+					displayName: 'Meg City Admin',
 					photoURL: 'assets/images/avatars/demo-admin.png',
 					email: 'admin@nlb.com',
 					settings: {

@@ -10,7 +10,7 @@
   --primaryPinkLight: #ee318d;
   --primaryGreen: #91ce45;
   --primaryBg: #1a1c29;
-  --secondaryBg: #212435;
+  --secondaryBg: #252b3d;
   --darkPurple: #24284a;
   --darkBlue: #214674;
   --textColor: #646464;
@@ -89,7 +89,7 @@
 
 .custom-table thead tr th.MuiTableCell-root {
   color: var(--white) !important;
-  background: var(--primaryBlueLight) !important;
+  background: var(--secondaryBg) !important;
 }
 
 .custom-table thead tr th.MuiTableCell-root * {

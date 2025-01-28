@@ -195,7 +195,7 @@ function UsersApp() {
 					className="flex flex-wrap justify-end items-end gap-[10px] formikFormField pt-[10px!important]"
 				>
 					<Button
-						className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
+						className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-900/80"
 						type="button"
 						variant="contained"
 						size="medium"
