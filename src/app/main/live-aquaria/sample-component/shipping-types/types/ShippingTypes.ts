@@ -7,22 +7,21 @@ export type ShippingTypeItemCategoryResponse = {
 	is_active?: number;
 };
 
-export type ShippingTypeResponse = {
-	allow_transit_delay?: number;
-	id?: string;
-	name?: string;
-	is_active?: number;
-	created_at?: string;
-	updated_at?: string;
-	item_category?: ShippingTypeItemCategoryResponse[];
+export type WebTypeResp = {
+	articleId?:string;
+	ratings?:string;
+	title?:string;
+	description?:string;
+	author?:string;
+	is_active?:string;
 };
 
 export type Meta = {
 	total?: number;
 };
 
-export type ShippingTypeApiResponse = {
-	data?: ShippingTypeResponse[];
+export type WebTypeApiResponse = {
+	data?: WebTypeResp[];
 	meta?: Meta;
 };
 
@@ -41,7 +40,7 @@ export type ShippingTypeModifiedData = {
 };
 
 export type ShippingCreateType = {
-	discount?: string;
+	ratings?: number;
 	title?: string;
 	description?: string;
 	author?: string;

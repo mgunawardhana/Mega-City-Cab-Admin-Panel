@@ -1,39 +1,24 @@
+// @ts-nocheck
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CancelIcon from '@mui/icons-material/Cancel';
 import {
 	Button,
 	Checkbox,
-	Chip,
 	CircularProgress,
 	Dialog,
 	DialogContent,
 	DialogTitle,
-	FormControl,
-	FormControlLabel,
 	Grid,
 	IconButton,
-	MenuItem,
-	OutlinedInput,
-	Select,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
 	Typography
 } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import {
-	fetchAllCategoryTypesData,
-	updateShippingType
-} from '../../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
-import TextFormDateField from '../../../../../common/FormComponents/TextFormDateField';
-import { ShippingCreateType, ShippingTypeItemCategoryResponse, ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { ShippingCreateType, ShippingTypeModifiedData } from '../types/ShippingTypes';
+import * as yup from 'yup';
 
 interface Props {
 	toggleModal: () => void;
@@ -43,108 +28,87 @@ interface Props {
 	isTableMode?: string;
 }
 
-interface Category {
-	id: string;
-	name: string;
-	sub_item_categories?: Category[];
-	subCategories?: Category[];
-}
-
-interface DropCategory {
-	id?: string;
-	name?: string;
+interface Image {
+	id: number;
+	link: string;
+	file: File;
+	base64: string;
 }
 
 function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
 	const { t } = useTranslation('shippingTypes');
-	const [allCategories, setAllCategories] = useState<Category[]>([]);
-	const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
-	const [selectedCategory, setSelectedCategory] = useState<Category | string>('');
 	const [isDataLoading, setDataLoading] = useState(false);
+	const [images, setImages] = useState<Image[]>([]);
+	const maxImageCount = 1;
+	const maxImageSize = 5 * 1024 * 1024; // 5MB
 
-	const extractSubCategories = (categories: Category[], parentName: string = '') => {
-		let result: Category[] = [];
-		categories.forEach((category) => {
-			const fullName = parentName ? `${parentName} > ${category.name}` : category.name;
-			result.push({
-				id: category.id,
-				name: fullName,
-				subCategories: category.sub_item_categories
-			});
+	// Convert base64 image if provided in clickedRowData
+	useEffect(() => {
+		if (clickedRowData.media) {
+			setImages([{ id: Date.now(), link: clickedRowData.media, file: null as unknown as File, base64: clickedRowData.media }]);
+		}
+	}, [clickedRowData]);
 
-			if (category.sub_item_categories && category.sub_item_categories.length > 0) {
-				result = result.concat(extractSubCategories(category.sub_item_categories, fullName));
-			}
+	const schema = yup.object().shape({
+		title: yup.string().required(t('Title is required')),
+		description: yup.string().required(t('Description is required')),
+		author: yup.string().required(t('Author is required')),
+		ratings: yup.number().required(t('Ratings are required')).min(0).max(10),
+		is_active: yup.boolean()
+	});
+
+	const convertToBase64 = (file: File): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onloadend = () => resolve(reader.result as string);
+			reader.onerror = (error) => reject(error);
 		});
-		return result;
 	};
 
-	const fetchAllCategories = async () => {
-		try {
-			const response: { data?: Category[] } = await fetchAllCategoryTypesData();
-			const subCategories = extractSubCategories(response.data);
-			setAllCategories(subCategories);
-		} catch (error) {
-			toast.error('Error fetching categories');
+	const validateImage = async (file: File): Promise<boolean> => {
+		if (file.size > maxImageSize) {
+			toast.error('Image size should be ≤ 5MB.');
+			return false;
 		}
+		return true;
 	};
 
-	useEffect(() => {
-		fetchAllCategories();
-	}, []);
+	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = event.target;
 
-	useEffect(() => {
-		if (clickedRowData?.item_category && allCategories.length > 0) {
-			const transformedData = clickedRowData.item_category.map((item: ShippingTypeItemCategoryResponse) => ({
-				id: item.id,
-				name: item.name
-			}));
-			setSelectedCategories(transformedData);
-		}
-	}, [clickedRowData, allCategories]);
+		if (files && files.length > 0) {
+			if (images.length >= maxImageCount) {
+				toast.error(`You can only upload a maximum of ${maxImageCount} image.`);
+				return;
+			}
 
-	const handleAddCategory = () => {
-		if (selectedCategory) {
-			const isCategoryAlreadyAdded = selectedCategories.some(
-				(cat) => cat.id === (selectedCategory as Category).id
-			);
+			const file = files[0]; // Only allow one file
+			const isValid = await validateImage(file);
 
-			if (isCategoryAlreadyAdded) {
-				toast.warning('Already added Category, please check with previous ones.');
-			} else {
-				setSelectedCategories((prev) => [...prev, selectedCategory as Category]);
-				setSelectedCategory('');
+			if (isValid) {
+				const base64 = await convertToBase64(file);
+				setImages([{ id: Date.now(), link: URL.createObjectURL(file), file, base64 }]);
 			}
 		}
 	};
-	const handleRemoveCategory = (category: Category) => {
-		setSelectedCategories((prev) => prev.filter((cat) => cat !== category));
+
+	const handleRemoveImage = () => {
+		setImages([]);
 	};
 
 	const handleUpdateShippingType = async (values: ShippingCreateType) => {
 		const data = {
-			name: values.shippingType,
-			item_category: values.product_category,
-			create_date: values.create_date,
-			allow_transit_delay: values.allow_transit_delay,
-			is_active: clickedRowData.is_active
+			title: values.title,
+			description: values.description,
+			author: values.author,
+			ratings: parseFloat(values.ratings.toString()), // Ensure ratings are stored as numbers
+			is_active: values.is_active,
+			media: images.length > 0 ? images[0].base64 : null // Store image as base64
 		};
 
-		if (values.product_category.length !== 0) {
-			setDataLoading(true);
-			try {
-				await updateShippingType(clickedRowData.id, data);
-				fetchAllShippingTypes();
-				toast.success('Shipping type updated successfully');
-				toggleModal();
-				setDataLoading(false);
-			} catch (error) {
-				toast.error('Error updating shipping type');
-				setDataLoading(false);
-			}
-		} else {
-			toast.error('At least one category is required.');
-		}
+		console.log('Form Data:', data);
+		// Call API or function to update shipping type
 	};
 
 	return (
@@ -152,264 +116,80 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 			open={isOpen}
 			maxWidth="md"
 			onClose={toggleModal}
-			PaperProps={{
-				style: {
-					top: '40px',
-					margin: 0,
-					position: 'absolute'
-				}
-			}}
+			PaperProps={{ style: { top: '40px', margin: 0, position: 'absolute' } }}
 		>
-			<DialogTitle className="pb-0">
-				<h6 className="text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-400">
-					{t('EDIT_SHIPPING_TYPE')}
-				</h6>
+			<DialogTitle>
+				<h6 className="text-gray-600 font-400">{t('EDIT_SHIPPING_TYPE')}</h6>
 			</DialogTitle>
 			<DialogContent>
 				<Formik
 					initialValues={{
-						shippingType: clickedRowData?.shipping_type_name || '',
-						product_category: [],
-						create_date: clickedRowData?.create_date || '',
-						allow_transit_delay: clickedRowData?.allow_transit_delay === 'Allowed'
+						title: clickedRowData.title || '',
+						description: clickedRowData.description || '',
+						author: clickedRowData.author || '',
+						ratings: clickedRowData.ratings || 0,
+						is_active: clickedRowData.is_active || false
 					}}
-					onSubmit={(values: ShippingCreateType) => {
-						const categoryIds = selectedCategories.map((category) => category.id);
-						values.product_category = categoryIds;
-						handleUpdateShippingType(values);
-					}}
-					validationSchema={null}
+					validationSchema={schema}
+					onSubmit={(values) => handleUpdateShippingType(values)}
 				>
-					{({ dirty, values, handleChange, setFieldValue }) => (
+					{({ setFieldValue, values }) => (
 						<Form>
-							<Grid
-								container
-								spacing={2}
-								className="pt-[10px]"
-							>
-								<Grid
-									item
-									lg={4}
-									md={4}
-									sm={6}
-									xs={12}
-									className="formikFormField pt-[5px!important]"
-								>
-									<Typography className="formTypography">
-										{t('Shipping Type Name')}
-										<span className="text-red"> *</span>
-									</Typography>
-									<Field
-										disabled={isTableMode === 'view'}
-										name="shippingType"
-										component={TextFormField}
-										fullWidth
-										size="small"
-										placeholder={t('Placeholder')}
+							<Grid container spacing={2}>
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Title')} *</Typography>
+									<Field name="title" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Description')} *</Typography>
+									<Field name="description" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Author')} *</Typography>
+									<Field name="author" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Ratings')} *</Typography>
+									<Field type="number" name="ratings" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Is Active')}</Typography>
+									<Checkbox
+										checked={values.is_active}
+										onChange={(event) => setFieldValue('is_active', event.target.checked)}
+										color="primary"
 									/>
 								</Grid>
 
-								<Grid
-									item
-									lg={8}
-									md={8}
-									sm={6}
-									xs={12}
-									className="pt-[5px!important] flex items-center gap-[5px]"
-								>
-									<FormControl
-										fullWidth
-										size="small"
-									>
-										<Typography className="formTypography">
-											{t('Categories')}
-											<span className="text-red"> *</span>
-										</Typography>
-										<Select
-											labelId="demo-single-chip-label"
-											disabled={isTableMode === 'view'}
-											id="demo-single-chip"
-											value={(selectedCategory as Category)?.id || ''}
-											onChange={(event) => {
-												const selectedId = event.target.value;
-												const selectedCategoryObj = allCategories.find(
-													(category) => category.id === selectedId
-												);
-												setSelectedCategory(selectedCategoryObj || '');
-											}}
-											input={<OutlinedInput id="select-single-chip" />}
-											renderValue={(selected) => {
-												const selectedCategoryObj = allCategories.find(
-													(category) => category.id === selected
-												);
-												return (
-													<Chip
-														disabled={isTableMode === 'view'}
-														key={selectedCategoryObj?.id}
-														label={selectedCategoryObj?.name}
-														size="small"
-													/>
-												);
-											}}
-										>
-											{allCategories.map((category: Category) => (
-												<MenuItem
-													key={category.id}
-													value={category.id} // Pass the ID instead of the whole object
-												>
-													{category.name}
-												</MenuItem>
-											))}
-										</Select>
-									</FormControl>
-									<IconButton
-										disabled={isTableMode === 'view'}
-										onClick={handleAddCategory}
-										size="medium"
-										className="text-primaryBlue mt-[20px]"
-									>
-										<AddCircleIcon />
-									</IconButton>
+								<Grid item md={6} xs={12}>
+									<Typography>{t('Upload Thumbnail Image')}</Typography>
+									<div className="relative flex gap-2 overflow-x-auto">
+										{images.length > 0 && (
+											<div className="relative inline-block w-[100px] h-[100px]">
+												<img src={images[0].link} alt="Thumbnail" className="w-full h-full object-cover" />
+												<IconButton className="absolute top-0 right-0" onClick={handleRemoveImage}>
+													<CancelIcon fontSize="small" />
+												</IconButton>
+											</div>
+										)}
+										{images.length === 0 && (
+											<IconButton onClick={() => document.getElementById('imageUpload')?.click()}>
+												<AddCircleIcon fontSize="large" />
+											</IconButton>
+										)}
+										<input id="imageUpload" type="file" accept="image/*" hidden onChange={handleImageUpload} />
+									</div>
 								</Grid>
 
-								<Grid
-									item
-									lg={4}
-									md={4}
-									sm={6}
-									xs={12}
-									className="formikFormField pt-[5px!important]"
-								>
-									<Typography className="formTypography">{t('Created Date')}</Typography>
-									<TextFormDateField
-										name="create_date"
-										type="date"
-										placeholder=""
-										id="create_date"
-										disabled
-									/>
-								</Grid>
-
-								<Grid
-									item
-									lg={8}
-									md={8}
-									sm={6}
-									xs={12}
-									className="pt-[5px!important] flex items-center gap-[5px]"
-								>
-									<FormControlLabel
-										className="mt-[20px]"
-										disabled={isTableMode === 'view'}
-										name="allow_transit_delay"
-										id="allow_transit_delay"
-										control={<Checkbox color="primary" />}
-										label="Allow Transit Delay"
-										checked={values.allow_transit_delay}
-										onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-											setFieldValue('allow_transit_delay', event.target.checked)
-										}
-									/>
-								</Grid>
-
-								<Grid
-									item
-									xs={12}
-									lg={12}
-									md={12}
-									className="pt-[5px!important]"
-								>
-									<TableContainer>
-										<Table
-											size="small"
-											className="custom-table"
-										>
-											<TableHead>
-												<TableRow>
-													<TableCell
-														sx={{
-															backgroundColor: '#354a95',
-															color: 'white',
-															padding: '2px'
-														}}
-													>
-														{t('Category')}
-													</TableCell>
-													<TableCell
-														sx={{
-															backgroundColor: '#354a95',
-															color: 'white',
-															padding: '2px'
-														}}
-													>
-														{t('Action')}
-													</TableCell>
-												</TableRow>
-											</TableHead>
-											<TableBody>
-												{selectedCategories.length > 0 ? (
-													selectedCategories.map((category, index) => (
-														<TableRow key={index}>
-															<TableCell sx={{ padding: '2px' }}>
-																{category.name}
-															</TableCell>
-															<TableCell sx={{ padding: '2px' }}>
-																<IconButton
-																	disabled={isTableMode === 'view'}
-																	onClick={() => handleRemoveCategory(category)}
-																	size="small"
-																	className="text-red-400"
-																>
-																	<DeleteIcon />
-																</IconButton>
-															</TableCell>
-														</TableRow>
-													))
-												) : (
-													<TableRow>
-														<TableCell
-															colSpan={2}
-															align="center"
-															sx={{ padding: '2px' }}
-														>
-															{t('No categories selected')}
-														</TableCell>
-													</TableRow>
-												)}
-											</TableBody>
-										</Table>
-									</TableContainer>
-								</Grid>
-
-								<Grid
-									item
-									lg={12}
-									md={12}
-									sm={12}
-									xs={12}
-									className="flex justify-end items-start gap-[10px] pt-[10px!important]"
-								>
-									{isTableMode === 'edit' && (
-										<Button
-											type="submit"
-											variant="contained"
-											className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
-										>
-											{t('Save')}
-											{isDataLoading ? (
-												<CircularProgress
-													className="text-white ml-[5px]"
-													size={24}
-												/>
-											) : null}
-										</Button>
-									)}
-
-									<Button
-										variant="contained"
-										className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80"
-										onClick={toggleModal}
-									>
+								<Grid item lg={12} className="flex justify-end gap-2">
+									<Button type="submit" variant="contained" disabled={isDataLoading}>
+										{t('Save')}
+									</Button>
+									<Button variant="contained" onClick={toggleModal}>
 										{t('Cancel')}
 									</Button>
 								</Grid>

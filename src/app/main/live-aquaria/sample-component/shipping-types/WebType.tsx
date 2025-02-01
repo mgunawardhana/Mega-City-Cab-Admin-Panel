@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Chip, FormControlLabel, FormGroup, Grid, Switch, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
@@ -13,7 +14,7 @@ import {
 	fetchAllShippingTypesData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
-import { ShippingTypeApiResponse, ShippingTypeModifiedData, ShippingTypeResponse } from './types/ShippingTypes';
+import { WebTypeApiResponse, ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
 import ShippingTypeActiveComp from './components/ShippingTypeActiveComp';
 import ShippingTypeDeleteAlertForm from './components/ShippingTypeDeleteAlertForm';
 
@@ -33,7 +34,7 @@ function WebType() {
 	const [isOpenNewShippingTypeModal, setIsOpenNewShippingTypeModal] = useState<boolean>(false);
 	const toggleNewShippingTypeModal = () => setIsOpenNewShippingTypeModal(!isOpenNewShippingTypeModal);
 
-	const [sampleData, setSampleData] = useState<ShippingTypeModifiedData[]>([]);
+	const [sampleData, setSampleData] = useState<WebTypeResp[]>();
 	const [isTableLoading, setTableLoading] = useState(false);
 	const [selectedActiveRowData, setSelectedActiveRowData] = useState<ShippingTypeModifiedData>(null);
 	const [selectedDeleteRowData, setSelectedDeleteRowData] = useState<ShippingTypeModifiedData>(null);
@@ -58,68 +59,60 @@ function WebType() {
 
 	const tableColumns = [
 		{
-			title: t('SHIPPING_TYPE_NAME'),
-			field: 'shipping_type_name',
+			title: t('Article Id'),
+			field: 'articleId',
+			cellStyle: {
+				padding: '6px 8px'
+			}
+		},
+		{
+			title: t('Title'),
+			field: 'title',
 			cellStyle: {
 				padding: '4px 8px'
 			}
 		},
 		{
-			title: t('PRODUCT_CATEGORY'),
-			field: 'product_category',
-			render: (rowData: ShippingTypeModifiedData) => (
-				<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-					{rowData.product_category.map((category: string, index: number) => (
-						<Chip
-							className="text-[11px] [&>*]:!text-primaryBlueLight font-700 capitalize bg-primaryBlueLight/10"
-							size="small"
-							key={index}
-							label={category}
-						/>
-					))}
-				</Box>
-			)
-		},
-		{
-			title: t('ALLOW_TRANSIT_DELAY'),
-			field: 'allow_transit_delay',
+			title: t('Ratings'),
+			field: 'ratings',
 			cellStyle: {
 				padding: '4px 8px'
 			}
 		},
 		{
-			title: t('ACTIVE'),
-			field: 'active',
+			title: t('Author'),
+			field: 'author',
+			cellStyle: {
+				padding: '4px 8px'
+			}
+		},
+		{
+			title: t('Is Active'),
+			field: 'is_active',
 			cellStyle: {
 				padding: '4px 8px'
 			},
-			render: (rowData: ShippingTypeModifiedData) => (
-				<FormGroup>
-					<FormControlLabel
-						control={
-							<Switch
-								checked={rowData.active}
-								onClick={() => handleSwitchClick(rowData)}
-								aria-label="active switch"
-								size="small"
-								sx={{
-									'& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-										backgroundColor: '#387ed4'
-									}
-								}}
-							/>
-						}
-						label=""
-					/>
-				</FormGroup>
+			render: rowData => (
+				<span
+					style={{
+						display: 'inline-block',
+						padding: '4px 12px',
+						borderRadius: '16px',
+						color: rowData.is_active ? '#4CAF50' : '#F44336', // Green for active, red for inactive
+						backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE', // Light green/red for background
+						fontSize: '14px',
+						fontWeight: 500,
+						textAlign: 'center',
+						minWidth: '80px' // Optional for consistent size
+					}}
+				>
+            {rowData.is_active ? t('Active') : t('Inactive')}
+        </span>
 			)
 		}
-	];
 
-	const handleSwitchClick = (rowData: ShippingTypeModifiedData) => {
-		setSelectedActiveRowData(rowData);
-		toggleActiveModal();
-	};
+
+	];
 
 	const handleConfirmStatusChange = async () => {
 		toggleActiveModal();
@@ -130,7 +123,7 @@ function WebType() {
 				is_active: !selectedActiveRowData?.active
 			};
 			await updateShippingTypeStatus(id, data);
-			fetchAllShippingTypes();
+			await fetchAllShippingTypes();
 			toast.success('Status updated successfully');
 		} catch (error) {
 			toast.error('Error updating status:');
@@ -140,25 +133,30 @@ function WebType() {
 	const fetchAllShippingTypes = async () => {
 		setTableLoading(true);
 		try {
-			const response: ShippingTypeApiResponse = await fetchAllShippingTypesData(pageNo, pageSize);
+			const response = await fetchAllShippingTypesData(pageNo, pageSize);
 
-			const transformedData: ShippingTypeModifiedData[] = response.data.map((item: ShippingTypeResponse) => ({
-				...item,
-				shipping_type_name: item.name,
-				product_category: item.item_category.map((category: { name: string }) => category.name),
-				create_date: item.created_at.slice(0, 10),
-				allow_transit_delay: item.allow_transit_delay === 1 ? 'Allowed' : 'Disallowed',
-				active: item.is_active === 1
-			}));
+			console.log("API Response:", response);
 
-			setSampleData(transformedData);
-			setCount(count);
-			setTableLoading(false);
+			if (response && Array.isArray(response.result)) {
+				const transformedData: WebTypeResp[] = response.result.map((item) => ({
+					...item,
+				}));
+
+				setSampleData(transformedData);
+				setCount(response.result.length);
+			} else {
+				console.error("Unexpected data format:", response);
+				setSampleData([]);
+			}
 		} catch (error) {
+			console.error("Error fetching shipping types:", error);
 			toast.error('Error fetching data');
+			setSampleData([]);
+		} finally {
 			setTableLoading(false);
 		}
 	};
+
 
 	const handleRowDelete = async (rowData: ShippingTypeModifiedData) => {
 		setSelectedDeleteRowData(rowData);
