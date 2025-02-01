@@ -228,19 +228,6 @@ function ClassicForgotPasswordPage() {
 		<div className="flex min-w-0 flex-auto flex-col items-center sm:justify-center">
 			<Paper className="min-h-full w-full rounded-0 px-16 py-32 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:p-48 sm:shadow">
 				<div className="mx-auto w-full max-w-320 sm:mx-0 sm:w-320">
-					{/* <img
-						className="w-48"
-						src="assets/images/logo/logo.svg"
-						alt="logo"
-					/> */}
-
-					{/* <Typography
-            variant="h4"
-            component="h1"
-            className="text-4xl text-gray-800 font-extrabold leading-tight tracking-tight text-center mb-[10px]"
-          >
-            Enter Your Email
-          </Typography> */}
 
 					{pwdResetFormView ? (
 						<form
@@ -376,7 +363,7 @@ function ClassicForgotPasswordPage() {
 										sx={{ width: 'fit-content' }}
 										variant="contained"
 										color="secondary"
-										className="w-full text-white text-lg mt-4 rounded-[6px] bg-primaryBlue hover:bg-primaryBlueLight"
+										className="w-full text-white text-lg mt-4 rounded-[6px] bg-yellow-800 hover:bg-yellow-800"
 										aria-label="Reset Password"
 										type="submit"
 										size="large"
@@ -474,7 +461,7 @@ function ClassicForgotPasswordPage() {
 							<Button
 								variant="contained"
 								color="secondary"
-								className="w-full text-white text-lg mt-16 rounded-[6px] bg-primaryBlue hover:bg-primaryBlueLight"
+								className="w-full text-white text-lg mt-16 rounded-[6px] bg-yellow-800 hover:bg-yellow-800"
 								// style={{ width: 'fit-content', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px' }}
 								aria-label="Send Reset Link"
 								type="submit"

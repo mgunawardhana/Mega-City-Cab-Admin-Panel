@@ -15,49 +15,27 @@ import customerManagementConfigs from '../main/customerManagement/CustomerManage
 import userManagementConfigs from '../main/live-aquaria/user-management/userManagementConfigs';
 import ClassicForgotPasswordPage from '../main/pages/authentication/forgot-password/ClassicForgotPasswordPage';
 import GeneralAdvertisementRoot from '../main/live-aquaria/sample-component/GeneralAdvertisementRoot';
+import WebSiteRoot from '../main/live-aquaria/sample-component/website-management/WebSiteRoot';
+import VehicleManagementRoot from '../main/live-aquaria/sample-component/vehicle-management/VehicleManagementRoot';
 
-const routeConfigs: FuseRouteConfigsType = [
-	SignOutConfig,
-	SignInConfig,
-	// SignUpConfig,
-	DocumentationConfig,
-	...PagesConfigs,
-	...UserInterfaceConfigs,
-	...DashboardsConfigs,
-	// ...AppsConfigs,
-	...authRoleExamplesConfigs,
-	...GeneralAdvertisementRoot,
-		...userManagementConfigs,
-	// ...ticketManagementConfigs,
-	...customerManagementConfigs,
-];
+const routeConfigs: FuseRouteConfigsType = [SignOutConfig, SignInConfig, // SignUpConfig,
+	DocumentationConfig, ...PagesConfigs, ...UserInterfaceConfigs, ...DashboardsConfigs, // ...AppsConfigs,
+	...authRoleExamplesConfigs, ...GeneralAdvertisementRoot, ...userManagementConfigs, // ...ticketManagementConfigs,
+	...customerManagementConfigs, ...WebSiteRoot, ...VehicleManagementRoot];
 
 /**
  * The routes of the application.
  */
-const routes: FuseRoutesType = [
-	...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
-	{
-		path: '/',
-		element: <Navigate to="/dashboards/project" />,
-		auth: settingsConfig.defaultAuth
-	},
-	{
-		path: 'loading',
-		element: <FuseLoading />
-	},
-	{
-		path: 'forgot-password/:token',
-		element: <ClassicForgotPasswordPage />
-	},
-	{
-		path: '404',
-		element: <Error404Page />
-	},
-	{
-		path: '*',
-		element: <Navigate to="404" />
-	}
-];
+const routes: FuseRoutesType = [...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth), {
+	path: '/', element: <Navigate to="/dashboards/project" />, auth: settingsConfig.defaultAuth
+}, {
+	path: 'loading', element: <FuseLoading />
+}, {
+	path: 'forgot-password/:token', element: <ClassicForgotPasswordPage />
+}, {
+	path: '404', element: <Error404Page />
+}, {
+	path: '*', element: <Navigate to="404" />
+}];
 
 export default routes;

@@ -1,8 +1,12 @@
+// @ts-nocheck
 import { del, get, put, post } from '../../../http/LiveAquariaServiceMethods';
 import * as url from '../url_helper';
+import { GET_ALL_WEB_ARTICLES } from '../url_helper';
 
 export const fetchAllShippingTypesData = (pageNo: string | number, pageSize: string | number) =>
-	get(`${url.GET_ALL_SHIPPING_TYPES}?limit=${pageSize}&page=${pageNo}`);
+	post(`${url.GET_ALL_WEB_ARTICLES}?page=0&size=4`)
+
+
 export const updateShippingTypeStatus = (id: string | number, action: any) =>
 	put(`${url.UPDATE_SHIPPING_TYPE_STATUS}${id}`, action);
 

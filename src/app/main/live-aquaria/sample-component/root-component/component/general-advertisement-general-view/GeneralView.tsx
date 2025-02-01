@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { Field, Form, Formik } from 'formik';
-import { CircularProgress, Grid, MenuItem } from '@mui/material';
+import { CircularProgress, Grid, IconButton, MenuItem } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,8 @@ import FormControl from '@mui/material/FormControl';
 import { Controller } from 'react-hook-form';
 import FormHelperText from '@mui/material/FormHelperText';
 import TextFormDateField from '../../../../../../common/FormComponents/TextFormDateField';
+import Avatar from '@mui/material/Avatar';
+import { PhotoCamera } from '@mui/icons-material';
 
 interface Props {
 	clickedRowData: GeneralAdvMainObject;
@@ -27,16 +29,42 @@ interface Props {
 function GeneralView({ clickedRowData, isTableMode, fetchDataForProfileView }: Props) {
 	const { t } = useTranslation('sampleComponent');
 	const [isProductSubmitDataLoading, setProductSubmitDataLoading] = useState(false);
+	const [profilePic, setProfilePic] = useState<string | null>(null);
 	const schema = yup.object().shape({});
 	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
+	const [vehicleAssigned, setVehicleAssigned] = useState<{ value: string; label: string }[]>([]);
+	const [driverAvailability, setDriverAvailability] = useState<{ value: string; label: string }[]>([]);
 	useEffect(() => {
-		// Hardcoded role values
-		setUserRoles([
-			{ value: 'admin', label: t('Admin') },
-			{ value: 'user', label: t('User') },
-			{ value: 'guest', label: t('Guest') },
+		setDriverAvailability([
+			{ value: 'active', label: t('ACTIVE') },
+			{ value: 'pending', label: t('PENDING') },
+			{ value: 'inactive', label: t('INACTIVE') },
 		]);
 	}, [t]);
+
+	useEffect(() => {
+		setVehicleAssigned([
+			{ value: 'true', label: t('TRUE') },
+			{ value: 'false', label: t('FALSE') },
+		]);
+	}, [t]);
+
+	useEffect(() => {
+		setUserRoles([
+			{ value: 'admin', label: t('ADMIN') },
+			{ value: 'user', label: t('USER') },
+			{ value: 'guest', label: t('GUEST') },
+		]);
+	}, [t]);
+
+	const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => setProfilePic(reader.result as string);
+			reader.readAsDataURL(file);
+		}
+	};
 
 	const handleUpdate = async (values: GeneralAdvGeneralViewSubmitDataType) => {
 		const generalDetails = {
@@ -81,6 +109,32 @@ function GeneralView({ clickedRowData, isTableMode, fetchDataForProfileView }: P
 
 	return (<div className="min-w-full max-w-[100vw]">
 			<Paper className="p-[16px] mt-[-5px] rounded-[4px]">
+				<Grid container spacing={2} className="mb-4">
+					<Grid item xs={12} sm={3} className="flex ">
+						<div className="flex flex-col ">
+							<Avatar
+								src={profilePic || ''}
+								alt="Profile Picture"
+								sx={{ width: 100, height: 100 }}
+							/>
+							<IconButton
+								color="primary"
+								aria-label="upload picture"
+								component="label"
+								className="mt-2"
+							>
+								<input
+									hidden
+									accept="image/*"
+									type="file"
+									onChange={handleProfilePicChange}
+								/>
+								<PhotoCamera />
+							</IconButton>
+						</div>
+					</Grid>
+				</Grid>
+
 				<Formik
 					enableReinitialize
 					initialValues={{
@@ -99,6 +153,7 @@ function GeneralView({ clickedRowData, isTableMode, fetchDataForProfileView }: P
 					onSubmit={handleUpdate}
 				>
 					{({ errors, touched, handleChange, values }) => {
+						// @ts-ignore
 						// @ts-ignore
 						// @ts-ignore
 						// @ts-ignore
@@ -279,9 +334,8 @@ function GeneralView({ clickedRowData, isTableMode, fetchDataForProfileView }: P
 										/>
 									</Grid>
 									<Grid item xl={3} md={6} sm={12} xs={12} className="formikFormField pt-[5px!important]" key="role_id">
-										<Typography htmlFor="role_id" className="formTypography">
-											{t('Role')} <span className="text-red">*</span>
-										</Typography>
+										<Typography className="formTypography">{t('Role')} <span
+											className="text-red">*</span></Typography>
 										<FormControl fullWidth size="small">
 											<Select
 												id="role_id"
@@ -297,9 +351,47 @@ function GeneralView({ clickedRowData, isTableMode, fetchDataForProfileView }: P
 												))}
 											</Select>
 										</FormControl>
-
 									</Grid>
 
+									<Grid item xl={3} md={6} sm={12} xs={12} className="formikFormField pt-[5px!important]" key="vehicle_assigned">
+										<Typography className="formTypography">{t('Vehicle Assigned')} <span
+											className="text-red">*</span></Typography>
+										<FormControl fullWidth size="small">
+											<Select
+												id="vehicle_assigned"
+												name="vehicle_assigned"
+												value={values.vehicle_assigned}
+												onChange={handleChange}
+												disabled={isTableMode === 'view'}
+											>
+												{vehicleAssigned.map((vehicle_assigned) => (
+													<MenuItem key={vehicle_assigned.value} value={vehicle_assigned.value}>
+														{vehicle_assigned.label}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+									</Grid>
+
+									<Grid item xl={3} md={6} sm={12} xs={12} className="formikFormField pt-[5px!important]" key="driver_availability">
+										<Typography className="formTypography">{t('Vehicle Assigned')} <span
+											className="text-red">*</span></Typography>
+										<FormControl fullWidth size="small">
+											<Select
+												id="driver_availability"
+												name="driver_availability"
+												value={values.driver_availability}
+												onChange={handleChange}
+												disabled={isTableMode === 'view'}
+											>
+												{driverAvailability.map((driver_availability) => (
+													<MenuItem key={driver_availability.value} value={driver_availability.value}>
+														{driver_availability.label}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+									</Grid>
 									<Grid
 										item
 										xl={3}

@@ -30,13 +30,13 @@ function BoardHeader(props: BoardHeaderProps) {
 				</Button>
 
 				<Button
-					className="whitespace-nowrap"
+					className="whitespace-nowrap bg-yellow-800"
 					variant="contained"
-					color="secondary"
+					color=""
 					onClick={() => onSetSidebarOpen(true)}
 				>
 					<FuseSvgIcon size={20}>heroicons-outline:cog</FuseSvgIcon>
-					<span className="hidden sm:flex mx-8">Settings</span>
+					<span className="hidden sm:flex mx-8"></span>
 				</Button>
 			</div>
 		</div>

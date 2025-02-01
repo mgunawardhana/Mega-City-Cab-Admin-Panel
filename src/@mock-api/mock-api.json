@@ -25670,10 +25670,10 @@
             },
             "currentRange": "DT",
             "data": {
-              "name": "Due Tasks",
+              "name": "Complete Rides",
               "count": {
                 "DY": 21,
-                "DT": 25,
+                "DT": "657K",
                 "DTM": 19
               },
               "extra": {
@@ -25688,9 +25688,9 @@
             "detail": "You can show some detailed information about this widget in here."
           },
           "overdue": {
-            "title": "Overdue",
+            "title": "Cancelled",
             "data": {
-              "name": "Tasks",
+              "name": "Bookings",
               "count": 4,
               "extra": {
                 "name": "Yesterday's overdue",
@@ -25714,7 +25714,7 @@
           "features": {
             "title": "Features",
             "data": {
-              "name": "Proposals",
+              "name": "Bookings",
               "count": 42,
               "extra": {
                 "name": "Implemented",
