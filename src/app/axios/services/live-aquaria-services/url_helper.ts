@@ -1,3 +1,17 @@
+export const GET_ALL_WEB_ARTICLES = 'api/v1/web-content/public/get-article-with-pagination';
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const POST_CUSTOMER = '/api/admin/v1/customers';
 export const POST_CUSTOMER_ADVANCE_FILTERING = '/api/admin/v1/customers1';
 export const GET_ALL_CUSTOMERS = '/api/admin/v1/customers?';
@@ -74,6 +88,16 @@ export const GET_ALL_PRODUCTS_WITHOUT_PAGINATION = '/api/admin/v1/products?pagin
 export const CREATE_DRIVERS_DEN_ADVERTISEMENTS = '/api/admin/v1/divers-advertisements';
 export const UPDATE_DRIVERS_DEN_ADVERTISEMENTS_RELATED_PRODUCTS = '/api/admin/v1/advertisements/';
 
+
+
+
+
+
+
+
+
+
+
 export const GET_RELATED_PRODUCTS = '/api/admin/v1/products';
 export const TAG_RELATED_PRODUCTS = '/api/admin/v1/advertisements/';
 export const TAG_RELATED_ARTICLES = '/api/admin/v1/advertisements/';
@@ -81,7 +105,6 @@ export const GET_ALL_RELATED_PRODUCT_ARTICLE = '/api/admin/v1/articles';
 export const PUBLISH_DRIVERS_DEN_ADVERTISEMENTS = '/api/admin/v1/publish-advertisements';
 
 export const GENERAL_ADVERTISEMENT_GUARANTEE_OPTIONS = '/api/admin/v1/advertisements/';
-export const GET_ALL_SHIPPING_TYPES = '/api/admin/v1/shipping-types';
 export const GET_ALL_PENDING_DRIVERS_DEN_ADVERTISEMENTS_DATA = '/api/admin/v1/pending-advertisements?';
 export const UPDATE_SHIPPING_TYPE_STATUS = '/api/admin/v1/shipping-types/';
 export const GET_ALL_CATEGORY_TYPES = '/api/admin/v1/item-categories?paginate=false';

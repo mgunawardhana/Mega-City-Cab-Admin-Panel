@@ -15,6 +15,7 @@ import customerManagementConfigs from '../main/customerManagement/CustomerManage
 import userManagementConfigs from '../main/live-aquaria/user-management/userManagementConfigs';
 import ClassicForgotPasswordPage from '../main/pages/authentication/forgot-password/ClassicForgotPasswordPage';
 import GeneralAdvertisementRoot from '../main/live-aquaria/sample-component/GeneralAdvertisementRoot';
+import WebSiteRoot from '../main/live-aquaria/sample-component/shipping-types/WebSiteRoot';
 
 const routeConfigs: FuseRouteConfigsType = [
 	SignOutConfig,
@@ -30,6 +31,7 @@ const routeConfigs: FuseRouteConfigsType = [
 		...userManagementConfigs,
 	// ...ticketManagementConfigs,
 	...customerManagementConfigs,
+	...WebSiteRoot
 ];
 
 /**

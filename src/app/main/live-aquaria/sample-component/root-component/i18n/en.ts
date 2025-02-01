@@ -11,7 +11,7 @@ const locale = {
 	ITEM_NUMBER: 'Item Number',
 	SIZE: 'Size',
 	DESCRIPTION: 'Description',
-	ACTIVE: 'Active',
+	// ACTIVE: 'Active',
 	ACTION: 'Action',
 	CLEAR_FILTERS: 'Clear Filters',
 	FILTER_ALL: 'Filter All',
