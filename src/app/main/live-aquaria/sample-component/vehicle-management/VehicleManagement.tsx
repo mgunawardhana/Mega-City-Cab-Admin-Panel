@@ -6,10 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import NavigationViewComp from '../../../../common/FormComponents/NavigationViewComp';
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
-import ShippingTypeEditModal from './components/VehicleManagementEditModel';
-import NewShippingTypeModel from './components/NewVehicleManagement';
+import VehicleEditModel from './components/VehicleManagementEditModel';
+import NewVehicleManagement from './components/VehicleEditModel';
 import {
-	deleteShippingType, fetchAllShippingTypesData, updateShippingTypeStatus
+	deleteShippingType,
+	fetchAllShippingTypesData,
+	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
 import { ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
 import NewVehicleActiveComp from './components/NewVehicleActiveComp';
@@ -55,40 +57,58 @@ function VehicleManagement() {
 	};
 
 	const tableColumns = [{
-		title: t('Article Id'), field: 'articleId', cellStyle: {
+		title: t('Registration Number'), field: 'registration_number', cellStyle: {
 			padding: '6px 8px'
 		}
 	}, {
-		title: t('Title'), field: 'title', cellStyle: {
+		title: t('Model'), field: 'model', cellStyle: {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Ratings'), field: 'ratings', cellStyle: {
+		title: t('Color'), field: 'color', cellStyle: {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Author'), field: 'author', cellStyle: {
+		title: t('Fuel Type'), field: 'fuelType', cellStyle: {
 			padding: '4px 8px'
 		}
-	}, {
-		title: t('Is Active'), field: 'is_active', cellStyle: {
-			padding: '4px 8px'
-		}, render: rowData => (<span
-			style={{
-				display: 'inline-block',
-				padding: '4px 12px',
-				borderRadius: '16px',
-				color: rowData.is_active ? '#4CAF50' : '#F44336', // Green for active, red for inactive
-				backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE', // Light green/red for background
-				fontSize: '14px',
-				fontWeight: 500,
-				textAlign: 'center',
-				minWidth: '80px' // Optional for consistent size
-			}}
-		>
+	},
+
+		{
+			title: t('Insurance Provider'), field: 'insurance_provider', cellStyle: {
+				padding: '4px 8px'
+			}
+		}, {
+			title: t('Seating Cap'), field: 'seating_capacity', cellStyle: {
+				padding: '4px 8px'
+			}
+		}, {
+			title: t('License No'), field: 'license_plate_number', cellStyle: {
+				padding: '4px 8px'
+			}
+		}, {
+			title: t('Air Condition'), field: 'air_conditioning', cellStyle: {
+				padding: '4px 8px'
+			}
+		}, {
+			title: t('Vehicle Type'), field: 'is_active', cellStyle: {
+				padding: '4px 8px'
+			}, render: rowData => (<span
+				style={{
+					display: 'inline-block',
+					padding: '4px 12px',
+					borderRadius: '16px',
+					color: rowData.is_active ? '#4CAF50' : '#F44336', // Green for active, red for inactive
+					backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE', // Light green/red for background
+					fontSize: '14px',
+					fontWeight: 500,
+					textAlign: 'center',
+					minWidth: '80px' // Optional for consistent size
+				}}
+			>
             {rowData.is_active ? t('Active') : t('Inactive')}
         </span>)
-	}
+		}
 
 
 	];
@@ -243,7 +263,7 @@ function VehicleManagement() {
 							size="medium"
 							onClick={handleNewShippingType}
 						>
-							{t('Create Article')}
+							{t('Create Vehicle')}
 						</Button>
 					</Grid>
 				</Grid>
@@ -294,7 +314,7 @@ function VehicleManagement() {
 		</Grid>
 
 		{/* New Shipping Type Modal */}
-		{isOpenNewShippingTypeModal && (<NewShippingTypeModel
+		{isOpenNewShippingTypeModal && (<NewVehicleManagement
 			isOpen={isOpenNewShippingTypeModal}
 			toggleModal={toggleNewShippingTypeModal}
 			clickedRowData={{}}
@@ -302,7 +322,7 @@ function VehicleManagement() {
 		/>)}
 
 		{/* View Modal */}
-		{isOpenShippingTypeViewModal && (<ShippingTypeEditModal
+		{isOpenShippingTypeViewModal && (<VehicleEditModel
 			isOpen={isOpenShippingTypeViewModal}
 			toggleModal={toggleShippingTypeViewModal}
 			clickedRowData={selectedViewRowData}
@@ -311,7 +331,7 @@ function VehicleManagement() {
 		/>)}
 
 		{/* Edit Modal */}
-		{isOpenShippingTypeEditModal && (<ShippingTypeEditModal
+		{isOpenShippingTypeEditModal && (<VehicleEditModel
 			isOpen={isOpenShippingTypeEditModal}
 			toggleModal={toggleShippingTypeEditModal}
 			clickedRowData={selectedEditRowData}

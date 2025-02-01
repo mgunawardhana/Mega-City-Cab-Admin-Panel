@@ -17,7 +17,7 @@ const VehicleManagementConfig = {
 	permission: 'SHIPPING_TYPES',
 	routes: [
 		{
-			path: 'web/web-site-management',
+			path: 'vehicle/vehicle-management',
 			element: <ShippingTypes />
 		}
 	]
