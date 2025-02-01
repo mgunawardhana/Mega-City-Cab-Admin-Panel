@@ -13,7 +13,7 @@ const locale = {
 	SAVE: 'Save',
 	VIEW_SHIPPING_TYPE: 'View Shipping Type',
 	EDIT_SHIPPING_TYPE: 'Edit Shipping Type',
-	NEW_SHIPPING_TYPE: 'New Shipping Type',
+	NEW_ARTICLE: 'Create New Article',
 	ALLOW_TRANSIT_DELAY: 'Allow Transit Delay'
 };
 

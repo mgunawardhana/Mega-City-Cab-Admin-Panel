@@ -11,7 +11,7 @@ const locale = {
 	MESSENGER: 'Messenger',
 	SCRUMBOARD: 'Scrumboard',
 	NOTES: 'Notes',
-	USER_MANAGEMENT: 'User Management',
+	PROPERTY_MANAGEMENT: 'Property Management',
 	USERS: 'Users',
 	ROLES: 'Roles',
 	PERMISSIONS: 'Permissions',

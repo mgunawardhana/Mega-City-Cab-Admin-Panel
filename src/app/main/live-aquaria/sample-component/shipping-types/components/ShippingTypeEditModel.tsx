@@ -137,23 +137,48 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Title')} *</Typography>
-									<Field name="title" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Title')}<span className="text-red"> *</span></Typography>
+									<Field
+										name="title"
+										component={TextFormField}
+										fullWidth
+										size="small"
+										disabled={isTableMode === 'view'}
+									/>
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Description')} *</Typography>
-									<Field name="description" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Description')}<span className="text-red"> *</span></Typography>
+									<Field
+										name="description"
+										component={TextFormField}
+										fullWidth
+										size="small"
+										disabled={isTableMode === 'view'}
+									/>
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Author')} *</Typography>
-									<Field name="author" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Author')} <span className="text-red"> *</span></Typography>
+									<Field
+										name="author"
+										component={TextFormField}
+										fullWidth
+										size="small"
+										disabled={isTableMode === 'view'}
+									/>
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Ratings')} *</Typography>
-									<Field type="number" name="ratings" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Ratings')}<span className="text-red"> *</span></Typography>
+									<Field
+										type="number"
+										name="ratings"
+										component={TextFormField}
+										fullWidth
+										size="small"
+										disabled={isTableMode === 'view'}
+									/>
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
@@ -161,37 +186,59 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 									<Checkbox
 										checked={values.is_active}
 										onChange={(event) => setFieldValue('is_active', event.target.checked)}
-										color="primary"
+										disabled={isTableMode === 'view'}
 									/>
 								</Grid>
 
-								<Grid item md={6} xs={12}>
+								<Grid item md={8} xs={12}>
 									<Typography>{t('Upload Thumbnail Image')}</Typography>
 									<div className="relative flex gap-2 overflow-x-auto">
 										{images.length > 0 && (
-											<div className="relative inline-block w-[100px] h-[100px]">
+											<div className="relative inline-block w-[440px] h-[220px]">
 												<img src={images[0].link} alt="Thumbnail" className="w-full h-full object-cover" />
-												<IconButton className="absolute top-0 right-0" onClick={handleRemoveImage}>
+												<IconButton
+													className="absolute top-0 right-0"
+													onClick={handleRemoveImage}
+													disabled={isTableMode === 'view'}
+												>
 													<CancelIcon fontSize="small" />
 												</IconButton>
 											</div>
 										)}
 										{images.length === 0 && (
-											<IconButton onClick={() => document.getElementById('imageUpload')?.click()}>
+											<IconButton
+												onClick={() => document.getElementById('imageUpload')?.click()}
+												disabled={isTableMode === 'view'}
+											>
 												<AddCircleIcon fontSize="large" />
 											</IconButton>
 										)}
-										<input id="imageUpload" type="file" accept="image/*" hidden onChange={handleImageUpload} />
+										<input
+											id="imageUpload"
+											type="file"
+											accept="image/*"
+											hidden
+											onChange={handleImageUpload}
+											disabled={isTableMode === 'view'}
+										/>
 									</div>
 								</Grid>
 
 								<Grid item lg={12} className="flex justify-end gap-2">
-									<Button type="submit" variant="contained" disabled={isDataLoading}>
-										{t('Save')}
-									</Button>
-									<Button variant="contained" onClick={toggleModal}>
+									<Button
+										className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80"
+										variant="contained" onClick={toggleModal}>
 										{t('Cancel')}
 									</Button>
+									<Button
+										className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
+										type="submit"
+										variant="contained"
+										disabled={isDataLoading || isTableMode === 'view'}
+									>
+										{t('Save')}
+									</Button>
+
 								</Grid>
 							</Grid>
 						</Form>
@@ -199,6 +246,7 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 				</Formik>
 			</DialogContent>
 		</Dialog>
+
 	);
 }
 

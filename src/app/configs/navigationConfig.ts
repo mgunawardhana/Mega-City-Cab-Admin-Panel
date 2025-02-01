@@ -44,15 +44,15 @@ const navigationConfig: FuseNavItemType[] = [
 		]
 	},
 	{
-		id: 'usermanagement',
-		title: 'UserManagement',
+		id: 'propertymanagement',
+		title: 'Property Management',
 		type: 'group',
 		icon: 'heroicons-outline:home',
-		translate: 'USER_MANAGEMENT',
-		subtitle: 'Property Management',
+		translate: 'PROPERTY_MANAGEMENT',
+		subtitle: 'Business Properties Management',
 		children: [
 			{
-				id: 'usermanagement.users',
+				id: 'propertymanagement.users',
 				title: 'Users',
 				type: 'item',
 				icon: 'heroicons-outline:user',
