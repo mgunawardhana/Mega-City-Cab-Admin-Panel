@@ -15,8 +15,6 @@ import {
 } from '../../../../../../axios/services/live-aquaria-services/general-advertisement-services/GeneralAdvertisementService';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
-import { Controller } from 'react-hook-form';
-import FormHelperText from '@mui/material/FormHelperText';
 import TextFormDateField from '../../../../../../common/FormComponents/TextFormDateField';
 import Avatar from '@mui/material/Avatar';
 import { PhotoCamera } from '@mui/icons-material';

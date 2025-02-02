@@ -1,7 +1,7 @@
 const locale = {
 	SAMPLE_COMPONENT: 'Sample Component',
 	GENERAL_ADVERTISEMENT: 'General Advertisement',
-	ADD_NEW_ADVERTISEMENT: 'Add New Advertisement',
+	CREATE_GUIDELINE: 'Create Guideline',
 	ADVANCED_FILTERING: 'Advance Filtering',
 	PRODUCT_ID: 'Product ID',
 	PRODUCT_NAME: 'Product Name',
@@ -60,7 +60,7 @@ const locale = {
 	CONFIRM_MESSAGE: 'Are you sure you want to update this status ?',
 	CANCEL: 'Cancel',
 	CONFIRM: 'Confirm',
-	DEFAULT: 'Live Aquaria',
+	DEFAULT: 'Mega City Admin',
 	EDIT_GENERAL_ADVERTISEMENT: 'Edit General Advertisement',
 	CREATE_GENERAL_ADVERTISEMENT: 'Create General Advertisement',
 	VIEW_GENERAL_ADVERTISEMENT: 'View General Advertisement',

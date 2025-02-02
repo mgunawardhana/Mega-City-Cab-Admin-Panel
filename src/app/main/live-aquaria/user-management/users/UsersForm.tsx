@@ -4,8 +4,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
-import { Grid, IconButton, Select } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Checkbox, Grid, IconButton, Select } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { z } from 'zod';
@@ -21,6 +21,8 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTranslation } from 'react-i18next';
+import TextFormDateField from '../../../../common/FormComponents/TextFormDateField';
+import { DateField } from '@mui/x-date-pickers';
 
 interface Role {
 	id: number;
@@ -65,7 +67,7 @@ const schema = z
 			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.')
 			.regex(/^[^;/=+_-]*$/, 'Password should not contain ;/=+_- special characters'),
 		passwordConfirm: z.string().min(1, 'Password confirmation is required'),
-		customerAddress: z.string().min(3,'please enter your address'),
+		customerAddress: z.string().min(3, 'please enter your address')
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
 		message: 'Passwords must match', path: ['passwordConfirm']
@@ -80,7 +82,7 @@ const schemaOnEdit = z.object({
 		.min(5, 'Must be at least 5 characters')
 		.max(50, 'Must be maximum 50 characters')
 		.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov)$/, 'Email must end with .com, .org, .net, .edu, or .gov'),
-	customerAddress: z.string().min(3,'please enter your address'),
+	customerAddress: z.string().min(3, 'please enter your address')
 });
 
 interface Props {
@@ -101,7 +103,8 @@ function UsersForm(props: Props) {
 	const { isAdd, className, isOpen, setIsFormOpen, isEdit, selectedRow, onCloseHandler, isView } = props;
 	const [openDialog, setOpenDialog] = useState(isOpen);
 	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
-
+	const [driverStatus, setDriverStatus] = useState<{ value: string; label: string }[]>([]);
+	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [loading, setLoading] = useState(false);
 	const [fullWidth] = useState(true);
 	const defaultValues = {
@@ -115,7 +118,7 @@ function UsersForm(props: Props) {
 		rootUserId: selectedRow ? selectedRow.rootUserId : '',
 		customerAddress: selectedRow ? selectedRow.customerAddress : '',
 		customerNIC: selectedRow ? selectedRow.customerNIC : '',
-		phoneNumber: selectedRow ? selectedRow.phoneNumber : '',
+		phoneNumber: selectedRow ? selectedRow.phoneNumber : ''
 	};
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -132,29 +135,27 @@ function UsersForm(props: Props) {
 	}
 
 	function onSubmit(data: UserInterface) {
-		// if (isEdit) {
-		// 	updateRole(data);
-		// } else {
-		//
-		// }
-		saveRole(data);
+		saveRole(data).then(r => (r));
 	}
 
 	useEffect(() => {
-		setUserRoles([{ value: 'MANAGER', label: t('MANAGER') }, { value: 'CUSTOMER', label: t('CUSTOMER') }, {
-			value: 'GUEST',
-			label: t('GUEST')
-		}]);
+		setUserRoles([{ value: 'MANAGER', label: t('MANAGER') }, {
+			value: 'CUSTOMER', label: t('CUSTOMER')
+		}, { value: 'GUEST', label: t('GUEST') }, { value: 'DRIVER', label: t('DRIVER') }]);
 	}, [t]);
+
+	useEffect(() => {
+		setDriverStatus([{value: 'AVAILABLE', label: 'AVAILABLE'}, {value: 'UNAVAILABLE', label: 'UNAVAILABLE'}]);
+	}, []);
 
 	async function saveRole(data: UserInterface) {
 		setLoading(true);
 		try {
 			const data_save = {
 				firstName: data.firstName,
-				lastName:data.lastName,
-				email:data.email,
-				password:data.password,
+				lastName: data.lastName,
+				email: data.email,
+				password: data.password,
 				role: data.role,
 				address: data.address,
 				nic: data.nic,
@@ -172,11 +173,15 @@ function UsersForm(props: Props) {
 		}
 	}
 
+	const handleRoleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		setSelectedRole(event.target.value as string);
+	};
+
+
 	async function updateRole(data: UserInterface) {
 		setLoading(true);
 		try {
-			const data_update = {
-			};
+			const data_update = {};
 			await axios.put(`${UPDATE_ADMIN_USER}/${selectedRow.id}`, data_update);
 			toast.success('Admin User updated successfully');
 		} catch (error) {
@@ -208,356 +213,471 @@ function UsersForm(props: Props) {
 	};
 
 	return loading ? (<div
-			className="flex justify-center items-center w-[111.2vw] h-[111.2svh] fixed top-0 left-0 z-[10000] bg-white/95">
-			<div className="flex-col gap-4 w-full flex items-center justify-center">
+		className="flex justify-center items-center w-[111.2vw] h-[111.2svh] fixed top-0 left-0 z-[10000] bg-white/95">
+		<div className="flex-col gap-4 w-full flex items-center justify-center">
+			<div
+				className="w-[60px] h-[60px] border-4 border-transparent text-primaryPurple text-4xl animate-spin flex items-center justify-center border-t-primaryPurple rounded-full">
 				<div
-					className="w-[60px] h-[60px] border-4 border-transparent text-primaryPurple text-4xl animate-spin flex items-center justify-center border-t-primaryPurple rounded-full">
-					<div
-						className="w-[50px] h-[50px] border-4 border-transparent text-primaryPurple text-2xl animate-spin flex items-center justify-center border-t-primaryPurple rounded-full" />
-				</div>
+					className="w-[50px] h-[50px] border-4 border-transparent text-primaryPurple text-2xl animate-spin flex items-center justify-center border-t-primaryPurple rounded-full" />
 			</div>
-		</div>) : (<div className={clsx('', className)}>
-			<Dialog
-				fullWidth={fullWidth}
-				open={openDialog}
-				onClose={handleCloseDialog}
-				aria-labelledby="form-dialog-title"
-				scroll="body"
-				maxWidth="lg"
-			>
-				<DialogTitle className="pb-0">
-					<h6 className="text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-400">
-						{getTitle('User')}
-					</h6>
-				</DialogTitle>
+		</div>
+	</div>) : (<div className={clsx('', className)}>
+		<Dialog
+			fullWidth={fullWidth}
+			open={openDialog}
+			onClose={handleCloseDialog}
+			aria-labelledby="form-dialog-title"
+			scroll="body"
+			maxWidth="xl"
+		>
+			<DialogTitle className="pb-0">
+				<h6 className="text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-400">
+					{getTitle('User')}
+				</h6>
+			</DialogTitle>
 
-				<DialogContent>
-					<form
-						noValidate
-						onSubmit={handleSubmit(onSubmit)}
-						className="w-full"
+			<DialogContent>
+				<form
+					noValidate
+					onSubmit={handleSubmit(onSubmit)}
+					className="w-full"
+				>
+					<Grid
+						container
+						spacing={2}
+						className="pt-[10px]"
 					>
 						<Grid
-							container
-							spacing={2}
-							className="pt-[10px]"
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
 						>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									Role <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="role"
-									control={control}
-									render={({ field }) => (<FormControl
+							<Typography className="formTypography">
+								Role <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="role"
+								control={control}
+								render={({ field }) => (<FormControl
+									fullWidth
+									required
+								>
+									<Select {...field} size="small" onChange={(e) => {
+										field.onChange(e);
+										handleRoleChange(e);
+									}}>
+										{userRoles.map(role => (
+											<MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>))}
+									</Select>
+									<FormHelperText error>{errors?.role?.message}</FormHelperText>
+								</FormControl>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								First Name <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="firstName"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="firstName"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.firstName}
+									helperText={errors?.firstName?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Last Name <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="lastName"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="lastName"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.lastName}
+									helperText={errors?.lastName?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Email <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="email"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="email"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.email}
+									helperText={errors?.email?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Password <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="password"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									type={showPassword ? 'text' : 'password'}
+									id="password"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.password}
+									helperText={errors?.password?.message}
+									disabled={isView}
+									required
+									InputProps={{
+										endAdornment: (<InputAdornment position="end">
+											<IconButton
+												aria-label="toggle password visibility"
+												onClick={togglePasswordVisibility}
+												edge="end"
+												size="small"
+											>
+												{showPassword ? <Visibility /> : <VisibilityOff />}
+											</IconButton>
+										</InputAdornment>)
+									}}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Confirm Password <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="passwordConfirm"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									type={showConfirmPassword ? 'text' : 'password'}
+									id="passwordConfirm"
+									variant="outlined"
+									className="m-0"
+									fullWidth
+									size="small"
+									error={!!errors.passwordConfirm}
+									helperText={errors?.passwordConfirm?.message}
+									disabled={isView}
+									required
+									InputProps={{
+										endAdornment: (<InputAdornment position="end">
+											<IconButton
+												aria-label="toggle password visibility"
+												onClick={toggleConfirmPasswordVisibility}
+												edge="end"
+												size="small"
+											>
+												{showConfirmPassword ? (<Visibility />) : (<VisibilityOff />)}
+											</IconButton>
+										</InputAdornment>)
+									}}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Address <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="address"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="address"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.address}
+									helperText={errors?.address?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								NIC <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="nic"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="nic"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.nic}
+									helperText={errors?.nic?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							md={6}
+							lg={3}
+							className="formikFormField pt-[5px!important]"
+						>
+							<Typography className="formTypography">
+								Mobile <span className="text-red">*</span>
+							</Typography>
+							<Controller
+								name="phone_number"
+								control={control}
+								render={({ field }) => (<TextField
+									{...field}
+									className="m-0"
+									id="phone_number"
+									variant="outlined"
+									fullWidth
+									size="small"
+									error={!!errors.phone_number}
+									helperText={errors?.phone_number?.message}
+									required
+									disabled={isView}
+								/>)}
+							/>
+						</Grid>
+						{selectedRole === 'DRIVER' && (
+							<>
+								<Grid item xs={12} md={6} lg={9}></Grid>
+								<br />
+								<Grid item xs={12} md={6} lg={3}>
+									<Typography>License Expiry data <span className="text-red">*</span></Typography>
+									<Controller
+										name="licenseExpiryDate"
+										control={control}
+										render={({ field }) => (<TextField
+											{...field}
+											className="m-0"
+											id="licenseExpiryDate"
+											variant="outlined"
+											fullWidth
+											size="small"
+											error={!!errors.licenseExpiryDate}
+											helperText={errors?.licenseExpiryDate?.message}
+											required
+											disabled={isView}
+										/>)}
+									/>
+								</Grid>
+								<Grid item xs={12} md={6} lg={3} className="flex items-center">
+									<Typography>Vehicle Assigned <span className="text-red">*</span></Typography>
+									<Controller
+										name="vehicleAssigned"
+										control={control}
+										render={({ field }) => (
+											<Checkbox
+												{...field}
+												color="primary"
+												checked={field.value}
+												onChange={(event) => field.onChange(event.target.checked)}
+											/>
+										)}
+									/>
+
+								</Grid>
+								<Grid
+									item
+									xs={12}
+									md={6}
+									lg={3}
+									className="formikFormField"
+								>
+									<Typography className="formTypography">Driver Status <span className="text-red">*</span></Typography>
+									<Controller
+										name="driverStatus"
+										control={control}
+										render={({ field }) => (<FormControl
 											fullWidth
 											required
 										>
-											<Select
-												autoFocus
-												{...field}
-												className="m-0"
-												size="small"
-												disabled={isView}
-												error={!!errors.role}
-											>
-												{userRoles?.map((role) => (<MenuItem
-														key={role.value}
-														value={role.value}
-													>
-														{role.label}
-													</MenuItem>))}
+											<Select {...field} size="small" onChange={(e) => {
+												field.onChange(e);
+											}}>
+												{driverStatus.map(role => (
+													<MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>))}
 											</Select>
-											<FormHelperText error>{errors?.role?.message}</FormHelperText>
+											<FormHelperText error>{errors?.driverStatus?.message}</FormHelperText>
 										</FormControl>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									First Name <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="firstName"
-									control={control}
-									render={({ field }) => (<TextField
+									/>
+								</Grid>
+								<Grid item xs={12} md={6} lg={3}>
+									<Typography>Emergency Contact <span className="text-red">*</span></Typography>
+									<Controller
+										name="emergencyContact"
+										control={control}
+										render={({ field }) => (<TextField
 											{...field}
 											className="m-0"
-											id="firstName"
+											id="emergencyContact"
 											variant="outlined"
 											fullWidth
 											size="small"
-											error={!!errors.firstName}
-											helperText={errors?.firstName?.message}
+											error={!!errors.emergencyContact}
+											helperText={errors?.emergencyContact?.message}
 											required
 											disabled={isView}
 										/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									Last Name <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="lastName"
-									control={control}
-									render={({ field }) => (<TextField
+									/>
+								</Grid>
+
+								//TODO i have to give solutions -------------------------------------------------------------
+								<Grid item xs={12} md={6} lg={3}>
+									<Typography>Date of Birth <span className="text-red">*</span></Typography>
+									<Controller
+										name="dateOfBirth"
+										control={control}
+										render={({ field }) => (<DateField
 											{...field}
 											className="m-0"
-											id="lastName"
+											id="dateOfBirth"
 											variant="outlined"
 											fullWidth
 											size="small"
-											error={!!errors.lastName}
-											helperText={errors?.lastName?.message}
+											helperText={errors?.dateOfBirth?.message}
 											required
 											disabled={isView}
 										/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									Email <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="email"
-									control={control}
-									render={({ field }) => (<TextField
+									/>
+								</Grid>
+								<Grid item xs={12} md={6} lg={3}>
+									<Typography>Date of Joining <span className="text-red">*</span></Typography>
+									<Controller
+										name="dateOfJoining"
+										control={control}
+										render={({ field }) => (<TextField
 											{...field}
 											className="m-0"
-											id="email"
+											id="dateOfJoining"
 											variant="outlined"
 											fullWidth
 											size="small"
-											error={!!errors.email}
-											helperText={errors?.email?.message}
+											error={!!errors.dateOfJoining}
+											helperText={errors?.dateOfJoining?.message}
 											required
 											disabled={isView}
 										/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
+									/>
+								</Grid>
+							</>
+
+
+						)}
+						<Grid
+							item
+							md={12}
+							sm={12}
+							xs={12}
+							className="flex justify-end items-center gap-[10px] pt-[10px!important]"
+						>
+							<Button
+								variant="contained"
+								color="error"
+								// disabled={_.isEmpty(dirtyFields) || !isValid}
+								onClick={handleCloseDialog}
+								className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80"
 							>
-								<Typography className="formTypography">
-									Password <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="password"
-									control={control}
-									render={({ field }) => (<TextField
-										{...field}
-										className="m-0"
-										type={showPassword ? 'text' : 'password'}
-										id="password"
-										variant="outlined"
-										fullWidth
-										size="small"
-										error={!!errors.password}
-										helperText={errors?.password?.message}
-										disabled={isView}
-										required
-										InputProps={{
-											endAdornment: (<InputAdornment position="end">
-												<IconButton
-													aria-label="toggle password visibility"
-													onClick={togglePasswordVisibility}
-													edge="end"
-													size="small"
-												>
-													{showPassword ? <Visibility /> : <VisibilityOff />}
-												</IconButton>
-											</InputAdornment>)
-										}}
-									/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
+								Close
+							</Button>
+							{!isView && (<Button
+								variant="contained"
+								color="secondary"
+								type="submit"
+								className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
+								// disabled={_.isEmpty(dirtyFields) || !isValid}
+								disabled={loading}
 							>
-								<Typography className="formTypography">
-									Confirm Password <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="passwordConfirm"
-									control={control}
-									render={({ field }) => (<TextField
-										{...field}
-										type={showConfirmPassword ? 'text' : 'password'}
-										id="passwordConfirm"
-										variant="outlined"
-										className="m-0"
-										fullWidth
-										size="small"
-										error={!!errors.passwordConfirm}
-										helperText={errors?.passwordConfirm?.message}
-										disabled={isView}
-										required
-										InputProps={{
-											endAdornment: (<InputAdornment position="end">
-												<IconButton
-													aria-label="toggle password visibility"
-													onClick={toggleConfirmPasswordVisibility}
-													edge="end"
-													size="small"
-												>
-													{showConfirmPassword ? (<Visibility />) : (
-														<VisibilityOff />)}
-												</IconButton>
-											</InputAdornment>)
-										}}
-									/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									Address <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="address"
-									control={control}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											className="m-0"
-											id="address"
-											variant="outlined"
-											fullWidth
-											size="small"
-											error={!!errors.address}
-											helperText={errors?.address?.message}
-											required
-											disabled={isView}
-										/>
-									)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									NIC <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="nic"
-									control={control}
-									render={({ field }) => (<TextField
-											{...field}
-											className="m-0"
-											id="nic"
-											variant="outlined"
-											fullWidth
-											size="small"
-											error={!!errors.nic}
-											helperText={errors?.nic?.message}
-											required
-											disabled={isView}
-										/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								xs={12}
-								md={6}
-								lg={4}
-								className="formikFormField pt-[5px!important]"
-							>
-								<Typography className="formTypography">
-									Mobile <span className="text-red">*</span>
-								</Typography>
-								<Controller
-									name="phone_number"
-									control={control}
-									render={({ field }) => (<TextField
-											{...field}
-											className="m-0"
-											id="phone_number"
-											variant="outlined"
-											fullWidth
-											size="small"
-											error={!!errors.phone_number}
-											helperText={errors?.phone_number?.message}
-											required
-											disabled={isView}
-										/>)}
-								/>
-							</Grid>
-							<Grid
-								item
-								md={12}
-								sm={12}
-								xs={12}
-								className="flex justify-end items-center gap-[10px] pt-[10px!important]"
-							>
-								<Button
-									variant="contained"
-									color="error"
-									// disabled={_.isEmpty(dirtyFields) || !isValid}
-									onClick={handleCloseDialog}
-									className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80"
-								>
-									Close
-								</Button>
-								{!isView && (<Button
-										variant="contained"
-										color="secondary"
-										type="submit"
-										className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
-										// disabled={_.isEmpty(dirtyFields) || !isValid}
-										disabled={loading}
-									>
-										{loading ? (<CircularProgress
-												className="text-white ml-[5px]"
-												size={24}
-											/>) : isEdit ? ('Update') : ('Save')}
-									</Button>)}
-							</Grid>
+								{loading ? (<CircularProgress
+									className="text-white ml-[5px]"
+									size={24}
+								/>) : isEdit ? ('Update') : ('Save')}
+							</Button>)}
 						</Grid>
-					</form>
-				</DialogContent>
-			</Dialog>
-		</div>);
+					</Grid>
+				</form>
+			</DialogContent>
+		</Dialog>
+	</div>);
 }
 
 export default UsersForm;

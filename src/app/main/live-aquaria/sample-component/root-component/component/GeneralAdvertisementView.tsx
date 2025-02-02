@@ -24,8 +24,6 @@ import {
 } from '../types/general-advertisement-types';
 
 import GeneralAdvertisementActiveComp from './GeneralAdvertisementActiveComp';
-import CustomFormTextField from '../../../../../common/FormComponents/CustomFormTextField';
-import { dropDown } from '../../../customer/customer-profile/customer-types/CustomerTypes';
 
 interface GeneralAdvertisementViewProps {
 	onCreateClick?: () => void;
@@ -104,22 +102,22 @@ function GeneralAdvertisementView({
 
 	const tableColumns = [
 		{
-			title: t('ITEM_NUMBER'),
-			field: 'itemCode',
+			title: t('Guidelines Id'),
+			field: 'guidanceId',
 			cellStyle: {
 				padding: '4px 8px'
 			}
 		},
 		{
-			title: t('ITEM_NUMBER'),
-			field: 'code',
+			title: t('Title'),
+			field: 'title',
 			cellStyle: {
 				padding: '4px 8px'
 			}
 		},
 		{
-			title: t('PRODUCT_NAME'),
-			field: 'productName',
+			title: t('Description'),
+			field: 'description',
 			cellStyle: {
 				padding: '4px 8px'
 			}
@@ -132,76 +130,21 @@ function GeneralAdvertisementView({
 			}
 		},
 		{
-			title: t('STATUS'),
-			field: 'status',
+			title: t('Priority'),
+			field: 'priority',
 			cellStyle: {
 				padding: '2px 4px'
 			},
-			render: (rowData: GeneralAdvModifiedDataType, index: number) => {
-				const statusLabels = ['Pending', 'Approved', 'Rejected', 'Published', 'Sold Out'];
-				let chipColor;
-				switch (rowData?.status) {
-					case 0:
-						chipColor = 'bg-orange-50 [&>*]:!text-orange-800';
-						break;
-					case 1:
-						chipColor = 'bg-green-50 [&>*]:!text-green-800';
-						break;
-					case 2:
-						chipColor = 'bg-red-50 [&>*]:!text-red-800';
-						break;
-					case 3:
-						chipColor = 'bg-blue-50 [&>*]:!text-blue-800';
-						break;
-					default:
-						chipColor = 'bg-gray-50 [&>*]:!text-gray-800';
-				}
-
-				return (
-					<div className="flex flex-wrap gap-[5px]">
-						<span>
-							<Chip
-								className={`min-w-[85px] ${chipColor} text-[10px] sm:text-[12px] font-[500] px-[6px] py-[2px]`}
-								size="small"
-								key={index}
-								label={statusLabels[rowData.status] || 'Unknown'}
-							/>
-						</span>
-					</div>
-				);
-			}
 		},
 		{
-			title: t('ACTIVE'),
-			field: 'active',
-			render: (rowData: GeneralAdvModifiedDataType, index) => (
-				<FormGroup>
-					<FormControlLabel
-						control={
-							<Switch
-								checked={rowData.active}
-								onChange={handleSwitchChange(rowData.id, rowData)}
-								aria-label="login switch"
-								size="small"
-								sx={{
-									'& .muiltr-kpgjex-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track':
-										{
-											backgroundColor: '#387ed4'
-										}
-								}}
-							/>
-						}
-						label=""
-					/>
-				</FormGroup>
-			)
-		}
+			title: t('Related To'),
+			field: 'relatedTo',
+			cellStyle: {
+				padding: '2px 4px'
+			},
+		},
 	];
 
-	const handleSwitchChange = (index, rowData: GeneralAdvModifiedDataType) => async (event) => {
-		setTableActiveRowData(rowData);
-		toggleActiveMaterialsModal();
-	};
 
 	const handlePageChange = (page: number) => {
 		setPageNo(page);
@@ -340,15 +283,6 @@ function GeneralAdvertisementView({
 								xl={2}
 								className="formikFormField pt-[5px!important]"
 							>
-								<Typography className="formTypography">{t('PRODUCT_ID')}</Typography>
-								<CustomFormTextField
-									name="productId"
-									id="productId"
-									type="text"
-									placeholder=""
-									disabled={false}
-									changeInput={changeProductId}
-								/>
 							</Grid>
 
 							<Grid
@@ -360,15 +294,6 @@ function GeneralAdvertisementView({
 								xl={2}
 								className="formikFormField pt-[5px!important]"
 							>
-								<Typography className="formTypography">{t('PRODUCT_NAME')}</Typography>
-								<CustomFormTextField
-									name="productName"
-									id="productName"
-									type="text"
-									placeholder=""
-									disabled={false}
-									changeInput={changeProductName}
-								/>
 							</Grid>
 
 							<Grid
@@ -380,15 +305,6 @@ function GeneralAdvertisementView({
 								xl={2}
 								className="formikFormField pt-[5px!important]"
 							>
-								<Typography className="formTypography">{t('CATEGORY')}</Typography>
-								<CustomFormTextField
-									name="category"
-									id="category"
-									type="text"
-									placeholder=""
-									disabled={false}
-									changeInput={changeCategory}
-								/>
 							</Grid>
 
 							<Grid
@@ -400,25 +316,6 @@ function GeneralAdvertisementView({
 								xl={2}
 								className="formikFormField pt-[5px!important]"
 							>
-								<Typography className="formTypography">{t('STATUS')}</Typography>
-								<Autocomplete
-									size="small"
-									disablePortal
-									options={sampleTypes}
-									className="w-full"
-									value={values?.status || null}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											name="status"
-											label=""
-										/>
-									)}
-									onChange={(event: React.ChangeEvent<HTMLInputElement>, value: dropDown | null) => {
-										setFieldValue('status', value?.label || null);
-										changeStatus(value?.value || null);
-									}}
-								/>
 							</Grid>
 
 							<Grid
@@ -428,27 +325,17 @@ function GeneralAdvertisementView({
 								md={8}
 								lg={12}
 								xl={4}
-								className="flex flex-wrap justify-between items-end gap-[10px] pt-[10px!important]"
+								className="flex justify-end items-center gap-[10px] pt-[5px!important]"
 							>
 								<Button
-									className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80"
-									type="submit"
-									variant="contained"
-									size="medium"
-									disabled={false}
-									onClick={() => handleClearForm(resetForm)}
-								>
-									{t('CLEAR_FILTERS')}
-								</Button>
-								<Button
-									className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
+									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
 									type="button"
 									variant="contained"
 									size="medium"
 									disabled={false}
 									onClick={onCreateClick}
 								>
-									{t('ADD_NEW_ADVERTISEMENT')}
+									{t('Create Guideline')}
 								</Button>
 							</Grid>
 						</Grid>
