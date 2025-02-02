@@ -80,10 +80,10 @@ function WebType() {
 				borderRadius: '16px',
 				color: rowData.is_active ? '#4CAF50' : '#F44336', // Green for active, red for inactive
 				backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE', // Light green/red for background
-				fontSize: '14px',
+				fontSize: '12px',
 				fontWeight: 500,
 				textAlign: 'center',
-				minWidth: '80px' // Optional for consistent size
+				minWidth: '70px' // Optional for consistent size
 			}}
 		>
             {rowData.is_active ? t('Active') : t('Inactive')}

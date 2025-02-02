@@ -1,5 +1,5 @@
 export const GET_ALL_WEB_ARTICLES = 'api/v1/web-content/public/get-article-with-pagination';
-
+export const FETCH_ALL_VEHICLES = 'api/v1/vehicle/fetch-all?';
 
 
 

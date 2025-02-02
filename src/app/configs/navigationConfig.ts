@@ -75,7 +75,7 @@ const navigationConfig: FuseNavItemType[] = [
 		title: 'Vehicle',
 		type: 'item',
 		icon: 'heroicons-outline:truck',
-		url: '/apps/vehicle',
+		url: '/vehicle/vehicle-management',
 		end: true,
 		translate: 'Vehicle'
 	},
