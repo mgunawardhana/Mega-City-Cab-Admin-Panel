@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { PhotoCamera, Visibility, VisibilityOff } from '@mui/icons-material';
 import { SAVE_ADMIN_USER, UPDATE_ADMIN_USER } from 'src/app/axios/services/AuthServices';
 import { UserInterface } from './UsersApp';
 import FormControl from '@mui/material/FormControl';
@@ -23,6 +23,9 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { useTranslation } from 'react-i18next';
 import TextFormDateField from '../../../../common/FormComponents/TextFormDateField';
 import { DateField } from '@mui/x-date-pickers';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Avatar from '@mui/material/Avatar';
 
 interface Role {
 	id: number;
@@ -48,6 +51,14 @@ interface User {
 interface SingleUserSaveResponse {
 	data: User;
 }
+
+interface Image {
+	id: number;
+	link: string;
+	file: File;
+	base64: string;
+}
+
 
 const schema = z
 	.object({
@@ -99,12 +110,15 @@ interface Props {
 
 function UsersForm(props: Props) {
 	const { t } = useTranslation('sampleComponent');
-
+	const [images, setImages] = useState<Image[]>([]);
+	const maxImageCount = 2;
+	const maxImageSize = 5 * 1024 * 1024; // 5MB
 	const { isAdd, className, isOpen, setIsFormOpen, isEdit, selectedRow, onCloseHandler, isView } = props;
 	const [openDialog, setOpenDialog] = useState(isOpen);
 	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
 	const [driverStatus, setDriverStatus] = useState<{ value: string; label: string }[]>([]);
 	const [selectedRole, setSelectedRole] = useState<string>('');
+	const [profilePic, setProfilePic] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [fullWidth] = useState(true);
 	const defaultValues = {
@@ -191,14 +205,81 @@ function UsersForm(props: Props) {
 			onCloseHandler();
 		}
 	}
+	const convertToBase64 = (file: File): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onloadend = () => resolve(reader.result as string);
+			reader.onerror = (error) => reject(error);
+		});
+	};
+
+	const validateImageDimensions = (file: File): Promise<boolean> => {
+		return new Promise((resolve) => {
+			const img = new Image();
+			img.src = URL.createObjectURL(file);
+			img.onload = () => {
+				if (file.size <= maxImageSize) {
+					resolve(true);
+				} else {
+					toast.error('Image upload failed: Size should be <= 5MB.');
+					resolve(false);
+				}
+			};
+		});
+	};
+
+	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = event.target;
+
+		if (files) {
+			if (images.length + files.length > maxImageCount) {
+				toast.error(`You can only upload a maximum of ${maxImageCount} images.`);
+				return;
+			}
+
+			const validImages: Image[] = [];
+			for (const file of Array.from(files)) {
+				const isValid = await validateImageDimensions(file);
+
+				if (isValid) {
+					const base64 = await convertToBase64(file);
+					validImages.push({
+						id: Date.now(),
+						link: URL.createObjectURL(file),
+						file,
+						base64,
+					});
+				}
+			}
+
+			if (validImages.length > 0) {
+				setImages((prevImages) => [...prevImages, ...validImages]);
+			}
+		}
+	};
+
 
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	};
 
+	const handleRemoveImage = (id: number) => {
+		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
+	};
+
 	const toggleConfirmPasswordVisibility = () => {
 		setShowConfirmPassword(!showConfirmPassword);
 	};
+	const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => setProfilePic(reader.result as string);
+			reader.readAsDataURL(file);
+		}
+	};
+
 
 	const getTitle = (value: string): string => {
 		if (isEdit) {
@@ -232,11 +313,36 @@ function UsersForm(props: Props) {
 		>
 			<DialogTitle className="pb-0">
 				<h6 className="text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-400">
-					{getTitle('User')}
+					{('Add Profile Picture')}
 				</h6>
 			</DialogTitle>
 
 			<DialogContent>
+				<Grid container spacing={2} className="mb-4">
+					<Grid item xs={12} sm={3} className="flex ">
+						<div className="flex flex-col ">
+							<Avatar
+								src={profilePic || ''}
+								alt="Profile Picture"
+								sx={{ width: 100, height: 100 }}
+							/>
+							<IconButton
+								color="primary"
+								aria-label="upload picture"
+								component="label"
+								className="mt-2"
+							>
+								<input
+									hidden
+									accept="image/*"
+									type="file"
+									onChange={handleProfilePicChange}
+								/>
+								<PhotoCamera />
+							</IconButton>
+						</div>
+					</Grid>
+				</Grid>
 				<form
 					noValidate
 					onSubmit={handleSubmit(onSubmit)}
@@ -519,8 +625,6 @@ function UsersForm(props: Props) {
 						</Grid>
 						{selectedRole === 'DRIVER' && (
 							<>
-								<Grid item xs={12} md={6} lg={9}></Grid>
-								<br />
 								<Grid item xs={12} md={6} lg={3}>
 									<Typography>License Expiry data <span className="text-red">*</span></Typography>
 									<Controller
@@ -601,7 +705,6 @@ function UsersForm(props: Props) {
 									/>
 								</Grid>
 
-								//TODO i have to give solutions -------------------------------------------------------------
 								<Grid item xs={12} md={6} lg={3}>
 									<Typography>Date of Birth <span className="text-red">*</span></Typography>
 									<Controller
@@ -638,6 +741,54 @@ function UsersForm(props: Props) {
 											disabled={isView}
 										/>)}
 									/>
+								</Grid>
+								<Grid item md={6} xs={12}>
+									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
+										{t('Upload Thumbnail Image')}
+									</Typography>
+									<div className="relative flex gap-[10px] overflow-x-auto" style={{ whiteSpace: 'nowrap' }}>
+										{images.map((image) => (
+											<div
+												key={image.id}
+												className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+											>
+												<img
+													src={image.link}
+													alt={`Thumbnail ${image.id}`}
+													className="w-full h-full rounded-[10px] object-contain object-center"
+												/>
+												<IconButton
+													size="small"
+													className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
+													onClick={() => handleRemoveImage(image.id)}
+												>
+													<CancelIcon fontSize="small" />
+												</IconButton>
+											</div>
+										))}
+
+										{images.length < maxImageCount && (
+											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
+												<IconButton
+													className="text-primaryBlue"
+													onClick={() => document.getElementById('imageUpload')?.click()}
+												>
+													<AddCircleIcon fontSize="large" />
+												</IconButton>
+												<input
+													id="imageUpload"
+													type="file"
+													accept="image/*"
+													style={{ display: 'none' }}
+													multiple
+													onChange={handleImageUpload}
+												/>
+											</div>
+										)}
+									</div>
+									<span className="text-[10px] text-gray-700 italic">
+                                        <b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
+                                    </span>
 								</Grid>
 							</>
 
