@@ -10,12 +10,13 @@ import VehicleEditModel from './components/VehicleManagementEditModel';
 import NewVehicleManagement from './components/VehicleEditModel';
 import {
 	deleteShippingType,
-	fetchAllShippingTypesData,
+	fetchAllShippingTypesData, fetchAllVehicleData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
-import { ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
+import { ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/ShippingTypes';
 import NewVehicleActiveComp from './components/NewVehicleActiveComp';
 import NewVehicleDeleteAlertForm from './components/NewVehicleDeleteAlertForm';
+import Chip from '@mui/material/Chip';
 
 function VehicleManagement() {
 	const { t } = useTranslation('shippingTypes');
@@ -57,7 +58,7 @@ function VehicleManagement() {
 	};
 
 	const tableColumns = [{
-		title: t('Registration Number'), field: 'registration_number', cellStyle: {
+		title: t('Registration Number'), field: 'registrationNumber', cellStyle: {
 			padding: '6px 8px'
 		}
 	}, {
@@ -68,46 +69,99 @@ function VehicleManagement() {
 		title: t('Color'), field: 'color', cellStyle: {
 			padding: '4px 8px'
 		}
-	}, {
-		title: t('Fuel Type'), field: 'fuelType', cellStyle: {
+	},{
+		title: t('Fuel Type'),
+		field: 'fuelType',
+		cellStyle: {
 			padding: '4px 8px'
+		},
+		render: rowData => {
+			const fuelColors: { [key: string]: { text: string; bg: string;} } = {
+				Hybrid: { text: '#388E3C', bg: '#E8F5E9'},
+				Diesel: { text: '#F57C00', bg: '#FFF3E0' },
+				Electric: { text: '#1976D2', bg: '#E3F2FD'},
+				Petrol: { text: '#D32F2F', bg: '#FBE9E7' }
+			};
+
+			const { text, bg, border } = fuelColors[rowData.fuelType] || {
+				text: '#424242', bg: '#E0E0E0'
+			}; // Default color for unknown types
+
+			return (
+				<span
+					style={{
+						display: 'inline-block',
+						padding: '4px 12px',
+						borderRadius: '16px',
+						color: text,
+						backgroundColor: bg,
+						border: `1px solid ${border}`,
+						fontSize: '12px',
+						fontWeight: 500,
+						textAlign: 'center',
+						minWidth: '70px'
+					}}
+				>
+                {t(rowData.fuelType)}
+            </span>
+			);
 		}
 	},
 
 		{
-			title: t('Insurance Provider'), field: 'insurance_provider', cellStyle: {
+			title: t('Insurance Provider'), field: 'insuranceProvider', cellStyle: {
 				padding: '4px 8px'
 			}
 		}, {
-			title: t('Seating Cap'), field: 'seating_capacity', cellStyle: {
+			title: t('Seating Cap'), field: 'seatingCapacity', cellStyle: {
 				padding: '4px 8px'
 			}
 		}, {
-			title: t('License No'), field: 'license_plate_number', cellStyle: {
+			title: t('License No'), field: 'licensePlateNumber', cellStyle: {
 				padding: '4px 8px'
 			}
 		}, {
-			title: t('Air Condition'), field: 'air_conditioning', cellStyle: {
+			title: t('Air Condition'), field: 'airConditioning', cellStyle: {
 				padding: '4px 8px'
 			}
 		}, {
-			title: t('Vehicle Type'), field: 'is_active', cellStyle: {
+			title: t('Vehicle Type'),
+			field: 'vehicleType',
+			cellStyle: {
 				padding: '4px 8px'
-			}, render: rowData => (<span
-				style={{
-					display: 'inline-block',
-					padding: '4px 12px',
-					borderRadius: '16px',
-					color: rowData.is_active ? '#4CAF50' : '#F44336', // Green for active, red for inactive
-					backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE', // Light green/red for background
-					fontSize: '14px',
-					fontWeight: 500,
-					textAlign: 'center',
-					minWidth: '80px' // Optional for consistent size
-				}}
-			>
-            {rowData.is_active ? t('Active') : t('Inactive')}
-        </span>)
+			},
+			render: rowData => {
+				const vehicleColors: { [key: string]: { text: string; bg: string; border: string } } = {
+					Hatchback: { text: '#9C27B0', bg: '#F3E5F5'},
+					Sedan: { text: '#1976D2', bg: '#E3F2FD'},
+					SUV: { text: '#388E3C', bg: '#E8F5E9'},
+					Van: { text: '#F57C00', bg: '#FFF3E0' },
+					Truck: { text: '#D32F2F', bg: '#FBE9E7'}
+				};
+
+				const { text, bg, border } = vehicleColors[rowData.vehicleType] || {
+					text: '#424242', bg: '#E0E0E0'
+				};
+
+				return (
+					<span
+						style={{
+							display: 'inline-block',
+							padding: '4px 12px',
+							borderRadius: '16px',
+							color: text,
+							backgroundColor: bg,
+							border: `1px solid ${border}`,
+							fontSize: '12px',
+							fontWeight: 500,
+							textAlign: 'center',
+							minWidth: '80px'
+						}}
+					>
+                {t(rowData.vehicleType)}
+            </span>
+				);
+			}
 		}
 
 
@@ -132,12 +186,12 @@ function VehicleManagement() {
 	const fetchAllShippingTypes = async () => {
 		setTableLoading(true);
 		try {
-			const response = await fetchAllShippingTypesData(pageNo, pageSize);
+			const response = await fetchAllVehicleData(pageNo, pageSize);
 
-			console.log('API Response:', response);
+			console.log('API Response Vehicle:', response);
 
 			if (response && Array.isArray(response.result)) {
-				const transformedData: WebTypeResp[] = response.result.map((item) => ({
+				const transformedData: VehicleResp[] = response.result.map((item) => ({
 					...item
 				}));
 
