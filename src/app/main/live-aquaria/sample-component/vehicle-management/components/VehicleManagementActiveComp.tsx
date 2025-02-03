@@ -15,7 +15,7 @@ interface Props {
 	handleAlertForm: () => void;
 }
 
-function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
+function VehicleManagementActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
@@ -23,15 +23,13 @@ function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handle
 		>
 			<DialogTitle className="flex items-center gap-[5px] text-[16px] font-bold">
 				<ReportIcon className="text-red text-[20px]" />
-				Delete Confirmation
+				Confirmation
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
-					Are you sure you want to delete{' '}
-					<span className="font-bold">
-						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
-					</span>{' '}
-					this Shipping Type ?
+					Are you sure you want to{' '}
+					<span className="font-bold">{clickedRowData.active === true ? 'Inactive' : 'Active'}</span> this
+					Shipping Type?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
@@ -54,4 +52,4 @@ function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handle
 	);
 }
 
-export default NewVehicleDeleteAlertForm;
+export default VehicleManagementActiveComp;

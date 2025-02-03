@@ -19,7 +19,7 @@ import * as yup from 'yup';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { ShippingCreateType } from '../types/ShippingTypes';
+import { ShippingCreateType } from '../types/GuidelineTypes';
 
 interface Image {
 	id: number;

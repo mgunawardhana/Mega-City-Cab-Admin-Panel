@@ -14,13 +14,14 @@ import authRoleExamplesConfigs from '../main/auth/authRoleExamplesConfigs';
 import customerManagementConfigs from '../main/customerManagement/CustomerManagementConfigs';
 import userManagementConfigs from '../main/live-aquaria/user-management/userManagementConfigs';
 import ClassicForgotPasswordPage from '../main/pages/authentication/forgot-password/ClassicForgotPasswordPage';
-import GeneralAdvertisementRoot from '../main/live-aquaria/sample-component/GeneralAdvertisementRoot';
 import WebSiteRoot from '../main/live-aquaria/sample-component/website-management/WebSiteRoot';
 import VehicleManagementRoot from '../main/live-aquaria/sample-component/vehicle-management/VehicleManagementRoot';
+import GuidelineManagementRoot
+	from '../main/live-aquaria/sample-component/guideline-management/GuidelineManagementRoot';
 
 const routeConfigs: FuseRouteConfigsType = [SignOutConfig, SignInConfig, // SignUpConfig,
-	DocumentationConfig, ...PagesConfigs, ...UserInterfaceConfigs, ...DashboardsConfigs, // ...AppsConfigs,
-	...authRoleExamplesConfigs, ...GeneralAdvertisementRoot, ...userManagementConfigs, // ...ticketManagementConfigs,
+	DocumentationConfig, ...PagesConfigs, ...UserInterfaceConfigs, ...DashboardsConfigs, ...GuidelineManagementRoot, // ...AppsConfigs,
+	...authRoleExamplesConfigs, ...userManagementConfigs, // ...ticketManagementConfigs,
 	...customerManagementConfigs, ...WebSiteRoot, ...VehicleManagementRoot];
 
 /**

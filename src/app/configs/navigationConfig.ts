@@ -66,7 +66,7 @@ const navigationConfig: FuseNavItemType[] = [
 		title: 'Guideline',
 		type: 'item',
 		icon: 'heroicons-outline:shield-exclamation',
-		url: 'general-advertisement/general-advertisement-view',
+		url: 'guideline/guideline-management',
 		end: true,
 		translate: 'Guideline'
 	},

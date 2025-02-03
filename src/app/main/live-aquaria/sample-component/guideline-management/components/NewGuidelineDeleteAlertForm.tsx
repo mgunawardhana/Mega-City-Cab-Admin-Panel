@@ -15,7 +15,7 @@ interface Props {
 	handleAlertForm: () => void;
 }
 
-function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
+function NewGuidelineDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
@@ -54,4 +54,4 @@ function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handle
 	);
 }
 
-export default NewVehicleDeleteAlertForm;
+export default NewGuidelineDeleteAlertForm;
