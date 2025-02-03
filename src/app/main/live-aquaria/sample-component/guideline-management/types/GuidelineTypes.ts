@@ -21,7 +21,12 @@ export type Meta = {
 };
 
 export type GuidelineType = {
-
+	guidanceId: number;
+	title:string;
+	description: string;
+	category:string;
+	priority:string;
+	relatedTo:string;
 };
 
 

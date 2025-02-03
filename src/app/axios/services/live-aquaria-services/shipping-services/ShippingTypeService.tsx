@@ -10,3 +10,4 @@ export const fetchAllVehicleData = (pageNo: string | number, pageSize: string | 
 export const updateShippingTypeStatus = (id: string | number, action: any) => put(`${url.UPDATE_SHIPPING_TYPE_STATUS}${id}`, action);
 
 export const deleteShippingType = (id: string | number) => del(`${url.DELETE_CATEGORY_TYPE}${id}`);
+
