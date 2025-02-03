@@ -20,10 +20,32 @@ export type Meta = {
 	total?: number;
 };
 
-export type WebTypeApiResponse = {
-	data?: WebTypeResp[];
-	meta?: Meta;
+export type VehicleResp = {
+	id: number;
+	make: string;
+	model: string;
+	yearOfManufacture: number;
+	color: string;
+	engineCapacity: string;
+	fuelType: string;
+	seatingCapacity: number;
+	vehicleType: string;
+	registrationNumber: string;
+	licensePlateNumber: string;
+	chassisNumber: string;
+	permitType: string;
+	ownerName: string;
+	ownerContact: string;
+	ownerAddress: string;
+	insuranceProvider: string;
+	insurancePolicyNumber: string;
+	insuranceExpiryDate: string; // ISO date format (YYYY-MM-DD)
+	airConditioning: boolean;
+	additionalFeatures: string; // "Wireless Charging"
+	vehicleImage: string; // Base64 image string
+	vehiclePhoto: string; // Image file name
 };
+
 
 export type ShippingTypeModifiedData = {
 	allow_transit_delay?: string;

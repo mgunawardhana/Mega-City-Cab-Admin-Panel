@@ -6,14 +6,16 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
+import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
 
 interface Props {
 	toggleModal: () => void;
 	isOpen: boolean;
+	clickedRowData: ShippingTypeModifiedData;
 	handleAlertForm: () => void;
 }
 
-function MediaDeleteAlertForm({ toggleModal, isOpen, handleAlertForm }: Props) {
+function NewGuidelineActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
@@ -21,11 +23,13 @@ function MediaDeleteAlertForm({ toggleModal, isOpen, handleAlertForm }: Props) {
 		>
 			<DialogTitle className="flex items-center gap-[5px] text-[16px] font-bold">
 				<ReportIcon className="text-red text-[20px]" />
-				Delete Confirmation
+				Confirmation
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
-					Are you sure you want to delete media?
+					Are you sure you want to{' '}
+					<span className="font-bold">{clickedRowData.active === true ? 'Inactive' : 'Active'}</span> this
+					Shipping Type?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
@@ -48,4 +52,4 @@ function MediaDeleteAlertForm({ toggleModal, isOpen, handleAlertForm }: Props) {
 	);
 }
 
-export default MediaDeleteAlertForm;
+export default NewGuidelineActiveComp;

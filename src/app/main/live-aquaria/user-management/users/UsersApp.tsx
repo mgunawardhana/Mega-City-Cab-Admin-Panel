@@ -24,6 +24,14 @@ export type UserInterface = {
 	nic:string;
 	phone_number:string;
 	passwordConfirm: string;
+	licenseNumber : string;
+	licenseExpiryDate: string;
+	vehicleAssigned:boolean;
+	driverStatus:boolean;
+	emergencyContact:string;
+	dateOfBirth:string;
+	dateOfJoining:string;
+
 };
 
 function UsersApp() {

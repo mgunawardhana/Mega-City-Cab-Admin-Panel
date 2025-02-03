@@ -6,7 +6,7 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
-import { ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
 
 interface Props {
 	toggleModal: () => void;
@@ -15,7 +15,7 @@ interface Props {
 	handleAlertForm: () => void;
 }
 
-function NewVehicleActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
+function NewGuidelineDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
@@ -23,13 +23,15 @@ function NewVehicleActiveComp({ toggleModal, isOpen, clickedRowData, handleAlert
 		>
 			<DialogTitle className="flex items-center gap-[5px] text-[16px] font-bold">
 				<ReportIcon className="text-red text-[20px]" />
-				Confirmation
+				Delete Confirmation
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
-					Are you sure you want to{' '}
-					<span className="font-bold">{clickedRowData.active === true ? 'Inactive' : 'Active'}</span> this
-					Shipping Type?
+					Are you sure you want to delete{' '}
+					<span className="font-bold">
+						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
+					</span>{' '}
+					this Shipping Type ?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
@@ -52,4 +54,4 @@ function NewVehicleActiveComp({ toggleModal, isOpen, clickedRowData, handleAlert
 	);
 }
 
-export default NewVehicleActiveComp;
+export default NewGuidelineDeleteAlertForm;

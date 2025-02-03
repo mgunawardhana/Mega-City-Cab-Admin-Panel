@@ -1,59 +1,55 @@
-import React from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import ReportIcon from '@mui/icons-material/Report';
+import DialogContent from '@mui/material/DialogContent';
+import { DialogContentText } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import React from 'react';
+import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
 
-// Define prop types
-interface DynamicDeleteAlertFormProps {
-	isOpen: boolean;
+interface Props {
 	toggleModal: () => void;
-	confirmDelete: () => void;
-	deleteProductId?: string;
+	isOpen: boolean;
+	clickedRowData: ShippingTypeModifiedData;
+	handleAlertForm: () => void;
 }
 
-// eslint-disable-next-line react/function-component-definition
-const DynamicDeleteAlertForm: React.FC<DynamicDeleteAlertFormProps> = ({
-	isOpen,
-	toggleModal,
-	confirmDelete,
-	deleteProductId
-}) => {
+function VehicleManagementActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
 			onClose={toggleModal}
 		>
 			<DialogTitle className="flex items-center gap-[5px] text-[16px] font-bold">
-				<ReportIcon
-					color="error"
-					className="text-[20px]"
-				/>{' '}
+				<ReportIcon className="text-red text-[20px]" />
 				Confirmation
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
-					Are you sure you want to delete <span className="font-bold">{deleteProductId || ''}</span> this
-					Product?
+					Are you sure you want to{' '}
+					<span className="font-bold">{clickedRowData.active === true ? 'Inactive' : 'Active'}</span> this
+					Shipping Type?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
 				<Button
-					onClick={toggleModal}
 					className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80 bokShadow"
 					variant="contained"
 					size="medium"
-				>
-					Cancel
-				</Button>
-				<Button
-					onClick={confirmDelete}
-					className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80 boxShadow"
-					autoFocus
+					onClick={handleAlertForm}
 				>
 					Confirm
+				</Button>
+				<Button
+					className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80 boxShadow"
+					onClick={toggleModal}
+				>
+					Cancel
 				</Button>
 			</DialogActions>
 		</Dialog>
 	);
-};
+}
 
-export default DynamicDeleteAlertForm;
+export default VehicleManagementActiveComp;
