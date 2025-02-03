@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Button,
 	Checkbox,
@@ -35,12 +35,13 @@ interface Props {
 	fetchAllShippingTypes?: () => void;
 }
 
-function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
+function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 2;
 	const maxImageSize = 5 * 1024 * 1024; // 5MB
+	const [uniqueRegNumber, setUniqueRegNumber] = useState("");
 
 	const schema = yup.object().shape({
 		shippingType: yup.string().required(t('Shipping type name is required')),
@@ -48,7 +49,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		year_of_manufacture: yup.string().required(t('Year of manufacturer name is required')),
 		color: yup.string().required(t('Color name is required')),
 		engine_capacity: yup.string().required(t('Engine capacity name is required')),
-		fuel_type: yup.string().required(t('Fuel type name is required')),
+        fuel_type: yup.string().required(t('Fuel type name is required')),
 		chassis_number: yup.string().required(t('Chassis number name is required')),
 		vehicle_type: yup.string().required(t('Vehicle type name is required')),
 		owner_name: yup.string().required(t('Owner name is required')),
@@ -122,6 +123,10 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
 	};
 
+	useEffect(() => {
+		setUniqueRegNumber(`REG-VEH-${Math.floor(100000000000 + Math.random() * 900000000000)}`);
+	}, []);
+
 	const handleUpdateShippingType = async (values: ShippingCreateType) => {
 		const data = {
 			discount: values.discount,
@@ -155,23 +160,33 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Registration Number')}<span className="text-red"> *</span></Typography>
-									<Field name="registration_number" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Typography>
+										{t("Registration Number")}
+										<span className="text-red"> *</span>
+									</Typography>
+									<Field
+										name="registration_number"
+										component={TextFormField}
+										fullWidth
+										size="small"
+										disabled={isTableMode === "view"}
+										value={uniqueRegNumber}
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Make')}</Typography>
-									<Field name="make" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field name="make" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Model')}<span className="text-red"> *</span></Typography>
-									<Field name="model" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field name="model" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Year of Manufacturer')}<span className="text-red"> *</span></Typography>
-									<Field type="number" name="year_of_manufacture" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field type="number" name="year_of_manufacture" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 
@@ -340,4 +355,4 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 	);
 }
 
-export default NewVehicleManagement;
+export default GuidelineEditModel;

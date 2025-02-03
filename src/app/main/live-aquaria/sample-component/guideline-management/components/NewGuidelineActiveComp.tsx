@@ -6,7 +6,7 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
-import { ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
 
 interface Props {
 	toggleModal: () => void;
@@ -15,7 +15,7 @@ interface Props {
 	handleAlertForm: () => void;
 }
 
-function NewVehicleActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
+function NewGuidelineActiveComp({ toggleModal, isOpen, clickedRowData, handleAlertForm }: Props) {
 	return (
 		<Dialog
 			open={isOpen}
@@ -52,4 +52,4 @@ function NewVehicleActiveComp({ toggleModal, isOpen, clickedRowData, handleAlert
 	);
 }
 
-export default NewVehicleActiveComp;
+export default NewGuidelineActiveComp;

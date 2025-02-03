@@ -6,20 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import NavigationViewComp from '../../../../common/FormComponents/NavigationViewComp';
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
-import VehicleEditModel from './components/VehicleManagementEditModel';
-import NewVehicleManagement from './components/VehicleEditModel';
+import VehicleEditModel from './components/GuidelineManagementEditModel';
+import NewVehicleManagement from './components/GuidelineEditModel';
 import {
 	deleteShippingType,
 	fetchAllShippingTypesData, fetchAllVehicleData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
-import { ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/GuidelineTypes';
-import VehicleManagementActiveComp from './components/VehicleManagementActiveComp';
-import NewVehicleDeleteAlertForm from './components/NewVehicleDeleteAlertForm';
+import { GuidelineType, ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/GuidelineTypes';
+import NewGuidelineActiveComp from './components/NewGuidelineActiveComp';
+import NewGuidelineDeleteAlertForm from './components/NewGuidelineDeleteAlertForm';
 import Chip from '@mui/material/Chip';
 
-function VehicleManagement() {
-	const { t } = useTranslation('shippingTypes');
+function GuidelineManagement() {
+	const { t } = useTranslation('GuidelineTypes');
 
 	const [pageNo, setPageNo] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(5);
@@ -58,20 +58,20 @@ function VehicleManagement() {
 	};
 
 	const tableColumns = [{
-		title: t('Registration Number'), field: 'registrationNumber', cellStyle: {
+		title: t('Guidance No'), field: 'guidanceId', cellStyle: {
 			padding: '6px 8px'
 		}
 	}, {
-		title: t('Model'), field: 'model', cellStyle: {
+		title: t('Title'), field: 'title', cellStyle: {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Color'), field: 'color', cellStyle: {
+		title: t('Description'), field: 'description', cellStyle: {
 			padding: '4px 8px'
 		}
 	},{
-		title: t('Fuel Type'),
-		field: 'fuelType',
+		title: t('Category'),
+		field: 'category',
 		cellStyle: {
 			padding: '4px 8px'
 		},
@@ -83,7 +83,7 @@ function VehicleManagement() {
 				Petrol: { text: '#D32F2F', bg: '#FBE9E7' }
 			};
 
-			const { text, bg, border } = fuelColors[rowData.fuelType] || {
+			const { text, bg, border } = fuelColors[rowData.category] || {
 				text: '#424242', bg: '#E0E0E0'
 			}; // Default color for unknown types
 
@@ -102,69 +102,21 @@ function VehicleManagement() {
 						minWidth: '70px'
 					}}
 				>
-                {t(rowData.fuelType)}
+                {t(rowData.category)}
             </span>
 			);
 		}
 	},
 
 		{
-			title: t('Insurance Provider'), field: 'insuranceProvider', cellStyle: {
+			title: t('Priority'), field: 'priority', cellStyle: {
 				padding: '4px 8px'
 			}
 		}, {
-			title: t('Seating Cap'), field: 'seatingCapacity', cellStyle: {
+			title: t('Related To'), field: 'relatedTo', cellStyle: {
 				padding: '4px 8px'
-			}
-		}, {
-			title: t('License No'), field: 'licensePlateNumber', cellStyle: {
-				padding: '4px 8px'
-			}
-		}, {
-			title: t('Air Condition'), field: 'airConditioning', cellStyle: {
-				padding: '4px 8px'
-			}
-		}, {
-			title: t('Vehicle Type'),
-			field: 'vehicleType',
-			cellStyle: {
-				padding: '4px 8px'
-			},
-			render: rowData => {
-				const vehicleColors: { [key: string]: { text: string; bg: string; border: string } } = {
-					Hatchback: { text: '#9C27B0', bg: '#F3E5F5'},
-					Sedan: { text: '#1976D2', bg: '#E3F2FD'},
-					SUV: { text: '#388E3C', bg: '#E8F5E9'},
-					Van: { text: '#F57C00', bg: '#FFF3E0' },
-					Truck: { text: '#D32F2F', bg: '#FBE9E7'}
-				};
-
-				const { text, bg, border } = vehicleColors[rowData.vehicleType] || {
-					text: '#424242', bg: '#E0E0E0'
-				};
-
-				return (
-					<span
-						style={{
-							display: 'inline-block',
-							padding: '4px 12px',
-							borderRadius: '16px',
-							color: text,
-							backgroundColor: bg,
-							border: `1px solid ${border}`,
-							fontSize: '12px',
-							fontWeight: 500,
-							textAlign: 'center',
-							minWidth: '80px'
-						}}
-					>
-                {t(rowData.vehicleType)}
-            </span>
-				);
 			}
 		}
-
-
 	];
 
 	const handleConfirmStatusChange = async () => {
@@ -191,12 +143,12 @@ function VehicleManagement() {
 			console.log('API Response Vehicle:', response);
 
 			if (response && Array.isArray(response.result)) {
-				const transformedData: VehicleResp[] = response.result.map((item) => ({
+				const transformedData: GuidelineType[] = response.result.map((item) => ({
 					...item
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length);
+				setCount(response.result.length - 1);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);
@@ -317,7 +269,7 @@ function VehicleManagement() {
 							size="medium"
 							onClick={handleNewShippingType}
 						>
-							{t('Create Vehicle')}
+							{t('Create Guidelines')}
 						</Button>
 					</Grid>
 				</Grid>
@@ -393,14 +345,14 @@ function VehicleManagement() {
 			fetchAllShippingTypes={fetchAllShippingTypes}
 		/>)}
 
-		{isOpenActiveModal && (<VehicleManagementActiveComp
+		{isOpenActiveModal && (<NewGuidelineActiveComp
 			toggleModal={toggleActiveModal}
 			isOpen={isOpenActiveModal}
 			clickedRowData={selectedActiveRowData}
 			handleAlertForm={handleConfirmStatusChange}
 		/>)}
 
-		{isOpenDeleteModal && (<NewVehicleDeleteAlertForm
+		{isOpenDeleteModal && (<NewGuidelineDeleteAlertForm
 			toggleModal={toggleDeleteModal}
 			isOpen={isOpenDeleteModal}
 			clickedRowData={selectedDeleteRowData}
@@ -409,4 +361,4 @@ function VehicleManagement() {
 	</div>);
 }
 
-export default VehicleManagement;
+export default GuidelineManagement;

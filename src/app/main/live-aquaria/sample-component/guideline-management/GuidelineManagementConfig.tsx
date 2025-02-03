@@ -8,19 +8,19 @@ i18next.addResourceBundle('en', 'shippingTypes', en);
 i18next.addResourceBundle('si', 'shippingTypes', si);
 i18next.addResourceBundle('ta', 'shippingTypes', ta);
 
-const ShippingTypes = lazy(() => import('./VehicleManagement'));
+const ShippingTypes = lazy(() => import('./GuidelineManagement'));
 
-const VehicleManagementConfig = {
+const GuidelineManagementConfig = {
 	settings: {
 		layout: {}
 	},
 	permission: 'SHIPPING_TYPES',
 	routes: [
 		{
-			path: '/vehicle/vehicle-management',
+			path: 'guideline/guideline-management',
 			element: <ShippingTypes />
 		}
 	]
 };
 
-export default VehicleManagementConfig;
+export default GuidelineManagementConfig;
