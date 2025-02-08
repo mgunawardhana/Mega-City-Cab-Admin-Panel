@@ -102,17 +102,17 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 										   fullWidth size="small" />
 								</Grid>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Title')} *</Typography>
+									<Typography>{t('Title')}<span className="text-red"> *</span></Typography>
 									<Field disabled={isTableMode === 'view'} name="title" component={TextFormField}
 										   fullWidth size="small" />
 								</Grid>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Description')} *</Typography>
+									<Typography>{t('Description')}<span className="text-red"> *</span></Typography>
 									<Field disabled={isTableMode === 'view'} name="description"
 										   component={TextFormField} fullWidth size="small" />
 								</Grid>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Category')} *</Typography>
+									<Typography>{t('Category')}<span className="text-red"> *</span></Typography>
 									<FormControl fullWidth size="small"
 												 error={touched.category && Boolean(errors.category)}>
 										<Field disabled={isTableMode === 'view'} name="category" as={Select}>
@@ -125,7 +125,7 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Priority')} *</Typography>
+									<Typography>{t('Priority')}<span className="text-red"> *</span></Typography>
 									<FormControl fullWidth size="small"
 												 error={touched.priority && Boolean(errors.priority)}>
 										<Field disabled={isTableMode === 'view'} name="priority" as={Select}>
@@ -137,7 +137,7 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 									</FormControl>
 								</Grid>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
-									<Typography>{t('Related To')} *</Typography>
+									<Typography>{t('Related To')} <span className="text-red"> *</span></Typography>
 									<Field disabled={isTableMode === 'view'} name="relatedTo" component={TextFormField}
 										   fullWidth size="small" />
 								</Grid>
