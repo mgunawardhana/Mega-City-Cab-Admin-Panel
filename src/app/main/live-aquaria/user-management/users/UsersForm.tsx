@@ -4,7 +4,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Checkbox, Grid, IconButton, Select } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import clsx from 'clsx';
@@ -26,6 +26,7 @@ import { DateField } from '@mui/x-date-pickers';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Avatar from '@mui/material/Avatar';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 interface Role {
 	id: number;
@@ -109,6 +110,9 @@ interface Props {
 }
 
 function UsersForm(props: Props) {
+
+	console.log("user form ",props)
+
 	const { t } = useTranslation('sampleComponent');
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 2;
@@ -127,6 +131,7 @@ function UsersForm(props: Props) {
 		lastName: selectedRow ? selectedRow.lastName : '',
 		email: selectedRow ? selectedRow.email : '',
 		password: selectedRow ? selectedRow.password : '',
+		passwordConfirm: selectedRow ? selectedRow.password : '',
 		role: selectedRow ? selectedRow.role : '',
 		customerRegistrationNumber: selectedRow ? selectedRow.customerRegistrationNumber : '',
 		rootUserId: selectedRow ? selectedRow.rootUserId : '',
@@ -370,11 +375,18 @@ function UsersForm(props: Props) {
 									fullWidth
 									required
 								>
-									<Select {...field} size="small" onChange={(e) => {
-										field.onChange(e);
-										handleRoleChange(e);
-									}}>
-										{userRoles.map(role => (
+									<Select
+										{...field}
+										size="small"
+										onChange={(e: SelectChangeEvent<string>) => {
+											field.onChange({ target: { value: e.target.value } } as ChangeEvent<{ value: unknown }>);
+											// @ts-ignore
+											handleRoleChange(e);
+										}}
+									>
+
+
+									{userRoles.map(role => (
 											<MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>))}
 									</Select>
 									<FormHelperText error>{errors?.role?.message}</FormHelperText>
@@ -812,9 +824,8 @@ function UsersForm(props: Props) {
 							</Button>
 							{!isView && (<Button
 								variant="contained"
-								color="secondary"
 								type="submit"
-								className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80"
+								className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
 								// disabled={_.isEmpty(dirtyFields) || !isValid}
 								disabled={loading}
 							>

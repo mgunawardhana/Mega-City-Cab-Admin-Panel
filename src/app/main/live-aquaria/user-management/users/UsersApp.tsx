@@ -1,8 +1,14 @@
 import { Button, Grid } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
 import NavigationViewComp from '../../../../common/FormComponents/NavigationViewComp';
 import UsersForm from './UsersForm';
+import { t } from 'i18next';
+import { fetchAllGuideLines } from '../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
+import { GuidelineType, WebTypeResp } from '../../sample-component/guideline-management/types/GuidelineTypes';
+import { toast } from 'react-toastify';
+import { UserType } from './UsersTypes';
+import { fetchAllUsers } from '../../../../axios/services/mega-city-services/user-service/UserService';
 
 interface AdvanceFilteringTypes {
 	userName: string;
@@ -36,19 +42,12 @@ export type UserInterface = {
 
 function UsersApp() {
 	const [pageNo, setPageNo] = useState<number>(0);
-	const [pageSize, setPageSize] = useState<number>(10);
-	const [filteredValues, setFilteredValues] = useState<AdvanceFilteringTypes>({
-		userName: null,
-		status: null,
-		firstName: null,
-		lastName: null,
-		email: null,
-		mobile: null
-	});
+	const [pageSize, setPageSize] = useState<number>(5);
 	const [userRoles, setUserRoles] = useState<{ label: string; value: number }[]>([]);
 	const [users, setUsers] = useState<UserInterface[]>([]);
+	const [isTableLoading, setTableLoading] = useState(false);
+	const [sampleData, setSampleData] = useState<UserType[]>();
 	const [count, setCount] = useState(100);
-	const [isTableLoading] = useState(false);
 	const [isModelOpen, setIsModelOpen] = useState(false);
 	const [isAdd, setIsAdd] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
@@ -61,6 +60,33 @@ function UsersApp() {
 
 	const handlePageSizeChange = (pageSize: number) => {
 		setPageSize(pageSize);
+	};
+
+	useEffect(() => {
+		fetchAllGuidelines().then(r => (r));
+	}, [pageNo, pageSize]);
+
+	const fetchAllGuidelines = async () => {
+		setTableLoading(true);
+		try {
+			const response = await fetchAllUsers(pageNo, pageSize);
+
+			console.log("sample -----------------------",response)
+
+			if (response && Array.isArray(response.result)) {
+				setUsers(response.result);
+				setCount(response.result.length);
+			} else {
+				console.error('Unexpected data format:', response);
+				setUsers([]);
+			}
+		} catch (error) {
+			console.error('Error fetching users:', error);
+			toast.error('Error fetching data');
+			setUsers([]);
+		} finally {
+			setTableLoading(false);
+		}
 	};
 
 	const tableColumns = [
@@ -82,17 +108,45 @@ function UsersApp() {
 		},
 		{
 			title: 'Mobile No',
-			field: 'mobile'
+			field: 'phone_number'
 		},
 		{
 			title: 'Role',
-			field: 'role'
-		},
-		// {
-		// 	title: 'Status',
-		// 	field: 'is_active',
-		// 	render: (data: UserInterface) => (data.is_active === 1 ? 'Active' : 'Inactive')
-		// }
+			field: 'role',
+			cellStyle: {
+				padding: '4px 8px'
+			},
+			render: rowData => {
+				const roleColors = {
+					CUSTOMER: { text: '#1E88E5', bg: '#E3F2FD' }, // Blue tones
+					MANAGER: { text: '#E53935', bg: '#FFEBEE' },
+					DRIVER: { text: '#e57835', bg: '#ffebde' },
+				};
+
+				const { text, bg } = roleColors[rowData.role] || {
+					text: '#424242', bg: '#E0E0E0'
+				}; // Default color for unknown roles
+
+				return (
+					<span
+						style={{
+							display: 'inline-block',
+							padding: '4px 12px',
+							borderRadius: '16px',
+							color: text,
+							backgroundColor: bg,
+							fontSize: '12px',
+							fontWeight: 500,
+							textAlign: 'center',
+							minWidth: '70px'
+						}}
+					>
+        {t(rowData.role)}
+      </span>
+				);
+			}
+		}
+
 	];
 
 	const handleFormModelOpen = (isNew: boolean, isEdit: boolean, isView: boolean, seletedData: any) => {
