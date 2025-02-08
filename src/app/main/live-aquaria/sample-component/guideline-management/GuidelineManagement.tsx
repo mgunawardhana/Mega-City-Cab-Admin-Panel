@@ -180,7 +180,6 @@ function GuidelineManagement() {
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length - 1);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);

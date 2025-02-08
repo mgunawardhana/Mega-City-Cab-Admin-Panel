@@ -75,7 +75,6 @@ function UsersApp() {
 
 			if (response && Array.isArray(response.result)) {
 				setUsers(response.result);
-				setCount(response.result.length);
 			} else {
 				console.error('Unexpected data format:', response);
 				setUsers([]);
