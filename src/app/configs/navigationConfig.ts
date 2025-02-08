@@ -27,13 +27,13 @@ const navigationConfig: FuseNavItemType[] = [
 				icon: 'heroicons-outline:presentation-chart-line',
 				url: '/dashboards/project'
 			},
-			{
-				id: 'dashboards.analytics',
-				title: 'Analytics',
-				type: 'item',
-				icon: 'heroicons-outline:chart-pie',
-				url: '/dashboards/analytics'
-			},
+			// {
+			// 	id: 'dashboards.analytics',
+			// 	title: 'Analytics',
+			// 	type: 'item',
+			// 	icon: 'heroicons-outline:chart-pie',
+			// 	url: '/dashboards/analytics'
+			// },
 			{
 				id: 'dashboards.finance',
 				title: 'Finance',

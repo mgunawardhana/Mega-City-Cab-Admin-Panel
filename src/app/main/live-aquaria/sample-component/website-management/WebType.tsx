@@ -18,7 +18,7 @@ import ShippingTypeDeleteAlertForm from './components/ShippingTypeDeleteAlertFor
 function WebType() {
 	const { t } = useTranslation('shippingTypes');
 
-	const [pageNo, setPageNo] = useState<number>(1);
+	const [pageNo, setPageNo] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(5);
 	const [count, setCount] = useState<number>(100);
 
@@ -122,7 +122,6 @@ function WebType() {
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);

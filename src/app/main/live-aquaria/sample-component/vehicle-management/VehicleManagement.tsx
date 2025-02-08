@@ -198,7 +198,6 @@ function VehicleManagement() {
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);
