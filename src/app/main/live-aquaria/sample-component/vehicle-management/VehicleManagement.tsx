@@ -198,7 +198,6 @@ function VehicleManagement() {
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);
@@ -231,8 +230,8 @@ function VehicleManagement() {
 	};
 
 	const handleView = async (rowData: ShippingTypeModifiedData) => {
-		setSelectedViewRowData(rowData);
 		toggleShippingTypeViewModal();
+		setSelectedViewRowData(...rowData);
 	};
 
 	const handleEdit = async (rowData: ShippingTypeModifiedData) => {

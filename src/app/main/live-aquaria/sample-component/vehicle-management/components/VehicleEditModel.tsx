@@ -91,35 +91,25 @@ function VehicleEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippin
 		});
 	};
 
-	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { files } = event.target;
-
+	const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
 		if (files) {
-			if (images.length + files.length > maxImageCount) {
-				toast.error(`You can only upload a maximum of ${maxImageCount} images.`);
-				return;
-			}
+			const newImages = Array.from(files).map((file) => {
+				return new Promise<Image>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = () => resolve({ id: Date.now(), link: reader.result as string, file, base64: reader.result as string });
+					reader.onerror = (error) => reject(error);
+				});
+			});
 
-			const validImages: Image[] = [];
-			for (const file of Array.from(files)) {
-				const isValid = await validateImageDimensions(file);
-
-				if (isValid) {
-					const base64 = await convertToBase64(file);
-					validImages.push({
-						id: Date.now(),
-						link: URL.createObjectURL(file),
-						file,
-						base64,
-					});
-				}
-			}
-
-			if (validImages.length > 0) {
-				setImages((prevImages) => [...prevImages, ...validImages]);
-			}
+			Promise.all(newImages).then((results) => {
+				setImages((prevImages) => [...prevImages, ...results]);
+				console.log("Updated Images:", images);
+			});
 		}
 	};
+
 
 	const handleRemoveImage = (id: number) => {
 		setImages((prevImages) => prevImages.filter((image) => image.id !== id));

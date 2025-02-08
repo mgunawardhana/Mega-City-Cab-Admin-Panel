@@ -23,7 +23,7 @@ import GuidelineEditModel from './components/GuidelineEditModel';
 function GuidelineManagement() {
 	const { t } = useTranslation('GuidelineTypes');
 
-	const [pageNo, setPageNo] = useState<number>(1);
+	const [pageNo, setPageNo] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(5);
 	const [count, setCount] = useState<number>(100);
 
@@ -48,7 +48,7 @@ function GuidelineManagement() {
 	const toggleDeleteModal = () => setOpenDeleteModal(!isOpenDeleteModal);
 
 	useEffect(() => {
-		fetchAllGuidelines();
+		fetchAllGuidelines().then(r => (r));
 	}, [pageNo, pageSize]);
 
 	const handlePageChange = (page: number) => {
@@ -180,7 +180,6 @@ function GuidelineManagement() {
 				}));
 
 				setSampleData(transformedData);
-				setCount(response.result.length - 1);
 			} else {
 				console.error('Unexpected data format:', response);
 				setSampleData([]);

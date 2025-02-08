@@ -28,14 +28,39 @@ interface Image {
 	base64: string;
 }
 
+type Vehicle = {
+	model?:string;
+	yearOfManufacture?:string;
+	color?:string;
+	engineCapacity?:string;
+	fuelType?:string;
+	chassisNumber?:string;
+	vehicleType?:string;
+	ownerName?:string;
+	ownerContact?:string;
+	ownerAddress?:string;
+	insuranceProvider?:string;
+	insurancePolicyNumber?:string;
+	insuranceExpiryDate?:string;
+	seatingCapacity?:string;
+	licensePlateNumber?:string;
+	permitType?:string;
+	airConditioning?:string;
+	vehiclePhoto?:string;
+};
+
+
+
 interface Props {
 	isOpen?: boolean;
 	toggleModal?: () => void;
-	clickedRowData: any;
+	clickedRowData: Vehicle;
 	fetchAllShippingTypes?: () => void;
 }
 
-function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
+function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode }: Props) {
+	console.log("selected rows.....", clickedRowData);
+
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
@@ -43,7 +68,6 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 	const maxImageSize = 5 * 1024 * 1024; // 5MB
 
 	const schema = yup.object().shape({
-		shippingType: yup.string().required(t('Shipping type name is required')),
 		model: yup.string().required(t('Model name is required')),
 		year_of_manufacture: yup.string().required(t('Year of manufacturer name is required')),
 		color: yup.string().required(t('Color name is required')),
@@ -147,7 +171,30 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			</DialogTitle>
 			<DialogContent>
 				<Formik
-					initialValues={{}}
+					initialValues={{
+						registration_number: clickedRowData?.registrationNumber || '',
+						make: clickedRowData?.make || '',
+						model: clickedRowData?.model || '',
+						year_of_manufacture: clickedRowData?.yearOfManufacture || '',
+						color:clickedRowData?.color || '',
+						engine_capacity:clickedRowData?.engineCapacity || '',
+						fuel_type: clickedRowData?.fuelType || '',
+						chassis_number: clickedRowData?.chassisNumber || '',
+						vehicle_type: clickedRowData?.vehicleType || '',
+						owner_name: clickedRowData?.ownerName || '',
+						owner_contact: clickedRowData?.ownerContact || '',
+						owner_address: clickedRowData?.ownerAddress || '',
+						insurance_provider: clickedRowData?.insuranceProvider || '',
+						insurance_policy_number: clickedRowData?.insurancePolicyNumber || '',
+						insurance_expiry_date: clickedRowData?.insuranceExpiryDate || '',
+						seating_capacity: clickedRowData?.seatingCapacity || '',
+						license_plate_number: clickedRowData?.licensePlateNumber || '',
+						permit_type: clickedRowData?.permitType || '',
+						air_conditioning: clickedRowData?.airConditioning || '',
+						vehicle_photo: clickedRowData?.vehiclePhoto || '',
+						additional_features: clickedRowData?.additionalFeatures || '',
+						imageUpload:clickedRowData?.vehicleImage || '',
+					}}
 					onSubmit={(values: ShippingCreateType) => handleUpdateShippingType(values)}
 					validationSchema={schema}
 				>
