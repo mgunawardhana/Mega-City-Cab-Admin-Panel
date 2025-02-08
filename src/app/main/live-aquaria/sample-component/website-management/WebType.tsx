@@ -172,7 +172,7 @@ function WebType() {
 	};
 
 	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Website / Articles " />
+		<NavigationViewComp title="Website" />
 
 		<Formik
 			initialValues={{ shippingType: '', category: '', status: '' }}
@@ -298,6 +298,7 @@ function WebType() {
 			isOpen={isOpenNewShippingTypeModal}
 			toggleModal={toggleNewShippingTypeModal}
 			clickedRowData={{}}
+			isTableMode="new"
 			fetchAllShippingTypes={fetchAllShippingTypes}
 		/>)}
 

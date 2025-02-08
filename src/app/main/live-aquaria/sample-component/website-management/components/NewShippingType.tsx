@@ -33,9 +33,10 @@ interface Props {
 	toggleModal?: () => void;
 	clickedRowData: any;
 	fetchAllShippingTypes?: () => void;
+	isTableMode?: string;
 }
 
-function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes }: Props) {
+function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
@@ -125,7 +126,7 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			PaperProps={{ style: { top: '40px', margin: 0, position: 'absolute' } }}
 		>
 			<DialogTitle>
-				<h6 className="text-gray-600 font-400">{t('EDIT_SHIPPING_TYPE')}</h6>
+				<h6 className="text-gray-600 font-400">{t('Website Management model')}</h6>
 			</DialogTitle>
 			<DialogContent>
 				<Formik

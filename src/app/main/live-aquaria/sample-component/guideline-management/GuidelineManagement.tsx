@@ -17,6 +17,8 @@ import { GuidelineType, ShippingTypeModifiedData, VehicleResp, WebTypeResp } fro
 import NewGuidelineActiveComp from './components/NewGuidelineActiveComp';
 import NewGuidelineDeleteAlertForm from './components/NewGuidelineDeleteAlertForm';
 import Chip from '@mui/material/Chip';
+import { fetchAllGuideLines } from '../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
+import GuidelineEditModel from './components/GuidelineEditModel';
 
 function GuidelineManagement() {
 	const { t } = useTranslation('GuidelineTypes');
@@ -46,7 +48,7 @@ function GuidelineManagement() {
 	const toggleDeleteModal = () => setOpenDeleteModal(!isOpenDeleteModal);
 
 	useEffect(() => {
-		fetchAllShippingTypes();
+		fetchAllGuidelines();
 	}, [pageNo, pageSize]);
 
 	const handlePageChange = (page: number) => {
@@ -76,16 +78,16 @@ function GuidelineManagement() {
 			padding: '4px 8px'
 		},
 		render: rowData => {
-			const fuelColors: { [key: string]: { text: string; bg: string;} } = {
-				Hybrid: { text: '#388E3C', bg: '#E8F5E9'},
-				Diesel: { text: '#F57C00', bg: '#FFF3E0' },
-				Electric: { text: '#1976D2', bg: '#E3F2FD'},
-				Petrol: { text: '#D32F2F', bg: '#FBE9E7' }
+			const categoryColors = {
+				Safety: { text: '#1E88E5', bg: '#E3F2FD' },     // Blue tones
+				Maintenance: { text: '#43A047', bg: '#E8F5E9' }, // Green tones
+				Training: { text: '#e87b22', bg: '#f6e8dc' },    // Yellow tones
+				Pricing: { text: '#E53935', bg: '#FFEBEE' }      // Red tones
 			};
 
-			const { text, bg, border } = fuelColors[rowData.category] || {
+			const { text, bg } = categoryColors[rowData.category] || {
 				text: '#424242', bg: '#E0E0E0'
-			}; // Default color for unknown types
+			}; // Default color for unknown categories
 
 			return (
 				<span
@@ -95,7 +97,6 @@ function GuidelineManagement() {
 						borderRadius: '16px',
 						color: text,
 						backgroundColor: bg,
-						border: `1px solid ${border}`,
 						fontSize: '12px',
 						fontWeight: 500,
 						textAlign: 'center',
@@ -107,14 +108,45 @@ function GuidelineManagement() {
 			);
 		}
 	},
-
 		{
-			title: t('Priority'), field: 'priority', cellStyle: {
-				padding: '4px 8px'
-			}
-		}, {
 			title: t('Related To'), field: 'relatedTo', cellStyle: {
 				padding: '4px 8px'
+			}
+		},
+
+		{
+			title: t('Priority'),
+			field: 'priority',
+			cellStyle: {
+				padding: '4px 8px'
+			},
+			render: rowData => {
+				const priorityColors = {
+					Medium: { text: '#1E88E5', bg: '#E3F2FD' },     // Blue tones
+					High: { text: '#E53935', bg: '#FFEBEE' }      // Red tones
+				};
+
+				const { text, bg } = priorityColors[rowData.priority] || {
+					text: '#424242', bg: '#E0E0E0'
+				}; // Default color for unknown priorities
+
+				return (
+					<span
+						style={{
+							display: 'inline-block',
+							padding: '4px 12px',
+							borderRadius: '16px',
+							color: text,
+							backgroundColor: bg,
+							fontSize: '12px',
+							fontWeight: 500,
+							textAlign: 'center',
+							minWidth: '70px'
+						}}
+					>
+                {t(rowData.priority)}
+            </span>
+				);
 			}
 		}
 	];
@@ -128,19 +160,19 @@ function GuidelineManagement() {
 				is_active: !selectedActiveRowData?.active
 			};
 			await updateShippingTypeStatus(id, data);
-			await fetchAllShippingTypes();
+			await fetchAllGuidelines();
 			toast.success('Status updated successfully');
 		} catch (error) {
 			toast.error('Error updating status:');
 		}
 	};
 
-	const fetchAllShippingTypes = async () => {
+	const fetchAllGuidelines = async () => {
 		setTableLoading(true);
 		try {
-			const response = await fetchAllVehicleData(pageNo, pageSize);
+			const response = await fetchAllGuideLines(pageNo, pageSize);
 
-			console.log('API Response Vehicle:', response);
+			console.log('guideline details:', response);
 
 			if (response && Array.isArray(response.result)) {
 				const transformedData: GuidelineType[] = response.result.map((item) => ({
@@ -173,7 +205,7 @@ function GuidelineManagement() {
 		const id = selectedDeleteRowData?.id ?? null;
 		try {
 			await deleteShippingType(id);
-			fetchAllShippingTypes();
+			fetchAllGuidelines();
 			toast.success('Shipping Type deleted successfully');
 		} catch (e) {
 			toast.error('Error deleting Shipping Type');
@@ -198,7 +230,7 @@ function GuidelineManagement() {
 	};
 
 	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Website / Articles " />
+		<NavigationViewComp title="Guidelines" />
 
 		<Formik
 			initialValues={{ shippingType: '', category: '', status: '' }}
@@ -320,29 +352,30 @@ function GuidelineManagement() {
 		</Grid>
 
 		{/* New Shipping Type Modal */}
-		{isOpenNewShippingTypeModal && (<NewVehicleManagement
+		{isOpenNewShippingTypeModal && (<GuidelineEditModel
 			isOpen={isOpenNewShippingTypeModal}
 			toggleModal={toggleNewShippingTypeModal}
+			isTableMode="new"
 			clickedRowData={{}}
-			fetchAllShippingTypes={fetchAllShippingTypes}
+			fetchAllShippingTypes={fetchAllGuidelines}
 		/>)}
 
 		{/* View Modal */}
-		{isOpenShippingTypeViewModal && (<VehicleEditModel
+		{isOpenShippingTypeViewModal && (<NewVehicleManagement
 			isOpen={isOpenShippingTypeViewModal}
 			toggleModal={toggleShippingTypeViewModal}
 			clickedRowData={selectedViewRowData}
 			isTableMode="view"
-			fetchAllShippingTypes={fetchAllShippingTypes}
+			fetchAllShippingTypes={fetchAllGuidelines}
 		/>)}
 
 		{/* Edit Modal */}
-		{isOpenShippingTypeEditModal && (<VehicleEditModel
+		{isOpenShippingTypeEditModal && (<NewVehicleManagement
 			isOpen={isOpenShippingTypeEditModal}
 			toggleModal={toggleShippingTypeEditModal}
 			clickedRowData={selectedEditRowData}
 			isTableMode="edit"
-			fetchAllShippingTypes={fetchAllShippingTypes}
+			fetchAllShippingTypes={fetchAllGuidelines}
 		/>)}
 
 		{isOpenActiveModal && (<NewGuidelineActiveComp
