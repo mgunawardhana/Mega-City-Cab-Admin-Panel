@@ -23,7 +23,7 @@ import GuidelineEditModel from './components/GuidelineEditModel';
 function GuidelineManagement() {
 	const { t } = useTranslation('GuidelineTypes');
 
-	const [pageNo, setPageNo] = useState<number>(1);
+	const [pageNo, setPageNo] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(5);
 	const [count, setCount] = useState<number>(100);
 
