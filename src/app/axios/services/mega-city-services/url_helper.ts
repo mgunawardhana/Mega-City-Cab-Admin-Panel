@@ -5,3 +5,4 @@ export const DELETE_CATEGORY_TYPE = '/api/admin/v1/shipping-types/';
 
 
 export const FETCH_ALL_CATEGORIES = 'api/v1/guideline/fetch-all';
+export const FETCH_ALL_USERS = 'api/v1/auth/get-all-users?page=';

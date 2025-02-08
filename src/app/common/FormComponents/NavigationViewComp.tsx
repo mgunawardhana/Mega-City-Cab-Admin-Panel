@@ -7,7 +7,7 @@ function NavigationViewComp(props: any) {
 			<div className="col-span-12">
 				<h6 className="w-full flex flex-wrap items-center gap-[5px] text-[8px] sm:text-[10px] lg:text-[12px] text-gray-600 font-500 leading-[1.2]">
 					<span>Mega City </span> /{' '}
-					<span className="text-primaryBlueLight font-600">{props.title ? props.title : ''}</span>				
+					<span className="text-yellow-800 font-600">{props.title ? props.title : ''}</span>
 				</h6>
 			</div>
 		</div>

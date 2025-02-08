@@ -13,26 +13,20 @@ export type FormType = {
 	status?: string;
 };
 
-export type FormProps = {
-	className?: string;
-	isOpen?: boolean;
-	setIsFormOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	selectedRow?: FormType;
-	isEdit?: boolean;
-	isView?: boolean;
-	isAdd?: boolean;
-	onCloseHandler?: () => void;
-	userRoles?: RolesLOV[];
-};
-
-export interface FormData {
-	code: string;
-	role: string;
-	status: boolean;
-	description: string;
-}
-
 export interface RolesLOV {
 	value: string;
 	label: string;
+}
+
+export interface UserType {
+	firstName: string;
+	lastName: string;
+	role: string;
+	address: string;
+	registration_number: string | number;
+	root_user_id: string | number;
+	nic: string | number;
+	phone_number: string | number;
+	id: string | number;
+	email: string;
 }

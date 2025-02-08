@@ -18,6 +18,7 @@ import NewGuidelineActiveComp from './components/NewGuidelineActiveComp';
 import NewGuidelineDeleteAlertForm from './components/NewGuidelineDeleteAlertForm';
 import Chip from '@mui/material/Chip';
 import { fetchAllGuideLines } from '../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
+import GuidelineEditModel from './components/GuidelineEditModel';
 
 function GuidelineManagement() {
 	const { t } = useTranslation('GuidelineTypes');
@@ -229,7 +230,7 @@ function GuidelineManagement() {
 	};
 
 	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Website / Articles " />
+		<NavigationViewComp title="Guidelines" />
 
 		<Formik
 			initialValues={{ shippingType: '', category: '', status: '' }}
@@ -351,15 +352,16 @@ function GuidelineManagement() {
 		</Grid>
 
 		{/* New Shipping Type Modal */}
-		{isOpenNewShippingTypeModal && (<NewVehicleManagement
+		{isOpenNewShippingTypeModal && (<GuidelineEditModel
 			isOpen={isOpenNewShippingTypeModal}
 			toggleModal={toggleNewShippingTypeModal}
+			isTableMode="new"
 			clickedRowData={{}}
 			fetchAllShippingTypes={fetchAllGuidelines}
 		/>)}
 
 		{/* View Modal */}
-		{isOpenShippingTypeViewModal && (<VehicleEditModel
+		{isOpenShippingTypeViewModal && (<NewVehicleManagement
 			isOpen={isOpenShippingTypeViewModal}
 			toggleModal={toggleShippingTypeViewModal}
 			clickedRowData={selectedViewRowData}
@@ -368,7 +370,7 @@ function GuidelineManagement() {
 		/>)}
 
 		{/* Edit Modal */}
-		{isOpenShippingTypeEditModal && (<VehicleEditModel
+		{isOpenShippingTypeEditModal && (<NewVehicleManagement
 			isOpen={isOpenShippingTypeEditModal}
 			toggleModal={toggleShippingTypeEditModal}
 			clickedRowData={selectedEditRowData}

@@ -31,12 +31,12 @@ function NewGuidelineDeleteAlertForm({ toggleModal, isOpen, clickedRowData, hand
 					<span className="font-bold">
 						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
 					</span>{' '}
-					this Shipping Type ?
+					this Guideline ?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
 				<Button
-					className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-primaryBlue hover:bg-primaryBlue/80 bokShadow"
+					className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yell/80 bokShadow"
 					variant="contained"
 					size="medium"
 					onClick={handleAlertForm}

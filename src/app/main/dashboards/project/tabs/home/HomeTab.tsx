@@ -43,24 +43,24 @@ function HomeTab() {
 			<motion.div variants={item}>
 				<FeaturesWidget />
 			</motion.div>
-			<motion.div
-				variants={item}
-				className="sm:col-span-2 md:col-span-4"
-			>
-				<GithubIssuesWidget />
-			</motion.div>
-			<motion.div
-				variants={item}
-				className="sm:col-span-2 md:col-span-4 lg:col-span-2"
-			>
-				<TaskDistributionWidget />
-			</motion.div>
-			<motion.div
-				variants={item}
-				className="sm:col-span-2 md:col-span-4 lg:col-span-2"
-			>
-				<ScheduleWidget />
-			</motion.div>
+			{/*<motion.div*/}
+			{/*	variants={item}*/}
+			{/*	className="sm:col-span-2 md:col-span-4"*/}
+			{/*>*/}
+			{/*	<GithubIssuesWidget />*/}
+			{/*</motion.div>*/}
+			{/*<motion.div*/}
+			{/*	variants={item}*/}
+			{/*	className="sm:col-span-2 md:col-span-4 lg:col-span-2"*/}
+			{/*>*/}
+			{/*	<TaskDistributionWidget />*/}
+			{/*</motion.div>*/}
+			{/*<motion.div*/}
+			{/*	variants={item}*/}
+			{/*	className="sm:col-span-2 md:col-span-4 lg:col-span-2"*/}
+			{/*>*/}
+			{/*	<ScheduleWidget />*/}
+			{/*</motion.div>*/}
 		</motion.div>
 	);
 }

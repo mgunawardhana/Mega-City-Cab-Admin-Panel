@@ -9,8 +9,8 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import ProjectDashboardAppHeader from './ProjectDashboardAppHeader';
 import HomeTab from './tabs/home/HomeTab';
-import BudgetTab from './tabs/budget/BudgetTab';
-import TeamTab from './tabs/team/TeamTab';
+// import BudgetTab from './tabs/budget/BudgetTab';
+// import TeamTab from './tabs/team/TeamTab';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
 	'& .FusePageSimple-header': {
@@ -43,8 +43,6 @@ function ProjectDashboardApp() {
 					<Tabs
 						value={tabValue}
 						onChange={handleChangeTab}
-						indicatorColor="secondary"
-						textColor="inherit"
 						variant="scrollable"
 						scrollButtons={false}
 						className="w-full px-24 -mx-4 min-h-40"
@@ -52,31 +50,33 @@ function ProjectDashboardApp() {
 						TabIndicatorProps={{
 							children: (
 								<Box
-									sx={{ bgcolor: 'text.disabled' }}
-									className="w-full h-full rounded-full opacity-20"
+									 // Change from 'text.disabled' to 'yellow'
+									className="w-full h-full rounded-full opacity-100"
 								/>
 							)
 						}}
 					>
-						<Tab
-							className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
-							disableRipple
-							label="Home"
-						/>
-						<Tab
-							className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
-							disableRipple
-							label="Budget"
-						/>
-						<Tab
-							className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
-							disableRipple
-							label="Team"
-						/>
+
+					{/*<Tab*/}
+					{/*		*/}
+					{/*		label="Home"*/}
+					{/*	/>*/}
+
+
+						{/*<Tab*/}
+						{/*	className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"*/}
+						{/*	disableRipple*/}
+						{/*	label="Budget"*/}
+						{/*/>*/}
+						{/*<Tab*/}
+						{/*	className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"*/}
+						{/*	disableRipple*/}
+						{/*	label="Team"*/}
+						{/*/>*/}
 					</Tabs>
 					{tabValue === 0 && <HomeTab />}
-					{tabValue === 1 && <BudgetTab />}
-					{tabValue === 2 && <TeamTab />}
+					{/*{tabValue === 1 && <BudgetTab />}*/}
+					{/*{tabValue === 2 && <TeamTab />}*/}
 				</div>
 			}
 		/>

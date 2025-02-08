@@ -21,7 +21,7 @@ import Chip from '@mui/material/Chip';
 function VehicleManagement() {
 	const { t } = useTranslation('shippingTypes');
 
-	const [pageNo, setPageNo] = useState<number>(1);
+	const [pageNo, setPageNo] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(5);
 	const [count, setCount] = useState<number>(100);
 
@@ -45,9 +45,6 @@ function VehicleManagement() {
 	const toggleActiveModal = () => setOpenActiveModal(!isOpenActiveModal);
 	const toggleDeleteModal = () => setOpenDeleteModal(!isOpenDeleteModal);
 
-	useEffect(() => {
-		fetchAllShippingTypes();
-	}, [pageNo, pageSize]);
 
 	const handlePageChange = (page: number) => {
 		setPageNo(page);
@@ -56,6 +53,11 @@ function VehicleManagement() {
 	const handlePageSizeChange = (newPageSize: number) => {
 		setPageSize(newPageSize);
 	};
+
+	useEffect(() => {
+		fetchAllShippingTypes();
+	}, [pageNo, pageSize]);
+
 
 	const tableColumns = [{
 		title: t('Registration Number'), field: 'registrationNumber', cellStyle: {
@@ -246,7 +248,7 @@ function VehicleManagement() {
 	};
 
 	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Website / Articles " />
+		<NavigationViewComp title="Vehicle" />
 
 		<Formik
 			initialValues={{ shippingType: '', category: '', status: '' }}
