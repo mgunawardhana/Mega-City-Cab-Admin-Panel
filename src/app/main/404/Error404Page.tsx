@@ -22,7 +22,7 @@ function Error404Page() {
 						fill="none"
 						preserveAspectRatio="xMidYMax slice"
 						xmlns="http://www.w3.org/2000/svg"
-						sx={{ color: 'secondary.main' }}
+						sx={{ color: '#ffa502' }}
 					>
 						<g clipPath="url(#clip0)">
 							<path
