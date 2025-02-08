@@ -48,7 +48,7 @@ function GuidelineManagement() {
 	const toggleDeleteModal = () => setOpenDeleteModal(!isOpenDeleteModal);
 
 	useEffect(() => {
-		fetchAllGuidelines();
+		fetchAllGuidelines().then(r => (r));
 	}, [pageNo, pageSize]);
 
 	const handlePageChange = (page: number) => {
