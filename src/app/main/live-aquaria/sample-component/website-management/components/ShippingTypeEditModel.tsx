@@ -42,7 +42,6 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 	const maxImageCount = 1;
 	const maxImageSize = 5 * 1024 * 1024; // 5MB
 
-	// Convert base64 image if provided in clickedRowData
 	useEffect(() => {
 		if (clickedRowData.media) {
 			setImages([{ id: Date.now(), link: clickedRowData.media, file: null as unknown as File, base64: clickedRowData.media }]);
@@ -184,6 +183,7 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Is Active')}</Typography>
 									<Checkbox
+										className="yellow-800"
 										checked={values.is_active}
 										onChange={(event) => setFieldValue('is_active', event.target.checked)}
 										disabled={isTableMode === 'view'}

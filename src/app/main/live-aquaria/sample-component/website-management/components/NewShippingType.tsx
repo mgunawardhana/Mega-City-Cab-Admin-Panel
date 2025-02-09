@@ -111,7 +111,7 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			title: values.title,
 			description: values.description,
 			author: values.author,
-			media: images.length > 0 ? images[0].base64 : null, // Sending image as base64
+			media: images.length > 0 ? images[0].base64 : null,
 			is_active: values.is_active,
 		};
 
