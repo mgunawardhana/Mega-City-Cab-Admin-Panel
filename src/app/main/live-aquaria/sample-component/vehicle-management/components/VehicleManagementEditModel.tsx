@@ -46,7 +46,7 @@ type Vehicle = {
 	licensePlateNumber?:string;
 	permitType?:string;
 	airConditioning?:string;
-	vehiclePhoto?:string;
+	vehicleImage?:string;
 };
 
 
@@ -56,16 +56,17 @@ interface Props {
 	toggleModal?: () => void;
 	clickedRowData: Vehicle;
 	fetchAllShippingTypes?: () => void;
+	isTableMode?: string;
 }
 
 function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode }: Props) {
-	console.log("selected rows.....", clickedRowData);
+	console.log("clickedRowData?.vehicleImage.....", clickedRowData?.vehicleImage);
 
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
-	const maxImageCount = 2;
-	const maxImageSize = 5 * 1024 * 1024; // 5MB
+	const maxImageCount = 1;
+	const maxImageSize = 20 * 1024 * 1024; // 5MB
 
 	const schema = yup.object().shape({
 		model: yup.string().required(t('Model name is required')),
@@ -145,6 +146,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 	const handleRemoveImage = (id: number) => {
 		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
 	};
+
 
 	const handleUpdateShippingType = async (values: ShippingCreateType) => {
 		const data = {
@@ -348,12 +350,12 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
 												<IconButton
 													className="text-primaryBlue"
-													onClick={() => document.getElementById('imageUpload')?.click()}
+													onClick={() => document.getElementById('vehicleImage')?.click()}
 												>
 													<AddCircleIcon fontSize="large" />
 												</IconButton>
 												<input
-													id="imageUpload"
+													id="vehicleImage"
 													type="file"
 													accept="image/*"
 													style={{ display: 'none' }}
