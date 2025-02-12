@@ -17,13 +17,13 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
-import { ShippingCreateType, ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { ShippingCreateType, BookingDetails } from '../types/ShippingTypes';
 import * as yup from 'yup';
 
 interface Props {
 	toggleModal: () => void;
 	isOpen: boolean;
-	clickedRowData: ShippingTypeModifiedData;
+	clickedRowData: BookingDetails;
 	fetchAllShippingTypes?: () => void;
 	isTableMode?: string;
 }
@@ -39,8 +39,6 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
-	const maxImageCount = 1;
-	const maxImageSize = 5 * 1024 * 1024; // 5MB
 
 	useEffect(() => {
 		if (clickedRowData.media) {
@@ -55,46 +53,6 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 		ratings: yup.number().required(t('Ratings are required')).min(0).max(10),
 		is_active: yup.boolean()
 	});
-
-	const convertToBase64 = (file: File): Promise<string> => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onloadend = () => resolve(reader.result as string);
-			reader.onerror = (error) => reject(error);
-		});
-	};
-
-	const validateImage = async (file: File): Promise<boolean> => {
-		if (file.size > maxImageSize) {
-			toast.error('Image size should be ≤ 5MB.');
-			return false;
-		}
-		return true;
-	};
-
-	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { files } = event.target;
-
-		if (files && files.length > 0) {
-			if (images.length >= maxImageCount) {
-				toast.error(`You can only upload a maximum of ${maxImageCount} image.`);
-				return;
-			}
-
-			const file = files[0]; // Only allow one file
-			const isValid = await validateImage(file);
-
-			if (isValid) {
-				const base64 = await convertToBase64(file);
-				setImages([{ id: Date.now(), link: URL.createObjectURL(file), file, base64 }]);
-			}
-		}
-	};
-
-	const handleRemoveImage = () => {
-		setImages([]);
-	};
 
 	const handleUpdateShippingType = async (values: ShippingCreateType) => {
 		const data = {
@@ -124,10 +82,19 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 				<Formik
 					initialValues={{
 						title: clickedRowData.title || '',
-						description: clickedRowData.description || '',
-						author: clickedRowData.author || '',
-						ratings: clickedRowData.ratings || 0,
-						is_active: clickedRowData.is_active || false
+						bookingNumber: clickedRowData.bookingNumber || '',
+						bookingDate: clickedRowData.bookingDate || '',
+						pickupLocation: clickedRowData.pickupLocation || '',
+						dropOffLocation: clickedRowData.dropOffLocation || '',
+						carNumber: clickedRowData.carNumber || '',
+						taxes: clickedRowData.taxes || '',
+						distance: clickedRowData.distance || '',
+						estimatedTime: clickedRowData.estimatedTime || '',
+						taxWithoutCost: clickedRowData.taxWithoutCost || '',
+						totalAmount: clickedRowData.totalAmount || '',
+						customerRegistrationNumber: clickedRowData.customerRegistrationNumber || '',
+						driverId: clickedRowData.driverId || '',
+						status: clickedRowData.status || '',
 					}}
 					validationSchema={schema}
 					onSubmit={(values) => handleUpdateShippingType(values)}
@@ -137,67 +104,67 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 							<Grid container spacing={2}>
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Booking Number')}<span className="text-red"> *</span></Typography>
-									<Field name="bookingNumber" component={TextFormField} fullWidth size="small" />
+									<Field name="bookingNumber" disabled component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Booking Date')}<span className="text-red"> *</span></Typography>
-									<Field name="bookingDate" component={TextFormField} fullWidth size="small" />
+									<Field name="bookingDate" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Pick Up Location')}<span className="text-red"> *</span></Typography>
-									<Field name="pickupLocation" component={TextFormField} fullWidth size="small" />
+									<Field name="pickupLocation" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Drop Off Location')}<span className="text-red"> *</span></Typography>
-									<Field type="dropOffLocation" name="discount" component={TextFormField} fullWidth size="small" />
+									<Field  name="dropOffLocation" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Card Number')}<span className="text-red"> *</span></Typography>
-									<Field name="carNumber" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Taxes ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="taxes" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Taxes')}<span className="text-red"> *</span></Typography>
-									<Field name="taxes" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Distance ')}<span className="text-green"> (km)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="distance" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Distance')}<span className="text-red"> *</span></Typography>
-									<Field name="distance" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Estimated Time')}<span className="text-green"> (min)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="estimatedTime" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Estimated Time')}<span className="text-red"> *</span></Typography>
-									<Field type="estimatedTime" name="discount" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Tax Without Cost ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="taxWithoutCost" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Tax Without Cost')}<span className="text-red"> *</span></Typography>
-									<Field name="taxWithoutCost" component={TextFormField} fullWidth size="small" />
-								</Grid>
-
-								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Total Amount')}<span className="text-red"> *</span></Typography>
-									<Field name="totalAmount" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Total Amount ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="totalAmount" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Customer Registration Number')}<span className="text-red"> *</span></Typography>
-									<Field name="customerRegistrationNumber" component={TextFormField} fullWidth size="small" />
+									<Field name="customerRegistrationNumber" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Driver Name')}<span className="text-red"> *</span></Typography>
-									<Field type="driverId" name="discount" component={TextFormField} fullWidth size="small" />
+									<Field name="driverId" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Status')}<span className="text-red"> *</span></Typography>
-									<Field  name="status" component={TextFormField} fullWidth size="small" />
+									<Field  name="status" disabled={isDataLoading || isTableMode === 'view'}  component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 

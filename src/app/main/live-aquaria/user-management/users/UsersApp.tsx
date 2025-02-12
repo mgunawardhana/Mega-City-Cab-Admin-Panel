@@ -209,7 +209,7 @@ function UsersApp() {
 					className="!pt-[5px]"
 				>
 					<MaterialTableWrapper
-						title=""
+						title="User Management Table"
 						filterChanged={null}
 						handleColumnFilter={null}
 						tableColumns={tableColumns}
@@ -234,7 +234,6 @@ function UsersApp() {
 						records={users}
 						tableRowViewHandler={tableRowViewHandler}
 						tableRowEditHandler={tableRowEditHandler}
-						disableSearch
 					/>
 				</Grid>
 			</Grid>

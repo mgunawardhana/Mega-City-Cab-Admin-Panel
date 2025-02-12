@@ -13,7 +13,7 @@ import {
 	fetchAllShippingTypesData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
-import { ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
+import { BookingDetails, WebTypeResp } from './types/ShippingTypes';
 import ShippingTypeActiveComp from './components/ShippingTypeActiveComp';
 import ShippingTypeDeleteAlertForm from './components/ShippingTypeDeleteAlertForm';
 
@@ -35,10 +35,10 @@ function BookingType() {
 
 	const [sampleData, setSampleData] = useState<WebTypeResp[]>();
 	const [isTableLoading, setTableLoading] = useState(false);
-	const [selectedActiveRowData, setSelectedActiveRowData] = useState<ShippingTypeModifiedData>(null);
-	const [selectedDeleteRowData, setSelectedDeleteRowData] = useState<ShippingTypeModifiedData>(null);
-	const [selectedViewRowData, setSelectedViewRowData] = useState<ShippingTypeModifiedData>(null);
-	const [selectedEditRowData, setSelectedEditRowData] = useState<ShippingTypeModifiedData>(null);
+	const [selectedActiveRowData, setSelectedActiveRowData] = useState<BookingDetails>(null);
+	const [selectedDeleteRowData, setSelectedDeleteRowData] = useState<BookingDetails>(null);
+	const [selectedViewRowData, setSelectedViewRowData] = useState<BookingDetails>(null);
+	const [selectedEditRowData, setSelectedEditRowData] = useState<BookingDetails>(null);
 	const [isOpenActiveModal, setOpenActiveModal] = useState(false);
 	const [isOpenDeleteModal, setOpenDeleteModal] = useState(false);
 	const toggleActiveModal = () => setOpenActiveModal(!isOpenActiveModal);
@@ -145,7 +145,7 @@ function BookingType() {
 		try {
 			const response = await fetchAllBookings(pageNo, pageSize);
 
-			console.log('API Response assssssssssssssssssssssss:', response);
+			console.log('API Response:', response);
 
 			if (response && Array.isArray(response.result)) {
 				const transformedData: WebTypeResp[] = response.result.map((item) => ({
@@ -167,7 +167,7 @@ function BookingType() {
 	};
 
 
-	const handleRowDelete = async (rowData: ShippingTypeModifiedData) => {
+	const handleRowDelete = async (rowData: BookingDetails) => {
 		setSelectedDeleteRowData(rowData);
 		toggleDeleteModal();
 	};
@@ -184,12 +184,12 @@ function BookingType() {
 		}
 	};
 
-	const handleView = async (rowData: ShippingTypeModifiedData) => {
+	const handleView = async (rowData: BookingDetails) => {
 		setSelectedViewRowData(rowData);
 		toggleShippingTypeViewModal();
 	};
 
-	const handleEdit = async (rowData: ShippingTypeModifiedData) => {
+	const handleEdit = async (rowData: BookingDetails) => {
 		setSelectedEditRowData(rowData);
 		toggleShippingTypeEditModal();
 	};
@@ -202,7 +202,7 @@ function BookingType() {
 	};
 
 	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Website" />
+		<NavigationViewComp title="Bookings" />
 
 		<Formik
 			initialValues={{ shippingType: '', category: '', status: '' }}
@@ -273,7 +273,7 @@ function BookingType() {
 							size="medium"
 							onClick={handleNewShippingType}
 						>
-							{t('Create Article')}
+							{t('Place New Booking')}
 						</Button>
 					</Grid>
 				</Grid>
@@ -293,7 +293,7 @@ function BookingType() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Booking Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -314,7 +314,6 @@ function BookingType() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}

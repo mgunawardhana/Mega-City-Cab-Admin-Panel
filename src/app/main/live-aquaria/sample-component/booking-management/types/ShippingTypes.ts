@@ -25,18 +25,20 @@ export type WebTypeApiResponse = {
 	meta?: Meta;
 };
 
-export type ShippingTypeModifiedData = {
-	allow_transit_delay?: string;
-	id?: string;
-	name?: string;
-	is_active?: number;
-	created_at?: string;
-	updated_at?: string;
-	item_category?: ShippingTypeItemCategoryResponse[];
-	shipping_type_name?: string;
-	product_category?: string[];
-	create_date?: string;
-	active?: boolean;
+export type BookingDetails = {
+	bookingNumber: number;
+	bookingDate: string; // ISO 8601 date-time format
+	pickupLocation: string;
+	dropOffLocation: string;
+	carNumber: string;
+	taxes: number;
+	distance: number;
+	estimatedTime: number; // in hours
+	taxWithoutCost: number;
+	totalAmount: number;
+	customerRegistrationNumber: string;
+	driverId: string;
+	status: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'CLOSED';
 };
 
 export type ShippingCreateType = {

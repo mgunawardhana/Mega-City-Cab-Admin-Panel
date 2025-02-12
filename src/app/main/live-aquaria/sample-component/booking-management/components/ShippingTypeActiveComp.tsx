@@ -6,12 +6,12 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
-import { ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { BookingDetails } from '../types/ShippingTypes';
 
 interface Props {
 	toggleModal: () => void;
 	isOpen: boolean;
-	clickedRowData: ShippingTypeModifiedData;
+	clickedRowData: BookingDetails;
 	handleAlertForm: () => void;
 }
 

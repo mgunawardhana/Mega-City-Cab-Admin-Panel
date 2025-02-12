@@ -262,7 +262,7 @@ function WebType() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Website Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -283,7 +283,6 @@ function WebType() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}

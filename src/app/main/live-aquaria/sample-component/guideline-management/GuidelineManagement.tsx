@@ -320,7 +320,7 @@ function GuidelineManagement() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Guideline Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -341,7 +341,6 @@ function GuidelineManagement() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}

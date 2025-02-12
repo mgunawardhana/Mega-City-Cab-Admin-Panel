@@ -40,70 +40,11 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
-	const maxImageCount = 1;
-	const maxImageSize = 5 * 1024 * 1024; // 5MB
 
 	const schema = yup.object().shape({
 		shippingType: yup.string().required(t('Shipping type name is required')),
 	});
 
-	const convertToBase64 = (file: File): Promise<string> => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onloadend = () => resolve(reader.result as string);
-			reader.onerror = (error) => reject(error);
-		});
-	};
-
-	const validateImageDimensions = (file: File): Promise<boolean> => {
-		return new Promise((resolve) => {
-			const img = new Image();
-			img.src = URL.createObjectURL(file);
-			img.onload = () => {
-				if (file.size <= maxImageSize) {
-					resolve(true);
-				} else {
-					toast.error('Image upload failed: Size should be <= 5MB.');
-					resolve(false);
-				}
-			};
-		});
-	};
-
-	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { files } = event.target;
-
-		if (files) {
-			if (images.length + files.length > maxImageCount) {
-				toast.error(`You can only upload a maximum of ${maxImageCount} images.`);
-				return;
-			}
-
-			const validImages: Image[] = [];
-			for (const file of Array.from(files)) {
-				const isValid = await validateImageDimensions(file);
-
-				if (isValid) {
-					const base64 = await convertToBase64(file);
-					validImages.push({
-						id: Date.now(),
-						link: URL.createObjectURL(file),
-						file,
-						base64,
-					});
-				}
-			}
-
-			if (validImages.length > 0) {
-				setImages((prevImages) => [...prevImages, ...validImages]);
-			}
-		}
-	};
-
-	const handleRemoveImage = (id: number) => {
-		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
-	};
 
 	const handleUpdateShippingType = async (values: ShippingCreateType) => {
 		const data = {
@@ -163,28 +104,33 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Taxes')}<span className="text-red"> *</span></Typography>
-									<Field name="taxes" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Taxes ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="taxes" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Distance')}<span className="text-red"> *</span></Typography>
-									<Field name="distance" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Distance ')}<span className="text-green"> (km)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="distance" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Estimated Time')}<span className="text-red"> *</span></Typography>
-									<Field type="estimatedTime" name="discount" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Estimated Time')}<span className="text-green"> (min)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="estimatedTime" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Tax Without Cost')}<span className="text-red"> *</span></Typography>
-									<Field name="taxWithoutCost" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Tax Without Cost ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="taxWithoutCost" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Total Amount')}<span className="text-red"> *</span></Typography>
-									<Field name="totalAmount" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Total Amount ')}<span className="text-green"> (Rs)</span><span
+										className="text-red"> *</span></Typography>
+									<Field name="totalAmount" disabled={isDataLoading || isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>

@@ -338,7 +338,7 @@ function VehicleManagement() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Vehicle Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -359,7 +359,6 @@ function VehicleManagement() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}
