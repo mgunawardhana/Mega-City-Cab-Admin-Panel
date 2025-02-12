@@ -138,81 +138,68 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Title')}<span className="text-red"> *</span></Typography>
-									<Field name="title" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Booking Number')}<span className="text-red"> *</span></Typography>
+									<Field name="bookingNumber" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Description')}<span className="text-red"> *</span></Typography>
-									<Field name="description" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Booking Date')}<span className="text-red"> *</span></Typography>
+									<Field name="bookingDate" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Author')}<span className="text-red"> *</span></Typography>
-									<Field name="author" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Pick Up Location')}<span className="text-red"> *</span></Typography>
+									<Field name="pickupLocation" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Ratings')}<span className="text-red"> *</span></Typography>
-									<Field type="number" name="discount" component={TextFormField} fullWidth size="small" />
+									<Typography>{t('Drop Off Location')}<span className="text-red"> *</span></Typography>
+									<Field type="dropOffLocation" name="discount" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
-								<Grid item lg={4} md={4} sm={6} xs={12} className="flex items-center">
-									<Typography className="mr-2">{t('Is Active')}</Typography>
-									<Checkbox
-										color="primary"
-										onChange={(event) => setFieldValue('is_active', event.target.checked)}
-									/>
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Card Number')}<span className="text-red"> *</span></Typography>
+									<Field name="carNumber" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Taxes')}<span className="text-red"> *</span></Typography>
+									<Field name="taxes" component={TextFormField} fullWidth size="small" />
+								</Grid>
 
-								<Grid item md={6} xs={12}>
-									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
-										{t('Upload Thumbnail Image')}
-									</Typography>
-									<div className="relative flex gap-[10px] overflow-x-auto" style={{ whiteSpace: 'nowrap' }}>
-										{images.map((image) => (
-											<div
-												key={image.id}
-												className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
-											>
-												<img
-													src={image.link}
-													alt={`Thumbnail ${image.id}`}
-													className="w-full h-full rounded-[10px] object-contain object-center"
-												/>
-												<IconButton
-													size="small"
-													className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
-													onClick={() => handleRemoveImage(image.id)}
-												>
-													<CancelIcon fontSize="small" />
-												</IconButton>
-											</div>
-										))}
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Distance')}<span className="text-red"> *</span></Typography>
+									<Field name="distance" component={TextFormField} fullWidth size="small" />
+								</Grid>
 
-										{images.length < maxImageCount && (
-											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
-												<IconButton
-													className="text-primaryBlue"
-													onClick={() => document.getElementById('imageUpload')?.click()}
-												>
-													<AddCircleIcon fontSize="large" />
-												</IconButton>
-												<input
-													id="imageUpload"
-													type="file"
-													accept="image/*"
-													style={{ display: 'none' }}
-													multiple
-													onChange={handleImageUpload}
-												/>
-											</div>
-										)}
-									</div>
-									<span className="text-[10px] text-gray-700 italic">
-                                        <b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
-                                    </span>
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Estimated Time')}<span className="text-red"> *</span></Typography>
+									<Field type="estimatedTime" name="discount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Tax Without Cost')}<span className="text-red"> *</span></Typography>
+									<Field name="taxWithoutCost" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Total Amount')}<span className="text-red"> *</span></Typography>
+									<Field name="totalAmount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Customer Registration Number')}<span className="text-red"> *</span></Typography>
+									<Field name="customerRegistrationNumber" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Driver Name')}<span className="text-red"> *</span></Typography>
+									<Field type="driverId" name="discount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Status')}<span className="text-red"> *</span></Typography>
+									<Field  name="status" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 

@@ -9,7 +9,7 @@ import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTab
 import ShippingTypeEditModal from './components/ShippingTypeEditModel';
 import NewShippingTypeModel from './components/NewShippingType';
 import {
-	deleteShippingType,
+	deleteShippingType, fetchAllBookings,
 	fetchAllShippingTypesData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
@@ -45,7 +45,7 @@ function BookingType() {
 	const toggleDeleteModal = () => setOpenDeleteModal(!isOpenDeleteModal);
 
 	useEffect(() => {
-		fetchAllShippingTypes();
+		fetchAllShippingTypes().then(r => (r));
 	}, [pageNo, pageSize]);
 
 	const handlePageChange = (page: number) => {
@@ -57,7 +57,7 @@ function BookingType() {
 	};
 
 	const tableColumns = [{
-		title: t('Booking Id'), field: 'bookingId', cellStyle: {
+		title: t('Booking Id'), field: 'bookingNumber', cellStyle: {
 			padding: '6px 8px'
 		}
 	}, {
@@ -65,11 +65,11 @@ function BookingType() {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Driver Name'), field: 'ratings', cellStyle: {
+		title: t('Driver Name'), field: 'driverId', cellStyle: {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Time Estimation'), field: 'time_estimation', cellStyle: {
+		title: t('Time Estimation'), field: 'estimatedTime', cellStyle: {
 			padding: '4px 8px'
 		}
 	},{
@@ -77,31 +77,48 @@ function BookingType() {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Tax'), field: 'tax', cellStyle: {
+		title: t('Tax'), field: 'taxes', cellStyle: {
 			padding: '4px 8px'
 		}
 	}, {
-		title: t('Cost'), field: 'cost', cellStyle: {
+		title: t('Cost'), field: 'totalAmount', cellStyle: {
 			padding: '4px 8px'
 		}
-	}, {
-		title: t('Payment Status'), field: 'is_active', cellStyle: {
+	},{
+		title: t('Payment Status'),
+		field: 'status',
+		cellStyle: {
 			padding: '4px 8px'
-		}, render: rowData => (<span
-			style={{
-				display: 'inline-block',
-				padding: '4px 12px',
-				borderRadius: '16px',
-				color: rowData.is_active ? '#4CAF50' : '#F44336',
-				backgroundColor: rowData.is_active ? '#E8F5E9' : '#FFEBEE',
-				fontSize: '12px',
-				fontWeight: 500,
-				textAlign: 'center',
-				minWidth: '70px'
-			}}
-		>
-            {rowData.is_active ? t('Active') : t('Inactive')}
-        </span>)
+		},
+		render: rowData => {
+			const statusColors = {
+				PENDING: { text: '#FF9800', background: '#FFF3E0' },
+				CANCELLED: { text: '#F44336', background: '#FFEBEE' },
+				COMPLETED: { text: '#4CAF50', background: '#E8F5E9' },
+				CLOSED: { text: '#9E9E9E', background: '#F5F5F5' }
+			};
+
+			const status = rowData.status || 'PENDING';
+			const colors = statusColors[status] || statusColors.PENDING;
+
+			return (
+				<span
+					style={{
+						display: 'inline-block',
+						padding: '4px 12px',
+						borderRadius: '16px',
+						color: colors.text,
+						backgroundColor: colors.background,
+						fontSize: '12px',
+						fontWeight: 500,
+						textAlign: 'center',
+						minWidth: '80px'
+					}}
+				>
+                {t(status)}
+            </span>
+			);
+		}
 	}
 
 
@@ -126,9 +143,9 @@ function BookingType() {
 	const fetchAllShippingTypes = async () => {
 		setTableLoading(true);
 		try {
-			const response = await fetchAllShippingTypesData(pageNo, pageSize);
+			const response = await fetchAllBookings(pageNo, pageSize);
 
-			console.log('API Response:', response);
+			console.log('API Response assssssssssssssssssssssss:', response);
 
 			if (response && Array.isArray(response.result)) {
 				const transformedData: WebTypeResp[] = response.result.map((item) => ({

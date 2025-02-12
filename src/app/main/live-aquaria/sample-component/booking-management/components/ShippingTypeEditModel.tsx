@@ -136,93 +136,70 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Title')}<span className="text-red"> *</span></Typography>
-									<Field
-										name="title"
-										component={TextFormField}
-										fullWidth
-										size="small"
-										disabled={isTableMode === 'view'}
-									/>
+									<Typography>{t('Booking Number')}<span className="text-red"> *</span></Typography>
+									<Field name="bookingNumber" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Description')}<span className="text-red"> *</span></Typography>
-									<Field
-										name="description"
-										component={TextFormField}
-										fullWidth
-										size="small"
-										disabled={isTableMode === 'view'}
-									/>
+									<Typography>{t('Booking Date')}<span className="text-red"> *</span></Typography>
+									<Field name="bookingDate" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Author')} <span className="text-red"> *</span></Typography>
-									<Field
-										name="author"
-										component={TextFormField}
-										fullWidth
-										size="small"
-										disabled={isTableMode === 'view'}
-									/>
+									<Typography>{t('Pick Up Location')}<span className="text-red"> *</span></Typography>
+									<Field name="pickupLocation" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Ratings')}<span className="text-red"> *</span></Typography>
-									<Field
-										type="number"
-										name="ratings"
-										component={TextFormField}
-										fullWidth
-										size="small"
-										disabled={isTableMode === 'view'}
-									/>
+									<Typography>{t('Drop Off Location')}<span className="text-red"> *</span></Typography>
+									<Field type="dropOffLocation" name="discount" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
-									<Typography>{t('Is Active')}</Typography>
-									<Checkbox
-										className="yellow-800"
-										checked={values.is_active}
-										onChange={(event) => setFieldValue('is_active', event.target.checked)}
-										disabled={isTableMode === 'view'}
-									/>
+									<Typography>{t('Card Number')}<span className="text-red"> *</span></Typography>
+									<Field name="carNumber" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
-								<Grid item md={8} xs={12}>
-									<Typography>{t('Upload Thumbnail Image')}</Typography>
-									<div className="relative flex gap-2 overflow-x-auto">
-										{images.length > 0 && (
-											<div className="relative inline-block w-[440px] h-[220px]">
-												<img src={images[0].link} alt="Thumbnail" className="w-full h-full object-cover" />
-												<IconButton
-													className="absolute top-0 right-0"
-													onClick={handleRemoveImage}
-													disabled={isTableMode === 'view'}
-												>
-													<CancelIcon fontSize="small" />
-												</IconButton>
-											</div>
-										)}
-										{images.length === 0 && (
-											<IconButton
-												onClick={() => document.getElementById('imageUpload')?.click()}
-												disabled={isTableMode === 'view'}
-											>
-												<AddCircleIcon fontSize="large" />
-											</IconButton>
-										)}
-										<input
-											id="imageUpload"
-											type="file"
-											accept="image/*"
-											hidden
-											onChange={handleImageUpload}
-											disabled={isTableMode === 'view'}
-										/>
-									</div>
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Taxes')}<span className="text-red"> *</span></Typography>
+									<Field name="taxes" component={TextFormField} fullWidth size="small" />
 								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Distance')}<span className="text-red"> *</span></Typography>
+									<Field name="distance" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Estimated Time')}<span className="text-red"> *</span></Typography>
+									<Field type="estimatedTime" name="discount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Tax Without Cost')}<span className="text-red"> *</span></Typography>
+									<Field name="taxWithoutCost" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Total Amount')}<span className="text-red"> *</span></Typography>
+									<Field name="totalAmount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Customer Registration Number')}<span className="text-red"> *</span></Typography>
+									<Field name="customerRegistrationNumber" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Driver Name')}<span className="text-red"> *</span></Typography>
+									<Field type="driverId" name="discount" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
+								<Grid item lg={4} md={4} sm={6} xs={12}>
+									<Typography>{t('Status')}<span className="text-red"> *</span></Typography>
+									<Field  name="status" component={TextFormField} fullWidth size="small" />
+								</Grid>
+
 
 								<Grid item lg={12} className="flex justify-end gap-2">
 									<Button
