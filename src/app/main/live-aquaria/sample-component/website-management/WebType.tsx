@@ -146,7 +146,7 @@ function WebType() {
 		const id = selectedDeleteRowData?.id ?? null;
 		try {
 			await deleteShippingType(id);
-			fetchAllShippingTypes();
+			await fetchAllShippingTypes();
 			toast.success('Shipping Type deleted successfully');
 		} catch (e) {
 			toast.error('Error deleting Shipping Type');

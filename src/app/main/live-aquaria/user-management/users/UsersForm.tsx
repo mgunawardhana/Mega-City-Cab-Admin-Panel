@@ -615,7 +615,7 @@ function UsersForm(props: Props) {
 							lg={3}
 							className="formikFormField pt-[5px!important]"
 						>
-							<Typography className="formTypography">
+							<Typography className="formTypography mt-8">
 								Mobile <span className="text-red">*</span>
 							</Typography>
 							<Controller

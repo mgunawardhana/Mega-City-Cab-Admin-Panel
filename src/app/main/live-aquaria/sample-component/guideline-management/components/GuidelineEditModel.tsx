@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import {
 	Button,
@@ -16,7 +17,11 @@ import { Field, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
-import { ShippingCreateType } from '../types/GuidelineTypes';
+import { GuideType } from '../types/GuidelineTypes';
+import { toast } from 'react-toastify';
+import {
+	handleUpdateGuidelineAPI
+} from '../../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
 
 interface Image {
 	id: number;
@@ -64,16 +69,23 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 		}]);
 	}, [t]);
 
-	const handleUpdateShippingType = async (values: ShippingCreateType) => {
+	const handleUpdateGuideline = async (values: GuideType) => {
 		const data = {
+			guidanceId: values.guidanceId,
 			title: values.title,
 			description: values.description,
-			author: values.author,
-			media: images.length > 0 ? images[0].base64 : null,
-			is_active: values.is_active
+			category: values.category,
+			priority: values.priority,
+			relatedTo: values.relatedTo
 		};
 
-		console.log('Form Data:', data);
+		try{
+			await handleUpdateGuidelineAPI(data);
+			toast.success('Guideline updated successfully');
+		}catch (e) {
+			console.error('Error updating guideline:', e);
+			toast.error('Error updating guideline');
+		}
 	};
 
 	return (<Dialog open={isOpen} maxWidth="xl" onClose={toggleModal}
@@ -91,7 +103,7 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 						priority: clickedRowData.priority,
 						relatedTo: clickedRowData.relatedTo
 					}}
-					onSubmit={handleUpdateShippingType}
+					onSubmit={handleUpdateGuideline}
 					validationSchema={schema}
 				>
 					{({ setFieldValue, errors, touched }) => (<Form>

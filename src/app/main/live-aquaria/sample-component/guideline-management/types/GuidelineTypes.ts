@@ -31,25 +31,15 @@ export type GuidelineType = {
 
 
 export type ShippingTypeModifiedData = {
-	allow_transit_delay?: string;
-	id?: string;
-	name?: string;
-	is_active?: number;
-	created_at?: string;
-	updated_at?: string;
-	item_category?: ShippingTypeItemCategoryResponse[];
-	shipping_type_name?: string;
-	product_category?: string[];
-	create_date?: string;
-	active?: boolean;
+
 };
 
-export type ShippingCreateType = {
-	ratings?: number;
+export type GuideType = {
+	guidanceId?: any;
 	title?: string;
 	description?: string;
-	author?: string;
-	media?: string;
-	is_active?: boolean;
+	category?: any;
+	priority?: any;
+	relatedTo?: any;
 };
 

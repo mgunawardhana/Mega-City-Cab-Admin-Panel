@@ -6,12 +6,12 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
-import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
+import { GuideType, ShippingTypeModifiedData } from '../types/GuidelineTypes';
 
 interface Props {
 	toggleModal: () => void;
 	isOpen: boolean;
-	clickedRowData: ShippingTypeModifiedData;
+	clickedRowData: GuideType;
 	handleAlertForm: () => void;
 }
 
@@ -29,7 +29,7 @@ function NewGuidelineDeleteAlertForm({ toggleModal, isOpen, clickedRowData, hand
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
 					Are you sure you want to delete{' '}
 					<span className="font-bold">
-						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
+						{clickedRowData?.guidanceId ? clickedRowData?.title : ''}
 					</span>{' '}
 					this Guideline ?
 				</DialogContentText>
