@@ -20,6 +20,7 @@ import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import { GuideType } from '../types/GuidelineTypes';
 import { toast } from 'react-toastify';
 import {
+	handleCreateGuideline,
 	handleUpdateGuidelineAPI
 } from '../../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
 
@@ -34,12 +35,12 @@ interface Props {
 	isOpen?: boolean;
 	toggleModal?: () => void;
 	clickedRowData: any;
-	fetchAllShippingTypes?: () => void;
+	fetchAllGuidelines?: () => void;
 	isTableMode?: string;
 }
 
 // @ts-ignore
-function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, fetchAllShippingTypes }: Props) {
+function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, fetchAllGuidelines }: Props) {
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
@@ -47,7 +48,6 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 	const [priority, setPriority] = useState<{ value: string; label: string }[]>([]);
 
 	const schema = yup.object().shape({
-		guidanceId: yup.string().required(t('Guidance id is required')),
 		title: yup.string().required(t('Guidance title is required')),
 		description: yup.string().required(t('Description is required')),
 		category: yup.string().required(t('Category is required')),
@@ -69,24 +69,32 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 		}]);
 	}, [t]);
 
-	const handleUpdateGuideline = async (values: GuideType) => {
+	const handleSubmit = async (values: GuideType) => {
 		const data = {
 			guidanceId: values.guidanceId,
 			title: values.title,
 			description: values.description,
 			category: values.category,
 			priority: values.priority,
-			relatedTo: values.relatedTo
+			relatedTo: values.relatedTo,
 		};
 
-		try{
-			await handleUpdateGuidelineAPI(data);
-			toast.success('Guideline updated successfully');
-		}catch (e) {
-			console.error('Error updating guideline:', e);
-			toast.error('Error updating guideline');
+		try {
+			if (clickedRowData?.guidanceId) {
+				await handleUpdateGuidelineAPI(data);
+				fetchAllGuidelines();
+				toast.success('Guideline updated successfully');
+			} else {
+				await handleCreateGuideline(data);
+				fetchAllGuidelines();
+				toast.success('Guideline created successfully');
+			}
+		} catch (e) {
+			console.error('Error:', e);
+			toast.error('Error while saving guideline');
 		}
 	};
+
 
 	return (<Dialog open={isOpen} maxWidth="xl" onClose={toggleModal}
 					PaperProps={{ style: { top: '40px', margin: 0, position: 'absolute' } }}>
@@ -103,14 +111,14 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 						priority: clickedRowData.priority,
 						relatedTo: clickedRowData.relatedTo
 					}}
-					onSubmit={handleUpdateGuideline}
+					onSubmit={handleSubmit}
 					validationSchema={schema}
 				>
 					{({ setFieldValue, errors, touched }) => (<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Guidance Id')}</Typography>
-									<Field disabled={isTableMode === 'view'} name="guidanceId" component={TextFormField}
+									<Field disabled={isTableMode === 'view' | isTableMode === 'new'}  name="guidanceId" component={TextFormField}
 										   fullWidth size="small" />
 								</Grid>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
@@ -155,6 +163,7 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 								</Grid>
 								<Grid item lg={12} className="flex justify-end gap-2">
 									<Button type="submit" variant="contained"
+											disabled={isTableMode === 'view' || isDataLoading}
 											className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
 									>
 										{t('Save')}

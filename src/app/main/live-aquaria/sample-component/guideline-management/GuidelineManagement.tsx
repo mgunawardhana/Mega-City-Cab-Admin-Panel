@@ -358,7 +358,7 @@ function GuidelineManagement() {
 			toggleModal={toggleNewShippingTypeModal}
 			isTableMode="new"
 			clickedRowData={{}}
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{/* View Modal */}
@@ -367,7 +367,7 @@ function GuidelineManagement() {
 			toggleModal={toggleShippingTypeViewModal}
 			clickedRowData={selectedViewRowData}
 			isTableMode="view"
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{/* Edit Modal */}
@@ -376,7 +376,7 @@ function GuidelineManagement() {
 			toggleModal={toggleShippingTypeEditModal}
 			clickedRowData={selectedEditRowData}
 			isTableMode="edit"
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{isOpenActiveModal && (<NewGuidelineActiveComp

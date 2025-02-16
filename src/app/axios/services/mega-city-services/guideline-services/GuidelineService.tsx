@@ -11,3 +11,7 @@ export const handleUpdateGuidelineAPI = (data: any) =>
 
 export const deleteGuideline = (id: string | number) =>
 	del(`${url.DELETE_GUIDELINE}${id}`);
+
+
+export const handleCreateGuideline = (data: any) =>
+	post(url.SAVE_GUIDELINE, data);
