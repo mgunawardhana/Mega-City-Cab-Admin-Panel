@@ -162,12 +162,8 @@ function VehicleEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippin
 			};
 
 			console.log('formData:', formData);
-
-			// Ensure the API call is correctly awaited
 			await handleSaveVehicleAPI(formData);
 			toast.success('Vehicle created successfully');
-
-			// Use optional chaining to prevent calling undefined functions
 			toggleModal?.();
 			fetchAllShippingTypes?.();
 

@@ -15,7 +15,10 @@ import { ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/Guid
 import VehicleManagementActiveComp from './components/VehicleManagementActiveComp';
 import NewVehicleDeleteAlertForm from './components/NewVehicleDeleteAlertForm';
 import Chip from '@mui/material/Chip';
-import { fetchAllVehicleData } from '../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
+import {
+	fetchAllVehicleData,
+	handleDeleteAction
+} from '../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
 
 function VehicleManagement() {
 	const { t } = useTranslation('shippingTypes');
@@ -220,11 +223,12 @@ function VehicleManagement() {
 		toggleDeleteModal();
 		const id = selectedDeleteRowData?.id ?? null;
 		try {
-			await deleteShippingType(id);
-			fetchAllShippingTypes();
+
+			await handleDeleteAction(id);
+			fetchAllShippingTypes().then(r => (r));
 			toast.success('Shipping Type deleted successfully');
 		} catch (e) {
-			toast.error('Error deleting Shipping Type');
+			toast.error('Error deleting vehicle Type');
 		}
 	};
 

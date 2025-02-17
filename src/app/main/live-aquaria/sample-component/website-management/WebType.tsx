@@ -148,7 +148,7 @@ function WebType() {
 			await fetchAllShippingTypes();
 			toast.success('Shipping Type deleted successfully');
 		} catch (e) {
-			toast.error('Error deleting Shipping Type');
+			toast.error('Error deleting website');
 		}
 	};
 
