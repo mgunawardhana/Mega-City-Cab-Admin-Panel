@@ -17,3 +17,7 @@ export const SAVE_GUIDELINE = 'api/v1/guideline';
 export const UPDATE_VEHICLE = 'api/v1/vehicle/update';
 export const CREATE_VEHICLE = 'api/v1/vehicle/register';
 export const DELETE_VEHICLE = 'api/v1/vehicle/';
+
+export const DELETE_WEB_ARTICLE = 'api/v1/web-content/deleteArticle/';
+export const UPDATE_WEBSITE_ARTICLE = 'api/v1/web-content/updateArticle';
+export const CREATE_WEBSITE_ARTICLE = 'api/v1/web-content/createArticle';

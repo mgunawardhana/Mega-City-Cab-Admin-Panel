@@ -132,10 +132,7 @@ function VehicleEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippin
 		setDataLoading(true);
 
 		try {
-			// Ensure images array exists and has at least one element
 			const vehicleImage = images?.[0]?.base64 || '';
-
-			console.log('values for image:', vehicleImage);
 
 			const formData = {
 				registrationNumber: values.registration_number,
@@ -161,7 +158,7 @@ function VehicleEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippin
 				vehicleImage: vehicleImage
 			};
 
-			console.log('formData:', formData);
+			console.log('formData checking now :', formData);
 			await handleSaveVehicleAPI(formData);
 			toast.success('Vehicle created successfully');
 			toggleModal?.();

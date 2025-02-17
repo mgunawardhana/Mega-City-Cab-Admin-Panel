@@ -39,7 +39,7 @@ export type ShippingTypeModifiedData = {
 	active?: boolean;
 };
 
-export type ShippingCreateType = {
+export type WebContentType = {
 	ratings?: number;
 	title?: string;
 	description?: string;

@@ -17,8 +17,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
-import { ShippingCreateType, ShippingTypeModifiedData } from '../types/ShippingTypes';
+import { WebContentType, ShippingTypeModifiedData } from '../types/ShippingTypes';
 import * as yup from 'yup';
+import { updateWebsiteArticle } from '../../../../../axios/services/mega-city-services/web-article/WebArticleService';
 
 interface Props {
 	toggleModal: () => void;
@@ -96,18 +97,35 @@ function ShippingTypeEditModal({ isOpen, toggleModal, clickedRowData, fetchAllSh
 		setImages([]);
 	};
 
-	const handleUpdateShippingType = async (values: ShippingCreateType) => {
+	const handleUpdateShippingType = async (values: WebContentType) => {
 		const data = {
+			articleId: clickedRowData.articleId,
 			title: values.title,
 			description: values.description,
 			author: values.author,
-			ratings: parseFloat(values.ratings.toString()), // Ensure ratings are stored as numbers
+			ratings: parseFloat(values.ratings.toString()),
 			is_active: values.is_active,
-			media: images.length > 0 ? images[0].base64 : null // Store image as base64
+			media: images.length > 0 ? images[0].base64 : null
 		};
 
+		try{
+			await updateWebsiteArticle(data);
+			toast.success('Article type updated successfully');
+
+			if (toggleModal) {
+				toggleModal();
+			}
+
+			if (fetchAllShippingTypes) {
+				fetchAllShippingTypes();
+			}
+
+		}catch (e){
+			toast.error('Failed to update article type');
+			console.log('Failed to update article type', e);
+		}
+
 		console.log('Form Data:', data);
-		// Call API or function to update shipping type
 	};
 
 	return (
