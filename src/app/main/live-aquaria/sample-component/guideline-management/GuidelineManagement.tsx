@@ -9,7 +9,6 @@ import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTab
 import VehicleEditModel from './components/GuidelineManagementEditModel';
 import NewVehicleManagement from './components/GuidelineEditModel';
 import {
-	deleteShippingType,
 	fetchAllShippingTypesData, fetchAllVehicleData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';

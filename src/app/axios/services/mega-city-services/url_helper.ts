@@ -13,3 +13,6 @@ export const UPDATE_GUIDELINE = 'api/v1/guideline/update';
 export const DELETE_GUIDELINE = 'api/v1/guideline/';
 
 export const SAVE_GUIDELINE = 'api/v1/guideline';
+
+export const UPDATE_VEHICLE = 'api/v1/vehicle/update';
+export const CREATE_VEHICLE = 'api/v1/vehicle/register';

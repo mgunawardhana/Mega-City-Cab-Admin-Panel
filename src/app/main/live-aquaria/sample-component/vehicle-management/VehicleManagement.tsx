@@ -9,14 +9,13 @@ import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTab
 import VehicleEditModel from './components/VehicleManagementEditModel';
 import NewVehicleManagement from './components/VehicleEditModel';
 import {
-	deleteShippingType,
-	fetchAllShippingTypesData, fetchAllVehicleData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
 import { ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/GuidelineTypes';
 import VehicleManagementActiveComp from './components/VehicleManagementActiveComp';
 import NewVehicleDeleteAlertForm from './components/NewVehicleDeleteAlertForm';
 import Chip from '@mui/material/Chip';
+import { fetchAllVehicleData } from '../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
 
 function VehicleManagement() {
 	const { t } = useTranslation('shippingTypes');
@@ -231,7 +230,7 @@ function VehicleManagement() {
 
 	const handleView = async (rowData: ShippingTypeModifiedData) => {
 		toggleShippingTypeViewModal();
-		setSelectedViewRowData(...rowData);
+		setSelectedViewRowData(rowData);
 	};
 
 	const handleEdit = async (rowData: ShippingTypeModifiedData) => {

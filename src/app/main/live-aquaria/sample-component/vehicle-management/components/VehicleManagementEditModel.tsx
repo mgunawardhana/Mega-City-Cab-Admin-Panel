@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Button,
 	Checkbox,
@@ -19,75 +18,71 @@ import * as yup from 'yup';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { ShippingCreateType } from '../types/GuidelineTypes';
+import {
+	handleSaveVehicleAPI,
+	handleUpdateVehicleAPI
+} from '../../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
 
 interface Image {
 	id: number;
 	link: string;
-	file: File;
+	file?: File;
 	base64: string;
 }
-
-type Vehicle = {
-	model?:string;
-	yearOfManufacture?:string;
-	color?:string;
-	engineCapacity?:string;
-	fuelType?:string;
-	chassisNumber?:string;
-	vehicleType?:string;
-	ownerName?:string;
-	ownerContact?:string;
-	ownerAddress?:string;
-	insuranceProvider?:string;
-	insurancePolicyNumber?:string;
-	insuranceExpiryDate?:string;
-	seatingCapacity?:string;
-	licensePlateNumber?:string;
-	permitType?:string;
-	airConditioning?:string;
-	vehicleImage?:string;
-};
-
-
 
 interface Props {
 	isOpen?: boolean;
 	toggleModal?: () => void;
-	clickedRowData: Vehicle;
+	clickedRowData: any;
 	fetchAllShippingTypes?: () => void;
 	isTableMode?: string;
 }
 
-function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode }: Props) {
-	console.log("clickedRowData?.vehicleImage.....", clickedRowData?.vehicleImage);
+interface VehicleFormValues {
+	id: string;
+	registration_number: string;
+	make: string;
+	model: string;
+	year_of_manufacture: string;
+	color: string;
+	engine_capacity: string;
+	fuel_type: string;
+	chassis_number: string;
+	vehicle_type: string;
+	owner_name: string;
+	owner_contact: string;
+	owner_address: string;
+	insurance_provider: string;
+	insurance_policy_number: string;
+	insurance_expiry_date: string;
+	seating_capacity: string;
+	license_plate_number: string;
+	permit_type: string;
+	air_conditioning: boolean;
+	additional_features: string;
+}
+
+function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
+
+	console.log('clickedRowData:', clickedRowData);
 
 	const { t } = useTranslation('shippingTypes');
-	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 1;
-	const maxImageSize = 20 * 1024 * 1024; // 5MB
+	const maxImageSize = 20 * 1024 * 1024; // 20MB
+	const [isDataLoading, setDataLoading] = useState(false);
 
-	const schema = yup.object().shape({
-		model: yup.string().required(t('Model name is required')),
-		year_of_manufacture: yup.string().required(t('Year of manufacturer name is required')),
-		color: yup.string().required(t('Color name is required')),
-		engine_capacity: yup.string().required(t('Engine capacity name is required')),
-		fuel_type: yup.string().required(t('Fuel type name is required')),
-		chassis_number: yup.string().required(t('Chassis number name is required')),
-		vehicle_type: yup.string().required(t('Vehicle type name is required')),
-		owner_name: yup.string().required(t('Owner name is required')),
-		owner_contact: yup.string().required(t('Owner contact name is required')),
-		owner_address: yup.string().required(t('Owner address is required')),
-		insurance_provider: yup.string().required(t('Insurance provider name is required')),
-		insurance_policy_number: yup.string().required(t('Insurance policy number required')),
-		insurance_expiry_date: yup.string().required(t('Insurance expiry date required')),
-		seating_capacity: yup.string().required(t('seating capacity required')),
-		license_plate_number: yup.string().required(t('License plate number required')),
-		permit_type: yup.string().required(t('Permit type required')),
-		air_conditioning: yup.string().required(t('Air conditioning required')),
-		vehicle_photo: yup.string().required(t('Vehicle	photo required')),
-	});
+	useEffect(() => {
+		if (clickedRowData?.vehicleImage) {
+			setImages([{
+				id: Date.now(),
+				link: clickedRowData.vehicleImage,
+				base64: clickedRowData.vehicleImage
+			}]);
+		} else {
+			setImages([]);
+		}
+	}, [clickedRowData]);
 
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
@@ -106,7 +101,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 				if (file.size <= maxImageSize) {
 					resolve(true);
 				} else {
-					toast.error('Image upload failed: Size should be <= 5MB.');
+					toast.error('Image upload failed: Size should be <= 20MB.');
 					resolve(false);
 				}
 			};
@@ -138,27 +133,88 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 			}
 
 			if (validImages.length > 0) {
-				setImages((prevImages) => [...prevImages, ...validImages]);
+				setImages(validImages);
 			}
 		}
 	};
 
 	const handleRemoveImage = (id: number) => {
-		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
+		setImages([]);
 	};
 
+	const schema = yup.object().shape({
+		model: yup.string().required(t('Model name is required')),
+		year_of_manufacture: yup.string().required(t('Year of manufacturer name is required')),
+		color: yup.string().required(t('Color name is required')),
+		engine_capacity: yup.string().required(t('Engine capacity name is required')),
+		fuel_type: yup.string().required(t('Fuel type name is required')),
+		chassis_number: yup.string().required(t('Chassis number name is required')),
+		vehicle_type: yup.string().required(t('Vehicle type name is required')),
+		owner_name: yup.string().required(t('Owner name is required')),
+		owner_contact: yup.string().required(t('Owner contact name is required')),
+		owner_address: yup.string().required(t('Owner address is required')),
+		insurance_provider: yup.string().required(t('Insurance provider name is required')),
+		insurance_policy_number: yup.string().required(t('Insurance policy number required')),
+		insurance_expiry_date: yup.string().required(t('Insurance expiry date required')),
+		seating_capacity: yup.string().required(t('seating capacity required')),
+		license_plate_number: yup.string().required(t('License plate number required')),
+		permit_type: yup.string().required(t('Permit type required')),
+	});
 
-	const handleUpdateShippingType = async (values: ShippingCreateType) => {
-		const data = {
-			discount: values.discount,
-			title: values.title,
-			description: values.description,
-			author: values.author,
-			media: images.length > 0 ? images[0].base64 : null, // Sending image as base64
-			is_active: values.is_active,
-		};
+	const handleSubmit = async (values: VehicleFormValues) => {
+		setDataLoading(true);
 
-		console.log('Form Data:', data);
+		console.log('values for image:', images[0]?.base64);
+		try {
+			const formData = {
+				id: clickedRowData?.id,
+				registrationNumber: values.registration_number,
+				make: values.make,
+				model: values.model,
+				yearOfManufacture: values.year_of_manufacture,
+				color: values.color,
+				engineCapacity: values.engine_capacity,
+				fuelType: values.fuel_type,
+				chassisNumber: values.chassis_number,
+				vehicleType: values.vehicle_type,
+				ownerName: values.owner_name,
+				ownerContact: values.owner_contact,
+				ownerAddress: values.owner_address,
+				insuranceProvider: values.insurance_provider,
+				insurancePolicyNumber: values.insurance_policy_number,
+				insuranceExpiryDate: values.insurance_expiry_date,
+				seatingCapacity: values.seating_capacity,
+				licensePlateNumber: values.license_plate_number,
+				permitType: values.permit_type,
+				airConditioning: values.air_conditioning,
+				additionalFeatures: values.additional_features,
+				vehicleImage: images[0]?.base64 || ''
+			};
+
+			console.log('formData:', formData);
+
+			if (clickedRowData?.id) {
+				await handleUpdateVehicleAPI(formData);
+				toast.success('Vehicle updated successfully');
+			} else {
+				await handleSaveVehicleAPI(formData);
+				toast.success('Vehicle created successfully');
+			}
+			//
+			// if (toggleModal) {
+			// 	toggleModal();
+			// }
+			//
+			// if (fetchAllShippingTypes) {
+			// 	fetchAllShippingTypes();
+			// }
+
+		} catch (error) {
+			console.error('Error saving vehicle:', error);
+			toast.error('Error while saving vehicle');
+		} finally {
+			setDataLoading(false);
+		}
 	};
 
 	return (
@@ -174,12 +230,13 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 			<DialogContent>
 				<Formik
 					initialValues={{
+						id: clickedRowData?.id || '',
 						registration_number: clickedRowData?.registrationNumber || '',
 						make: clickedRowData?.make || '',
 						model: clickedRowData?.model || '',
 						year_of_manufacture: clickedRowData?.yearOfManufacture || '',
-						color:clickedRowData?.color || '',
-						engine_capacity:clickedRowData?.engineCapacity || '',
+						color: clickedRowData?.color || '',
+						engine_capacity: clickedRowData?.engineCapacity || '',
 						fuel_type: clickedRowData?.fuelType || '',
 						chassis_number: clickedRowData?.chassisNumber || '',
 						vehicle_type: clickedRowData?.vehicleType || '',
@@ -192,15 +249,14 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 						seating_capacity: clickedRowData?.seatingCapacity || '',
 						license_plate_number: clickedRowData?.licensePlateNumber || '',
 						permit_type: clickedRowData?.permitType || '',
-						air_conditioning: clickedRowData?.airConditioning || '',
-						vehicle_photo: clickedRowData?.vehiclePhoto || '',
+						air_conditioning: clickedRowData?.airConditioning || false,
 						additional_features: clickedRowData?.additionalFeatures || '',
-						imageUpload:clickedRowData?.vehicleImage || '',
+						vehicleImage: clickedRowData.vehicleImage || ''
 					}}
-					onSubmit={(values: ShippingCreateType) => handleUpdateShippingType(values)}
+					onSubmit={handleSubmit}
 					validationSchema={schema}
 				>
-					{({ setFieldValue }) => (
+					{({ setFieldValue, errors, touched }) => (
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
@@ -215,12 +271,12 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Model')}<span className="text-red"> *</span></Typography>
-									<Field name="model" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field name="model" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Year of Manufacturer')}<span className="text-red"> *</span></Typography>
-									<Field type="number" name="year_of_manufacture" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field type="number" name="year_of_manufacture"  component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 
@@ -243,7 +299,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Chassis Number')}<span className="text-red"> *</span></Typography>
-									<Field type="chassis_number" name="discount" component={TextFormField} fullWidth size="small" />
+									<Field  name="chassis_number" component={TextFormField} fullWidth size="small" />
 								</Grid>
 
 
@@ -319,8 +375,6 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 								</Grid>
 
 
-
-
 								<Grid item md={6} xs={12}>
 									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
 										{t('Upload Thumbnail Image')}
@@ -332,7 +386,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 												className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
 											>
 												<img
-													src={image.link}
+													src={image.base64}
 													alt={`Thumbnail ${image.id}`}
 													className="w-full h-full rounded-[10px] object-contain object-center"
 												/>
@@ -359,24 +413,31 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, isTableMode
 													type="file"
 													accept="image/*"
 													style={{ display: 'none' }}
-													multiple
 													onChange={handleImageUpload}
 												/>
 											</div>
 										)}
 									</div>
 									<span className="text-[10px] text-gray-700 italic">
-                                        <b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
-                                    </span>
+                    <b className="text-red">Note:</b> Image size should be ≤ 20MB.
+                  </span>
 								</Grid>
 
-
 								<Grid item lg={12} className="flex justify-end gap-2">
-									<Button type="submit" variant="contained" className="bg-yellow-800 text-white searchButton">
+									<Button
+										type="submit"
+										variant="contained"
+										className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
+										disabled={isTableMode === 'view' || isDataLoading}
+									>
 										{t('Save')}
 										{isDataLoading && <CircularProgress size={24} className="ml-2" />}
 									</Button>
-									<Button variant="contained" className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-gray-600 font-500 py-0 rounded-[6px] bg-gray-300 hover:bg-gray-300/80" onClick={toggleModal}>
+									<Button
+										variant="contained"
+										className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-grey-300 hover:bg-grey-300/80"
+										onClick={toggleModal}
+									>
 										{t('Cancel')}
 									</Button>
 								</Grid>

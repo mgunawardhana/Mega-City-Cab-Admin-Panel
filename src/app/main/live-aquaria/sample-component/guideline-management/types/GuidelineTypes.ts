@@ -34,6 +34,32 @@ export type ShippingTypeModifiedData = {
 
 };
 
+export type VehicleResp = {
+	id: number;
+	make: string;
+	model: string;
+	yearOfManufacture: number;
+	color: string;
+	engineCapacity: string;
+	fuelType: string;
+	seatingCapacity: number;
+	vehicleType: string;
+	registrationNumber: string;
+	licensePlateNumber: string;
+	chassisNumber: string;
+	permitType: string;
+	ownerName: string;
+	ownerContact: string;
+	ownerAddress: string;
+	insuranceProvider: string;
+	insurancePolicyNumber: string;
+	insuranceExpiryDate: string;
+	airConditioning: boolean;
+	additionalFeatures: string;
+	vehicleImage: string;
+	vehiclePhoto: string;
+};
+
 export type GuideType = {
 	guidanceId?: any;
 	title?: string;

@@ -8,8 +8,7 @@ import NavigationViewComp from '../../../../common/FormComponents/NavigationView
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
 import ShippingTypeEditModal from './components/ShippingTypeEditModel';
 import NewShippingTypeModel from './components/NewShippingType';
-import {
-	deleteShippingType, fetchAllShippingTypesData, updateShippingTypeStatus
+import { fetchAllShippingTypesData, updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
 import { ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
 import ShippingTypeActiveComp from './components/ShippingTypeActiveComp';
