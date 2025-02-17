@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { del, put, post } from '../../../http/LiveAquariaServiceMethods';
 import * as url from '../../mega-city-services/url_helper';
-import { CREATE_WEBSITE_ARTICLE } from '../../mega-city-services/url_helper';
 
 export const deleteWebArticle = (id: string | number) => del(`${url.DELETE_WEB_ARTICLE}${id}`);
 
