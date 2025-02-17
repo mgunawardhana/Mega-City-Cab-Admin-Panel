@@ -196,18 +196,15 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			if (clickedRowData?.id) {
 				await handleUpdateVehicleAPI(formData);
 				toast.success('Vehicle updated successfully');
-			} else {
-				await handleSaveVehicleAPI(formData);
-				toast.success('Vehicle created successfully');
 			}
-			//
-			// if (toggleModal) {
-			// 	toggleModal();
-			// }
-			//
-			// if (fetchAllShippingTypes) {
-			// 	fetchAllShippingTypes();
-			// }
+
+			if (toggleModal) {
+				toggleModal();
+			}
+
+			if (fetchAllShippingTypes) {
+				fetchAllShippingTypes();
+			}
 
 		} catch (error) {
 			console.error('Error saving vehicle:', error);
