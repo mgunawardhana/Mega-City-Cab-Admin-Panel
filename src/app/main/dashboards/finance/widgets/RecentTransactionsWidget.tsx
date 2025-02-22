@@ -5,43 +5,60 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import format from 'date-fns/format';
 import clsx from 'clsx';
 import Button from '@mui/material/Button';
 import FuseLoading from '@fuse/core/FuseLoading';
-import RecentTransactionsWidgetType from './types/RecentTransactionsWidgetType';
-import { useGetFinanceDashboardWidgetsQuery } from '../FinanceDashboardApi';
+import {
+	handleFilterForRecentCompletedBookings
+} from '../../../../axios/services/mega-city-services/bookings/BookingService';
 
-/**
- * The RecentTransactionsWidget widget.
- */
 function RecentTransactionsWidget() {
-	const { data: widgets, isLoading } = useGetFinanceDashboardWidgetsQuery();
+	const [isLoading, setIsLoading] = useState(true);
+	const [rows, setRows] = useState([]);
+
+	const columns = ['Booking', 'Date', 'From', 'To', 'Price', 'Status'];
+
+	useEffect(() => {
+		handleAdvancedFiltration();
+	}, []);
+
+	const handleAdvancedFiltration = async () => {
+		try {
+			const response = await handleFilterForRecentCompletedBookings(0, 6, 'COMPLETED');
+			if (response && Array.isArray(response.result)) {
+				const transformedData = response.result.map((booking) => ({
+					id: booking.bookingNumber,
+					date: booking.bookingDate,
+					from: booking.pickupLocation,
+					to: booking.dropOffLocation,
+					tot: booking.totalAmount,
+					status: 'completed'
+				}));
+				setRows(transformedData);
+			} else {
+				console.error('Unexpected data format:', response);
+			}
+			setIsLoading(false);
+		} catch (error) {
+			console.error('Error fetching data:', error);
+			setIsLoading(false);
+		}
+	};
 
 	if (isLoading) {
 		return <FuseLoading />;
 	}
 
-	const widget = widgets?.recentTransactions as RecentTransactionsWidgetType;
-
-	if (!widget) {
-		return null;
-	}
-
-	const { columns, rows } = widget;
-
 	return (
 		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden">
 			<div>
 				<Typography className="mr-16 text-lg font-medium tracking-tight leading-6 truncate">
-					Recent transactions
+					Recent Bookings
 				</Typography>
-				<Typography
-					className="font-medium"
-					color="text.secondary"
-				>
-					1 pending, 4 completed
+				<Typography className="font-medium" color="text.secondary">
+					{rows.length} completed bookings
 				</Typography>
 			</div>
 
@@ -65,86 +82,38 @@ function RecentTransactionsWidget() {
 					<TableBody>
 						{rows.map((row, index) => (
 							<TableRow key={index}>
-								{Object.entries(row).map(([key, value]) => {
-									switch (key) {
-										case 'id': {
-											return (
-												<TableCell
-													key={key}
-													component="th"
-													scope="row"
-												>
-													<Typography color="text.secondary">{value}</Typography>
-												</TableCell>
-											);
-										}
-										case 'date': {
-											return (
-												<TableCell
-													key={key}
-													component="th"
-													scope="row"
-												>
-													<Typography>{format(new Date(value), 'MMM dd, y')}</Typography>
-												</TableCell>
-											);
-										}
-										case 'amount': {
-											return (
-												<TableCell
-													key={key}
-													component="th"
-													scope="row"
-												>
-													<Typography>
-														{value.toLocaleString('en-US', {
-															style: 'currency',
-															currency: 'USD'
-														})}
-													</Typography>
-												</TableCell>
-											);
-										}
-										case 'status': {
-											return (
-												<TableCell
-													key={key}
-													component="th"
-													scope="row"
-												>
-													<Typography
-														className={clsx(
-															'inline-flex items-center font-bold text-10 px-10 py-2 rounded-full tracking-wide uppercase',
-															value === 'pending' &&
-																'bg-red-100 text-red-800 dark:bg-red-600 dark:text-red-50',
-															value === 'completed' &&
-																'bg-green-50 text-green-800 dark:bg-green-600 dark:text-green-50'
-														)}
-													>
-														{value}
-													</Typography>
-												</TableCell>
-											);
-										}
-										default: {
-											return (
-												<TableCell
-													key={key}
-													component="th"
-													scope="row"
-												>
-													<Typography>{value}</Typography>
-												</TableCell>
-											);
-										}
-									}
-								})}
+								<TableCell component="th" scope="row">
+									<Typography color="text.secondary">#{row.id}</Typography>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									<Typography>{format(new Date(row.date), 'MMM dd, y')}</Typography>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									<Typography>{row.from}</Typography>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									<Typography>{row.to}</Typography>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									<Typography>Rs {row.tot}</Typography>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									<Typography
+										className={clsx(
+											'inline-flex items-center font-bold text-10 px-10 py-2 rounded-full tracking-wide uppercase',
+											row.status === 'completed' &&
+											'bg-green-50 text-green-800 dark:bg-green-600 dark:text-green-50'
+										)}
+									>
+										{row.status}
+									</Typography>
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
 				</Table>
 				<div className="pt-24">
-					<Button variant="outlined">See all transactions</Button>
+					<Button variant="outlined">See all bookings</Button>
 				</div>
 			</div>
 		</Paper>

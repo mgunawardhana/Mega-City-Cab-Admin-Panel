@@ -1,7 +1,17 @@
 import { AxiosRequestConfig } from 'axios';
 import { axiosApi } from '../axios_instances';
+import config from '../../auth/services/jwt/jwtAuthConfig';
+
+export function getAccessToken<T>(){
+	return localStorage.getItem('jwt_access_token');
+}
 
 export async function get<T>(url: string, config: AxiosRequestConfig = {}): Promise<T> {
+	const accessToken = getAccessToken();
+	console.log('2',accessToken)
+	if(accessToken != null){
+		config.headers = {...config.headers, Authorization: `Bearer ${accessToken}`  };
+	}
 	const response = await axiosApi.get<T>(url, config);
 	return response.data;
 }

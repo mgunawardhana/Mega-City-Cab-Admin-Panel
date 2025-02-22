@@ -8,6 +8,7 @@ export const EXPORT_AS_EXCEL = 'api/v1/booking/export';
 export const FETCH_ALL_CATEGORIES = 'api/v1/guideline/fetch-all';
 export const FETCH_ALL_USERS = 'api/v1/auth/get-all-users?page=';
 export const UPDATE_GUIDELINE = 'api/v1/guideline/update';
+export const ADVANCED_FILTERING = 'api/v1/booking/advancedSearch';
 
 
 export const DELETE_GUIDELINE = 'api/v1/guideline/';

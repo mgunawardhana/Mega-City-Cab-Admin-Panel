@@ -114,7 +114,8 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 					onSubmit={handleSubmit}
 					validationSchema={schema}
 				>
-					{({ setFieldValue, errors, touched }) => (<Form>
+					{({ setFieldValue, errors, touched }) => (
+						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Guidance Id')}</Typography>

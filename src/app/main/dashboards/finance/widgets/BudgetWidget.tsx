@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { memo } from 'react';
+import { memo, useEffect,useState } from 'react';
 import Button from '@mui/material/Button';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -8,12 +8,34 @@ import IconButton from '@mui/material/IconButton';
 import FuseLoading from '@fuse/core/FuseLoading';
 import BudgetWidgetType from './types/BudgetWidgetType';
 import { useGetFinanceDashboardWidgetsQuery } from '../FinanceDashboardApi';
+import { businessSummery } from '../../../../axios/services/mega-city-services/reporting/BusinessDetailsService';
 
+interface Completed {
+	taxes: number;
+	tax_without_cost: number;
+	status: string;
+	row_count: number;
+}
 /**
  * The BudgetWidget widget.
  */
 function BudgetWidget() {
 	const { data: widgets, isLoading } = useGetFinanceDashboardWidgetsQuery();
+	const [sampleData, setSampleData] = useState<Completed>();
+	useEffect(() => {
+		fetchAllShippingTypes().then(r => (r));
+	}, []);
+
+	const fetchAllShippingTypes = async () => {
+		try {
+			const response = await businessSummery();
+			setSampleData(response.result);
+			console.log('Business summery:', sampleData[2]);
+		} catch (error) {
+			console.error('Error fetching shipping types:', error);
+		} finally {
+		}
+	};
 
 	if (isLoading) {
 		return <FuseLoading />;
@@ -26,6 +48,8 @@ function BudgetWidget() {
 	}
 
 	const { expenses, expensesLimit, savings, savingsGoal, bills, billsLimit } = widget;
+
+	console.log(expenses, expensesLimit, savings, savingsGoal, bills, billsLimit)
 
 	function calcProgressVal(val: number, limit: number) {
 		const percentage = (val * 100) / limit;

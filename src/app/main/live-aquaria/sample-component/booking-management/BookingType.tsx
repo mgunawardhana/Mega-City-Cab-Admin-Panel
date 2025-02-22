@@ -1,7 +1,8 @@
 // @ts-nocheck
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
-import { Button, Grid } from '@mui/material';
-import { Form, Formik } from 'formik';
+import { Button, Grid, Typography } from '@mui/material';
+import { Field, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import NavigationViewComp from '../../../../common/FormComponents/NavigationViewComp';
@@ -18,6 +19,19 @@ import ShippingTypeDeleteAlertForm from './components/ShippingTypeDeleteAlertFor
 import DownloadIcon from '@mui/icons-material/Download';
 import CircularProgress from '@mui/material/CircularProgress';
 import { axiosApiAuth } from '../../../../axios/axios_instances';
+import TextFormField from '../../../../common/FormComponents/FormTextField';
+import SearchIcon from '@mui/icons-material/Search';
+import { handleAdvancedFiltrationAPI } from '../../../../axios/services/mega-city-services/bookings/BookingService';
+
+interface AdvanceFilteringTypes {
+	bookingDate: string;
+	createdDate: string;
+	pickupLocation: string;
+	dropOffLocation: string;
+	carNumber: string;
+	driverName: string;
+	status: string;
+}
 
 function BookingType() {
 	const { t } = useTranslation('shippingTypes');
@@ -117,10 +131,7 @@ function BookingType() {
                 {t(status)}
             </span>);
 		}
-	}
-
-
-	];
+	}];
 
 	const handleConfirmStatusChange = async () => {
 		toggleActiveModal();
@@ -138,45 +149,35 @@ function BookingType() {
 		}
 	};
 
+
 	const exportAsExcel = async () => {
-		setIsDownloading(true); // Start the loading animation
+		setIsDownloading(true);
 		try {
-			console.log("Starting Excel export...");
 			const response = await axiosApiAuth.get('api/v1/booking/export', { responseType: 'blob' });
-			console.log("Received response:", response);
-
 			const url = window.URL.createObjectURL(new Blob([response.data]));
-			console.log("Blob URL created:", url);
-
 			const link = document.createElement('a');
 			link.href = url;
 			link.setAttribute('download', 'bookings.xlsx');
 			document.body.appendChild(link);
 			link.click();
 			link.remove();
-
-			console.log('Excel sheet downloaded successfully');
 		} catch (error) {
 			console.error('Error fetching the Excel file:', error);
 			toast.error('Error downloading the Excel file');
 		} finally {
-			setIsDownloading(false); // Stop the loading animation
+			setIsDownloading(false);
 		}
 	};
 
-
 	const fetchAllShippingTypes = async () => {
+		setSampleData([]);
 		setTableLoading(true);
 		try {
 			const response = await fetchAllBookings(pageNo, pageSize);
-
-			console.log('API Response:', response);
-
 			if (response && Array.isArray(response.result)) {
 				const transformedData: WebTypeResp[] = response.result.map((item) => ({
 					...item
 				}));
-
 				setSampleData(transformedData);
 			} else {
 				console.error('Unexpected data format:', response);
@@ -191,12 +192,34 @@ function BookingType() {
 		}
 	};
 
+	const handleAdvancedFiltration = async (values: AdvanceFilteringTypes) => {
+		setSampleData([]);
+		console.log('Advanced Filtration Values:', {
+			bookingDate: values.bookingDate,
+			createdDate: values.createdDate,
+			pickupLocation: values.pickupLocation,
+			dropOffLocation: values.dropOffLocation,
+			carNumber: values.carNumber,
+			driverName: values.driverName,
+			status: values.status
+		});
+
+		const response = await handleAdvancedFiltrationAPI(values.bookingDate, values.createdDate, values.pickupLocation, values.dropOffLocation, values.carNumber, values.driverName, values.status);
+		if (response && Array.isArray(response.result)) {
+			const transformedData: WebTypeResp[] = response.result.map((item) => ({
+				...item
+			}));
+			setSampleData(transformedData);
+		} else {
+			console.error('Unexpected data format:', response);
+			fetchAllShippingTypes();
+		}
+	};
 
 	const handleRowDelete = async (rowData: BookingDetails) => {
 		setSelectedDeleteRowData(rowData);
 		toggleDeleteModal();
 	};
-
 
 	const handleView = async (rowData: BookingDetails) => {
 		setSelectedViewRowData(rowData);
@@ -212,139 +235,155 @@ function BookingType() {
 		toggleNewShippingTypeModal();
 	};
 
+	return (
+		<div className="min-w-full max-w-[100vw]">
+			<NavigationViewComp title="Bookings" />
 
-	const handleSubmit1 = (values) => {
-	};
-
-	return (<div className="min-w-full max-w-[100vw]">
-		<NavigationViewComp title="Bookings" />
-
-		<Formik
-			initialValues={{ shippingType: '', category: '', status: '' }}
-			validationSchema={null}
-			onSubmit={handleSubmit1}
-		>
-			{/* eslint-disable-next-line unused-imports/no-unused-vars */}
-			{({ values }) => (<Form>
-				<Grid
-					container
-					spacing={2}
-					className="pt-[10px] pr-[30px] mx-auto"
-				>
-					<Grid
-						item
-						xs={12}
-						sm={6}
-						md={4}
-						lg={3}
-						xl={2}
-						className="formikFormField pt-[5px!important]"
-					>
-					</Grid>
-					<Grid
-						item
-						xs={12}
-						sm={6}
-						md={4}
-						lg={3}
-						xl={2}
-						className="formikFormField pt-[5px!important]"
-					>
-					</Grid>
-					<Grid
-						item
-						xs={12}
-						sm={6}
-						md={4}
-						lg={3}
-						xl={2}
-						className="formikFormField pt-[5px!important]"
-					>
-					</Grid>
-
-					<Grid
-						item
-						xs={12}
-						sm={6}
-						md={12}
-						lg={3}
-						xl={6}
-						className="flex justify-end items-center gap-[10px] pt-[5px!important]"
-					>
-						<Button
-							className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-green-900 hover:bg-green-900/80 flex items-center gap-2"
-							type="button"
-							variant="contained"
-							size="medium"
-							onClick={exportAsExcel}
-							disabled={isDownloading} // Disable the button while downloading
-						>
-							{isDownloading ? (
-								<>
-									{t('Processing...')}
-									<CircularProgress size={20} className="text-green-900 ml-2" />
-								</>
-							) : (
-								<>
-									{t('Export to Excel')}
-									<DownloadIcon className="text-white text-[20px] ml-2" />
-								</>
-							)}
-						</Button>
-
-
-						<Button
-							className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
-							type="button"
-							variant="contained"
-							size="medium"
-							onClick={handleNewShippingType}
-						>
-							{t('Place New Booking')}
-						</Button>
-
-					</Grid>
-				</Grid>
-			</Form>)}
-		</Formik>
-
-		<Grid
-			container
-			spacing={2}
-			className="pt-[20px] pr-[30px] mx-auto"
-		>
-			<Grid
-				item
-				md={12}
-				sm={12}
-				xs={12}
-				className="pt-[5px!important]"
+			<Formik
+				initialValues={{
+					bookingDate: '',
+					createdDate: '',
+					pickupLocation: '',
+					dropOffLocation: '',
+					carNumber: '',
+					driverName: '',
+					status: ''
+				}}
+				validationSchema={null}
+				onSubmit={handleAdvancedFiltration}
 			>
-				<MaterialTableWrapper
-					title="Booking Management Table"
-					filterChanged={null}
-					handleColumnFilter={null}
-					tableColumns={tableColumns}
-					handlePageChange={handlePageChange}
-					handlePageSizeChange={handlePageSizeChange}
-					handleCommonSearchBar={null}
-					pageSize={pageSize}
-					disableColumnFiltering
-					loading={isTableLoading}
-					setPageSize={setPageSize}
-					pageIndex={pageNo}
-					searchByText=""
-					count={count}
-					exportToExcel={null}
-					externalAdd={null}
-					externalEdit={null}
-					externalView={null}
-					selection={false}
-					selectionExport={null}
-					isColumnChoser
-					records={sampleData}
-					tableRowViewHandler={handleView}
-					tableRowEditHandler={handleEdit}
+				{({ handleSubmit }) => (
+					<Form onSubmit={handleSubmit}>
+						<Grid
+							container
+							spacing={2}
+							className="pt-[10px] pr-[30px] mx-auto"
+						>
+							<Grid item lg={2} md={2} sm={6} xs={12}>
+								<Typography>{t('Booking Date')}</Typography>
+								<Field name="bookingDate" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={12}>
+								<Typography>{t('Created Date')}</Typography>
+								<Field name="createdDate" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={12}>
+								<Typography>{t('Pickup Location')}</Typography>
+								<Field name="pickupLocation" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={12}>
+								<Typography>{t('Drop Off Location')}</Typography>
+								<Field name="dropOffLocation" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={12}>
+								<Typography>{t('Car Number')}</Typography>
+								<Field name="carNumber" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={4}>
+								<Typography>{t('Driver Name')}</Typography>
+								<Field name="driverName" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+							<Grid item lg={2} md={2} sm={4} xs={4}>
+								<Typography>{t('Status')}</Typography>
+								<Field name="status" component={TextFormField}
+									   fullWidth size="small" />
+							</Grid>
+
+							<Grid
+								item
+								xs={12}
+								sm={6}
+								md={12}
+								lg={3}
+								xl={6}
+								className="flex justify-end items-center gap-[10px] pt-[5px!important] ml-auto mt-12"
+							>
+								<Button
+									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-deep-orange-600 hover:bg-deep-orange-600/80"
+									type="submit"
+									variant="contained"
+									size="medium"
+								>
+									{t('Advanced Filter')}<SearchIcon className="text-white text-[20px] ml-2" />
+								</Button>
+								<Button
+									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-green-900 hover:bg-green-900/80 flex items-center gap-2"
+									type="button"
+									variant="contained"
+									size="medium"
+									onClick={exportAsExcel}
+									disabled={isDownloading}
+								>
+									{isDownloading ? (
+										<>
+											{t('Processing...')}
+											<CircularProgress size={20} className="text-green-900 ml-2" />
+										</>
+									) : (
+										<>
+											{t('Export to Excel')}
+											<DownloadIcon className="text-white text-[20px] ml-2" />
+										</>
+									)}
+								</Button>
+								<Button
+									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
+									type="button"
+									variant="contained"
+									size="medium"
+									onClick={handleNewShippingType}
+								>
+									{t('Place New Booking')}
+								</Button>
+							</Grid>
+						</Grid>
+					</Form>
+				)}
+			</Formik>
+
+			<Grid
+				container
+				spacing={2}
+				className="pt-[20px] pr-[30px] mx-auto"
+			>
+				<Grid
+					item
+					md={12}
+					sm={12}
+					xs={12}
+					className="pt-[5px!important]"
+				>
+					<MaterialTableWrapper
+						title="Booking Management Table"
+						filterChanged={null}
+						handleColumnFilter={null}
+						tableColumns={tableColumns}
+						handlePageChange={handlePageChange}
+						handlePageSizeChange={handlePageSizeChange}
+						handleCommonSearchBar={null}
+						pageSize={pageSize}
+						disableColumnFiltering
+						loading={isTableLoading}
+						setPageSize={setPageSize}
+						pageIndex={pageNo}
+						searchByText=""
+						count={count}
+						exportToExcel={null}
+						externalAdd={null}
+						externalEdit={null}
+						externalView={null}
+						selection={false}
+						selectionExport={null}
+						isColumnChoser
+						records={sampleData}
+						tableRowViewHandler={handleView}
+						tableRowEditHandler={handleEdit}
 					tableRowDeleteHandler={handleRowDelete}
 				/>
 			</Grid>

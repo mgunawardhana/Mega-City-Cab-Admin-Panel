@@ -1,5 +1,5 @@
-import { Button, Grid } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Button, FormControl, FormHelperText, Grid, MenuItem, Select, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
 import NavigationViewComp from '../../../../common/FormComponents/NavigationViewComp';
 import UsersForm from './UsersForm';
@@ -9,6 +9,8 @@ import { GuidelineType, WebTypeResp } from '../../sample-component/guideline-man
 import { toast } from 'react-toastify';
 import { UserType } from './UsersTypes';
 import { fetchAllUsers } from '../../../../axios/services/mega-city-services/user-service/UserService';
+import { Field, Form, Formik } from 'formik';
+import TextFormField from '../../../../common/FormComponents/FormTextField';
 
 interface AdvanceFilteringTypes {
 	userName: string;
@@ -171,6 +173,20 @@ function UsersApp() {
 	return (
 		<div className="min-w-full max-w-[100vw]">
 			<NavigationViewComp title="Users" />
+			<Formik
+				initialValues={{
+				}}
+				onSubmit={null}
+				validationSchema={null}
+			>
+				{({ setFieldValue, errors, touched }) => (
+					<Form>
+						<Grid container spacing={2}>
+
+						</Grid>
+					</Form>
+				)}
+			</Formik>
 
 			<Grid
 				container
