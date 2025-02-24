@@ -10,7 +10,6 @@ import { Checkbox, Grid, IconButton, Select } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
@@ -22,8 +21,6 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTranslation } from 'react-i18next';
-import TextFormDateField from '../../../../common/FormComponents/TextFormDateField';
-import { DateField } from '@mui/x-date-pickers';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Avatar from '@mui/material/Avatar';
@@ -65,6 +62,7 @@ interface Image {
 
 const schema = z
 	.object({
+		role: z.string().min(2, 'Must be at least 2 characters').max(30, 'Must be maximum 30 characters'),
 		firstName: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'),
 		lastName: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'),
 		email: z
@@ -83,12 +81,11 @@ const schema = z
 		customerAddress: z.string().min(3, 'Please enter your address'),
 		dateOfBirth: z.string()
 			.refine((val) => !isNaN(Date.parse(val)), 'Invalid date format')
-			.refine((val) => new Date(val) < new Date(), 'Date of Birth must be in the past'),
+			.refine((val) => new Date(val) < new Date(), 'Date of Birth must be in the past')
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
 		message: 'Passwords must match', path: ['passwordConfirm']
 	});
-
 
 
 const schemaOnEdit = z.object({
@@ -132,7 +129,7 @@ type DefaultValues = {
 
 function UsersForm(props: Props) {
 
-	console.log("*****************",props)
+	console.log('*****************', props);
 	const { t } = useTranslation('sampleComponent');
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 2;
@@ -148,18 +145,18 @@ function UsersForm(props: Props) {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
 	const initialRole = selectedRow?.role || '';
-	const [values,setValues] = useState();
+	const [values, setValues] = useState();
 
 // Update the role once it's available
 	useEffect(() => {
 		if (selectedRow?.role) {
-			setProfilePic(selectedRow.driver_profile_picture)
+			setProfilePic(selectedRow.driver_profile_picture);
 			setValues(selectedRow);
 			setSelectedRole(selectedRow.role);  // Set the role from selectedRow if available
 		}
 	}, [selectedRow]);
 
-	console.log("*****************",values)
+	console.log('*****************', values);
 	const { control, handleSubmit, formState } = useForm({
 		defaultValues: {
 			role: initialRole,
@@ -168,7 +165,7 @@ function UsersForm(props: Props) {
 			email: selectedRow?.email || '',
 			password: selectedRow?.password || '',
 			passwordConfirm: selectedRow?.password || '',
-			address: selectedRow?.address ||  values?.address,
+			address: selectedRow?.address || values?.address,
 			nic: selectedRow?.driver_nic || '',
 			phone_number: selectedRow?.phone_number || '',
 			licenseExpiryDate: selectedRow?.license_expiry_date || '',
@@ -179,7 +176,6 @@ function UsersForm(props: Props) {
 			dateOfJoining: selectedRow?.date_of_joining || ''
 		}
 	});
-
 
 
 	const { errors } = formState;
@@ -218,7 +214,7 @@ function UsersForm(props: Props) {
 				driverNIC: data?.driverNIC || '',
 				licenseNumber: data?.licenseNumber || '222223333',
 				driverAddress: data?.driverAddress || '',
-				licenseImages: images || [],
+				licenseImages: images || []
 			};
 
 
@@ -238,11 +234,9 @@ function UsersForm(props: Props) {
 
 
 	useEffect(() => {
-		setUserRoles([
-			{ value: 'ADMIN', label: t('ADMIN') },
-			{ value: 'CUSTOMER', label: t('CUSTOMER') },
-			{ value: 'DRIVER', label: t('DRIVER') }
-		]);
+		setUserRoles([{ value: 'ADMIN', label: t('ADMIN') }, {
+			value: 'CUSTOMER', label: t('CUSTOMER')
+		}, { value: 'DRIVER', label: t('DRIVER') }]);
 	}, [t]);
 
 	useEffect(() => {
@@ -292,6 +286,7 @@ function UsersForm(props: Props) {
 			onCloseHandler();
 		}
 	}
+
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -332,10 +327,7 @@ function UsersForm(props: Props) {
 				if (isValid) {
 					const base64 = await convertToBase64(file);
 					validImages.push({
-						id: Date.now(),
-						link: URL.createObjectURL(file),
-						file,
-						base64,
+						id: Date.now(), link: URL.createObjectURL(file), file, base64
 					});
 				}
 			}
@@ -431,6 +423,7 @@ function UsersForm(props: Props) {
 					</Grid>
 				</Grid>
 				<form
+					schema={schema}
 					noValidate
 					onSubmit={handleSubmit(onSubmit)}
 					className="w-full"
@@ -461,14 +454,16 @@ function UsersForm(props: Props) {
 										{...field}
 										size="small"
 										onChange={(e: SelectChangeEvent<string>) => {
-											field.onChange({ target: { value: e.target.value } } as ChangeEvent<{ value: unknown }>);
+											field.onChange({ target: { value: e.target.value } } as ChangeEvent<{
+												value: unknown
+											}>);
 											// @ts-ignore
 											handleRoleChange(e);
 										}}
 									>
 
 
-									{userRoles.map(role => (
+										{userRoles.map(role => (
 											<MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>))}
 									</Select>
 									<FormHelperText error>{errors?.role?.message}</FormHelperText>
@@ -569,6 +564,7 @@ function UsersForm(props: Props) {
 							<Controller
 								name="password"
 								control={control}
+								rules={{ required: 'Password is required' }}
 								render={({ field }) => (<TextField
 									{...field}
 									className="m-0"
@@ -609,6 +605,7 @@ function UsersForm(props: Props) {
 							<Controller
 								name="passwordConfirm"
 								control={control}
+								rules={{ required: 'Password confirm is required' }}
 								render={({ field }) => (<TextField
 									{...field}
 									type={showConfirmPassword ? 'text' : 'password'}
@@ -649,6 +646,7 @@ function UsersForm(props: Props) {
 							<Controller
 								name="address"
 								control={control}
+								rules={{ required: 'Address is required' }}
 								render={({ field }) => (<TextField
 									{...field}
 									className="m-0"
@@ -675,6 +673,7 @@ function UsersForm(props: Props) {
 							</Typography>
 							<Controller
 								name="nic"
+								rules={{ required: 'NIC is required' }}
 								control={control}
 								render={({ field }) => (<TextField
 									{...field}
@@ -691,22 +690,21 @@ function UsersForm(props: Props) {
 							/>
 						</Grid>
 						<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
-							<Typography className="formTypography mt-8">Date of Birth <span className="text-red">*</span></Typography>
+							<Typography className="formTypography mt-8">Date of Birth <span
+								className="text-red">*</span></Typography>
 							<Controller
 								name="dateOfBirth"
 								control={control}
-								rules={{ required: "Date of Birth is required" }}
-								render={({ field }) => (
-									<TextField
-										{...field}
-										type="date"
-										InputLabelProps={{ shrink: true }}
-										size="small"
-										fullWidth
-										error={!!errors.dateOfBirth}
-										helperText={errors.dateOfBirth?.message}
-									/>
-								)}
+								rules={{ required: 'Date of Birth is required' }}
+								render={({ field }) => (<TextField
+									{...field}
+									type="date"
+									InputLabelProps={{ shrink: true }}
+									size="small"
+									fullWidth
+									error={!!errors.dateOfBirth}
+									helperText={errors.dateOfBirth?.message}
+								/>)}
 							/>
 						</Grid>
 						<Grid
@@ -742,18 +740,16 @@ function UsersForm(props: Props) {
 									<Controller
 										name="licenseExpiryDate"
 										control={control}
-										rules={{ required: "License Exp is required" }}
-										render={({ field }) => (
-											<TextField
-												{...field}
-												type="date"
-												InputLabelProps={{ shrink: true }}
-												size="small"
-												fullWidth
-												error={!!errors.licenseExpiryDate}
-												helperText={errors.licenseExpiryDate?.message}
-											/>
-										)}
+										rules={{ required: 'License Exp is required' }}
+										render={({ field }) => (<TextField
+											{...field}
+											type="date"
+											InputLabelProps={{ shrink: true }}
+											size="small"
+											fullWidth
+											error={!!errors.licenseExpiryDate}
+											helperText={errors.licenseExpiryDate?.message}
+										/>)}
 									/>
 								</Grid>
 								<Grid item xs={12} md={6} lg={3} className="flex items-center">
@@ -782,19 +778,37 @@ function UsersForm(props: Props) {
 									<Controller
 										name="driverStatus"
 										control={control}
-										render={({ field }) => (<FormControl
-											fullWidth
-											required
-										>
-											<Select {...field} size="small" onChange={(e) => {
-												field.onChange(e);
-											}}>
-												{driverStatus.map(role => (<MenuItem key={role.value}
-																					 value={role.value}>{role.label}</MenuItem>))}
+										render={({ field }) => (<FormControl fullWidth required>
+											<Select
+												{...field}
+												size="small"
+												onChange={(e) => {
+													field.onChange(e);
+												}}
+											>
+												{driverStatus.map((status) => (
+													<MenuItem key={status.value} value={status.value}>
+            <span
+				style={{
+					display: 'inline-block',
+					padding: '4px 12px',
+					borderRadius: '16px',
+					color: status.value === 'AVAILABLE' ? '#2E7D32' : '#D32F2F',
+					backgroundColor: status.value === 'AVAILABLE' ? '#E8F5E9' : '#FFEBEE',
+					fontSize: '12px',
+					fontWeight: 500,
+					textAlign: 'center',
+					minWidth: '70px'
+				}}
+			>
+              {status.label}
+            </span>
+													</MenuItem>))}
 											</Select>
 											<FormHelperText error>{errors?.driverStatus?.message}</FormHelperText>
 										</FormControl>)}
 									/>
+
 								</Grid>
 								<Grid item xs={12} md={6} lg={3}>
 									<Typography>Emergency Contact <span className="text-red">*</span></Typography>
@@ -817,70 +831,66 @@ function UsersForm(props: Props) {
 								</Grid>
 
 
-
-									<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
-										<Typography className="formTypography mt-8">Date of Joinning <span className="text-red">*</span></Typography>
-										<Controller
-											name="dateOfJoining"
-											control={control}
-											rules={{ required: "Date of Joinning is required" }}
-											render={({ field }) => (
-												<TextField
-													{...field}
-													type="date"
-													InputLabelProps={{ shrink: true }}
-													size="small"
-													fullWidth
-													error={!!errors.dateOfJoining}
-													helperText={errors.dateOfJoining?.message}
-												/>
-											)}
-										/>
-									</Grid>
+								<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
+									<Typography className="formTypography mt-8">Date of Joinning <span
+										className="text-red">*</span></Typography>
+									<Controller
+										name="dateOfJoining"
+										control={control}
+										rules={{ required: 'Date of Joinning is required' }}
+										render={({ field }) => (<TextField
+											{...field}
+											type="date"
+											InputLabelProps={{ shrink: true }}
+											size="small"
+											fullWidth
+											error={!!errors.dateOfJoining}
+											helperText={errors.dateOfJoining?.message}
+										/>)}
+									/>
+								</Grid>
 
 								<Grid item md={6} xs={12}>
 									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
 										{t('Upload Thumbnail Image')}
 									</Typography>
-									<div className="relative flex gap-[10px] overflow-x-auto" style={{ whiteSpace: 'nowrap' }}>
-										{images.map((image) => (
-											<div
-												key={image.id}
-												className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+									<div className="relative flex gap-[10px] overflow-x-auto"
+										 style={{ whiteSpace: 'nowrap' }}>
+										{images.map((image) => (<div
+											key={image.id}
+											className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+										>
+											<img
+												src={image.link}
+												alt={`Thumbnail ${image.id}`}
+												className="w-full h-full rounded-[10px] object-contain object-center"
+											/>
+											<IconButton
+												size="small"
+												className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
+												onClick={() => handleRemoveImage(image.id)}
 											>
-												<img
-													src={image.link}
-													alt={`Thumbnail ${image.id}`}
-													className="w-full h-full rounded-[10px] object-contain object-center"
-												/>
-												<IconButton
-													size="small"
-													className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
-													onClick={() => handleRemoveImage(image.id)}
-												>
-													<CancelIcon fontSize="small" />
-												</IconButton>
-											</div>
-										))}
+												<CancelIcon fontSize="small" />
+											</IconButton>
+										</div>))}
 
-										{images.length < maxImageCount && (
-											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
-												<IconButton
-													className="text-primaryBlue"
-													onClick={() => document.getElementById('imageUpload')?.click()}
-												>
-													<AddCircleIcon fontSize="large" />
-												</IconButton>
-												<input
-													id="imageUpload"
-													type="file"
-													accept="image/*"
-													style={{ display: 'none' }}
-													multiple
-													onChange={handleImageUpload}
-												/>
-											</div>
-										)}
+										{images.length < maxImageCount && (<div
+											className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
+											<IconButton
+												className="text-primaryBlue"
+												onClick={() => document.getElementById('imageUpload')?.click()}
+											>
+												<AddCircleIcon fontSize="large" />
+											</IconButton>
+											<input
+												id="imageUpload"
+												type="file"
+												accept="image/*"
+												style={{ display: 'none' }}
+												multiple
+												onChange={handleImageUpload}
+											/>
+										</div>)}
 									</div>
 									<span className="text-[10px] text-gray-700 italic">
                                         <b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
