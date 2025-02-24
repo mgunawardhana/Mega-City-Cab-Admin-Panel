@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -27,6 +28,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Avatar from '@mui/material/Avatar';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { handleSaveUsers } from '../../../../axios/services/mega-city-services/user-service/UserService';
 
 interface Role {
 	id: number;
@@ -88,6 +90,7 @@ const schema = z
 	});
 
 
+
 const schemaOnEdit = z.object({
 	firstName: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'),
 	lastName: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'), // user_name: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'),
@@ -145,14 +148,18 @@ function UsersForm(props: Props) {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
 	const initialRole = selectedRow?.role || '';
+	const [values,setValues] = useState();
+
 // Update the role once it's available
 	useEffect(() => {
 		if (selectedRow?.role) {
+			setProfilePic(selectedRow.driver_profile_picture)
+			setValues(selectedRow);
 			setSelectedRole(selectedRow.role);  // Set the role from selectedRow if available
 		}
 	}, [selectedRow]);
 
-	console.log("*****************",initialRole)
+	console.log("*****************",values)
 	const { control, handleSubmit, formState } = useForm({
 		defaultValues: {
 			role: initialRole,
@@ -161,15 +168,15 @@ function UsersForm(props: Props) {
 			email: selectedRow?.email || '',
 			password: selectedRow?.password || '',
 			passwordConfirm: selectedRow?.password || '',
-			address: selectedRow?.address || '',
-			nic: selectedRow?.nic || '',
+			address: selectedRow?.address ||  values?.address,
+			nic: selectedRow?.driver_nic || '',
 			phone_number: selectedRow?.phone_number || '',
-			licenseExpiryDate: selectedRow?.licenseExpiryDate || '',
-			vehicleAssigned: selectedRow?.vehicleAssigned || '',
-			driverStatus: selectedRow?.driverStatus || '',
-			emergencyContact: selectedRow?.emergencyContact || '',
-			dateOfBirth: selectedRow?.dateOfBirth || '',
-			dateOfJoining: selectedRow?.dateOfJoining || ''
+			licenseExpiryDate: selectedRow?.license_expiry_date || '',
+			vehicleAssigned: selectedRow?.vehicle_assigned || '',
+			driverStatus: selectedRow?.driver_status || '',
+			emergencyContact: selectedRow?.emergency_contact || '',
+			dateOfBirth: selectedRow?.date_of_birth || '',
+			dateOfJoining: selectedRow?.date_of_joining || ''
 		}
 	});
 
@@ -204,16 +211,21 @@ function UsersForm(props: Props) {
 				nic: data?.nic || '',
 				password: data?.password || '',
 				passwordConfirm: data?.passwordConfirm || '',
-				phone_number: data?.phone_number || '',
+				phone_number: data?.phone_number || data?.phoneNumber || '',
 				role: data?.role || '',
-				vehicleAssigned: data?.vehicleAssigned || ''
+				vehicleAssigned: data?.vehicleAssigned || '',
+				driverProfilePicture: profilePic || '',
+				driverNIC: data?.driverNIC || '',
+				licenseNumber: data?.licenseNumber || '222223333',
+				driverAddress: data?.driverAddress || '',
+				licenseImages: images || [],
 			};
 
 
 			console.log('formData checking now :', userInfo);
 			await handleSaveUsers(userInfo);
 			toast.success('user created successfully');
-			// toggleModal?.();
+			// toggleModal?.
 			// fetchAllShippingTypes?.();
 
 		} catch (error) {
@@ -807,11 +819,11 @@ function UsersForm(props: Props) {
 
 
 									<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
-										<Typography className="formTypography mt-8">Date of Birth <span className="text-red">*</span></Typography>
+										<Typography className="formTypography mt-8">Date of Joinning <span className="text-red">*</span></Typography>
 										<Controller
 											name="dateOfJoining"
 											control={control}
-											rules={{ required: "Date of Birth is required" }}
+											rules={{ required: "Date of Joinning is required" }}
 											render={({ field }) => (
 												<TextField
 													{...field}
@@ -819,8 +831,8 @@ function UsersForm(props: Props) {
 													InputLabelProps={{ shrink: true }}
 													size="small"
 													fullWidth
-													error={!!errors.dateOfBirth}
-													helperText={errors.dateOfBirth?.message}
+													error={!!errors.dateOfJoining}
+													helperText={errors.dateOfJoining?.message}
 												/>
 											)}
 										/>

@@ -108,8 +108,9 @@ function UsersApp() {
 			field: 'email'
 		},
 		{
-			title: 'Mobile No',
-			field: 'phone_number'
+			title: 'Password',
+			field: 'password',
+			render: () => '************'
 		},
 		{
 			title: 'Role',
