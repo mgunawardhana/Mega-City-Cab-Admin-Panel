@@ -70,7 +70,6 @@ const schema = z
 			.email('Invalid email')
 			.min(5, 'Must be at least 5 characters')
 			.max(50, 'Must be maximum 50 characters')
-
 			.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov)$/, 'Email must end with .com, .org, .net, .edu, or .gov'),
 		password: z
 			.string()
@@ -79,11 +78,15 @@ const schema = z
 			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.')
 			.regex(/^[^;/=+_-]*$/, 'Password should not contain ;/=+_- special characters'),
 		passwordConfirm: z.string().min(1, 'Password confirmation is required'),
-		customerAddress: z.string().min(3, 'please enter your address')
+		customerAddress: z.string().min(3, 'Please enter your address'),
+		dateOfBirth: z.string()
+			.refine((val) => !isNaN(Date.parse(val)), 'Invalid date format')
+			.refine((val) => new Date(val) < new Date(), 'Date of Birth must be in the past'),
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
 		message: 'Passwords must match', path: ['passwordConfirm']
 	});
+
 
 const schemaOnEdit = z.object({
 	firstName: z.string().min(3, 'Must be at least 3 characters').max(30, 'Must be maximum 30 characters'),
@@ -109,41 +112,68 @@ interface Props {
 	userRoles?: { value: number; label: string }[];
 }
 
+type DefaultValues = {
+	id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+	passwordConfirm: string;
+	role: string;
+	customerRegistrationNumber: string;
+	rootUserId: string;
+	customerAddress: string;
+	customerNIC: string;
+	phoneNumber: string;
+};
+
 function UsersForm(props: Props) {
 
-	console.log("user form ",props)
-
+	console.log("*****************",props)
 	const { t } = useTranslation('sampleComponent');
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 2;
 	const maxImageSize = 5 * 1024 * 1024; // 5MB
 	const { isAdd, className, isOpen, setIsFormOpen, isEdit, selectedRow, onCloseHandler, isView } = props;
 	const [openDialog, setOpenDialog] = useState(isOpen);
-	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
 	const [driverStatus, setDriverStatus] = useState<{ value: string; label: string }[]>([]);
 	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [profilePic, setProfilePic] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [fullWidth] = useState(true);
-	const defaultValues = {
-		id: selectedRow ? selectedRow.id : '',
-		firstName: selectedRow ? selectedRow.firstName : '',
-		lastName: selectedRow ? selectedRow.lastName : '',
-		email: selectedRow ? selectedRow.email : '',
-		password: selectedRow ? selectedRow.password : '',
-		passwordConfirm: selectedRow ? selectedRow.password : '',
-		role: selectedRow ? selectedRow.role : '',
-		customerRegistrationNumber: selectedRow ? selectedRow.customerRegistrationNumber : '',
-		rootUserId: selectedRow ? selectedRow.rootUserId : '',
-		customerAddress: selectedRow ? selectedRow.customerAddress : '',
-		customerNIC: selectedRow ? selectedRow.customerNIC : '',
-		phoneNumber: selectedRow ? selectedRow.phoneNumber : ''
-	};
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-	const { handleSubmit, formState, control, reset } = useForm<UserInterface>({
-		mode: 'onChange', defaultValues, resolver: zodResolver(isEdit ? schemaOnEdit : schema)
+	const [userRoles, setUserRoles] = useState<{ value: string; label: string }[]>([]);
+	const initialRole = selectedRow?.role || '';
+// Update the role once it's available
+	useEffect(() => {
+		if (selectedRow?.role) {
+			setSelectedRole(selectedRow.role);  // Set the role from selectedRow if available
+		}
+	}, [selectedRow]);
+
+	console.log("*****************",initialRole)
+	const { control, handleSubmit, formState } = useForm({
+		defaultValues: {
+			role: initialRole,
+			firstName: selectedRow?.firstName || '',
+			lastName: selectedRow?.lastName || '',
+			email: selectedRow?.email || '',
+			password: selectedRow?.password || '',
+			passwordConfirm: selectedRow?.password || '',
+			address: selectedRow?.address || '',
+			nic: selectedRow?.nic || '',
+			phone_number: selectedRow?.phone_number || '',
+			licenseExpiryDate: selectedRow?.licenseExpiryDate || '',
+			vehicleAssigned: selectedRow?.vehicleAssigned || '',
+			driverStatus: selectedRow?.driverStatus || '',
+			emergencyContact: selectedRow?.emergencyContact || '',
+			dateOfBirth: selectedRow?.dateOfBirth || '',
+			dateOfJoining: selectedRow?.dateOfJoining || ''
+		}
 	});
+
+
 
 	const { errors } = formState;
 
@@ -153,18 +183,58 @@ function UsersForm(props: Props) {
 		onCloseHandler();
 	}
 
-	function onSubmit(data: UserInterface) {
-		saveRole(data).then(r => (r));
-	}
+	const onSubmit = async (data) => {
+		console.log('Form Data Submitted:', data);
+		console.log('profile pic:', profilePic);
+		console.log('license', images);
+
+		try {
+
+
+			const userInfo = {
+				address: data?.address || '',
+				dateOfBirth: data?.dateOfBirth || '',
+				dateOfJoining: data?.dateOfJoining || '',
+				driverStatus: data?.driverStatus || '',
+				email: data?.email || '',
+				emergencyContact: data?.emergencyContact || '',
+				firstName: data?.firstName || '',
+				lastName: data?.lastName || '',
+				licenseExpiryDate: data?.licenseExpiryDate || '',
+				nic: data?.nic || '',
+				password: data?.password || '',
+				passwordConfirm: data?.passwordConfirm || '',
+				phone_number: data?.phone_number || '',
+				role: data?.role || '',
+				vehicleAssigned: data?.vehicleAssigned || ''
+			};
+
+
+			console.log('formData checking now :', userInfo);
+			await handleSaveUsers(userInfo);
+			toast.success('user created successfully');
+			// toggleModal?.();
+			// fetchAllShippingTypes?.();
+
+		} catch (error) {
+			console.error('Error saving user:', error);
+			toast.error('Error while saving user');
+		} finally {
+			// setDataLoading(false);
+		}
+	};
+
 
 	useEffect(() => {
-		setUserRoles([{ value: 'MANAGER', label: t('MANAGER') }, {
-			value: 'CUSTOMER', label: t('CUSTOMER')
-		}, { value: 'GUEST', label: t('GUEST') }, { value: 'DRIVER', label: t('DRIVER') }]);
+		setUserRoles([
+			{ value: 'ADMIN', label: t('ADMIN') },
+			{ value: 'CUSTOMER', label: t('CUSTOMER') },
+			{ value: 'DRIVER', label: t('DRIVER') }
+		]);
 	}, [t]);
 
 	useEffect(() => {
-		setDriverStatus([{value: 'AVAILABLE', label: 'AVAILABLE'}, {value: 'UNAVAILABLE', label: 'UNAVAILABLE'}]);
+		setDriverStatus([{ value: 'AVAILABLE', label: 'AVAILABLE' }, { value: 'UNAVAILABLE', label: 'UNAVAILABLE' }]);
 	}, []);
 
 	async function saveRole(data: UserInterface) {
@@ -608,6 +678,25 @@ function UsersForm(props: Props) {
 								/>)}
 							/>
 						</Grid>
+						<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
+							<Typography className="formTypography mt-8">Date of Birth <span className="text-red">*</span></Typography>
+							<Controller
+								name="dateOfBirth"
+								control={control}
+								rules={{ required: "Date of Birth is required" }}
+								render={({ field }) => (
+									<TextField
+										{...field}
+										type="date"
+										InputLabelProps={{ shrink: true }}
+										size="small"
+										fullWidth
+										error={!!errors.dateOfBirth}
+										helperText={errors.dateOfBirth?.message}
+									/>
+								)}
+							/>
+						</Grid>
 						<Grid
 							item
 							xs={12}
@@ -635,25 +724,24 @@ function UsersForm(props: Props) {
 								/>)}
 							/>
 						</Grid>
-						{selectedRole === 'DRIVER' && (
-							<>
+						{selectedRole === 'DRIVER' && (<>
 								<Grid item xs={12} md={6} lg={3}>
 									<Typography>License Expiry data <span className="text-red">*</span></Typography>
 									<Controller
 										name="licenseExpiryDate"
 										control={control}
-										render={({ field }) => (<TextField
-											{...field}
-											className="m-0"
-											id="licenseExpiryDate"
-											variant="outlined"
-											fullWidth
-											size="small"
-											error={!!errors.licenseExpiryDate}
-											helperText={errors?.licenseExpiryDate?.message}
-											required
-											disabled={isView}
-										/>)}
+										rules={{ required: "License Exp is required" }}
+										render={({ field }) => (
+											<TextField
+												{...field}
+												type="date"
+												InputLabelProps={{ shrink: true }}
+												size="small"
+												fullWidth
+												error={!!errors.licenseExpiryDate}
+												helperText={errors.licenseExpiryDate?.message}
+											/>
+										)}
 									/>
 								</Grid>
 								<Grid item xs={12} md={6} lg={3} className="flex items-center">
@@ -661,14 +749,12 @@ function UsersForm(props: Props) {
 									<Controller
 										name="vehicleAssigned"
 										control={control}
-										render={({ field }) => (
-											<Checkbox
-												{...field}
-												color="primary"
-												checked={field.value}
-												onChange={(event) => field.onChange(event.target.checked)}
-											/>
-										)}
+										render={({ field }) => (<Checkbox
+											{...field}
+											color="primary"
+											checked={field.value}
+											onChange={(event) => field.onChange(event.target.checked)}
+										/>)}
 									/>
 
 								</Grid>
@@ -679,7 +765,8 @@ function UsersForm(props: Props) {
 									lg={3}
 									className="formikFormField"
 								>
-									<Typography className="formTypography">Driver Status <span className="text-red">*</span></Typography>
+									<Typography className="formTypography">Driver Status <span
+										className="text-red">*</span></Typography>
 									<Controller
 										name="driverStatus"
 										control={control}
@@ -690,8 +777,8 @@ function UsersForm(props: Props) {
 											<Select {...field} size="small" onChange={(e) => {
 												field.onChange(e);
 											}}>
-												{driverStatus.map(role => (
-													<MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>))}
+												{driverStatus.map(role => (<MenuItem key={role.value}
+																					 value={role.value}>{role.label}</MenuItem>))}
 											</Select>
 											<FormHelperText error>{errors?.driverStatus?.message}</FormHelperText>
 										</FormControl>)}
@@ -717,43 +804,28 @@ function UsersForm(props: Props) {
 									/>
 								</Grid>
 
-								<Grid item xs={12} md={6} lg={3}>
-									<Typography>Date of Birth <span className="text-red">*</span></Typography>
-									<Controller
-										name="dateOfBirth"
-										control={control}
-										render={({ field }) => (<DateField
-											{...field}
-											className="m-0"
-											id="dateOfBirth"
-											variant="outlined"
-											fullWidth
-											size="small"
-											helperText={errors?.dateOfBirth?.message}
-											required
-											disabled={isView}
-										/>)}
-									/>
-								</Grid>
-								<Grid item xs={12} md={6} lg={3}>
-									<Typography>Date of Joining <span className="text-red">*</span></Typography>
-									<Controller
-										name="dateOfJoining"
-										control={control}
-										render={({ field }) => (<TextField
-											{...field}
-											className="m-0"
-											id="dateOfJoining"
-											variant="outlined"
-											fullWidth
-											size="small"
-											error={!!errors.dateOfJoining}
-											helperText={errors?.dateOfJoining?.message}
-											required
-											disabled={isView}
-										/>)}
-									/>
-								</Grid>
+
+
+									<Grid item xs={12} md={6} lg={3} className="formikFormField pt-[5px!important]">
+										<Typography className="formTypography mt-8">Date of Birth <span className="text-red">*</span></Typography>
+										<Controller
+											name="dateOfJoining"
+											control={control}
+											rules={{ required: "Date of Birth is required" }}
+											render={({ field }) => (
+												<TextField
+													{...field}
+													type="date"
+													InputLabelProps={{ shrink: true }}
+													size="small"
+													fullWidth
+													error={!!errors.dateOfBirth}
+													helperText={errors.dateOfBirth?.message}
+												/>
+											)}
+										/>
+									</Grid>
+
 								<Grid item md={6} xs={12}>
 									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
 										{t('Upload Thumbnail Image')}
@@ -825,14 +897,12 @@ function UsersForm(props: Props) {
 							{!isView && (<Button
 								variant="contained"
 								type="submit"
+								onClick={handleSubmit(onSubmit)} // Ensure this calls onSubmit
 								className="flex justify-center items-center min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
-								// disabled={_.isEmpty(dirtyFields) || !isValid}
 								disabled={loading}
 							>
-								{loading ? (<CircularProgress
-									className="text-white ml-[5px]"
-									size={24}
-								/>) : isEdit ? ('Update') : ('Save')}
+								{loading ? (<CircularProgress className="text-white ml-[5px]"
+															  size={24} />) : isEdit ? ('Update') : ('Save')}
 							</Button>)}
 						</Grid>
 					</Grid>

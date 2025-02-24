@@ -19,6 +19,7 @@ import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { handleSaveVehicleAPI } from '../../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
+import TextFormDateField from '../../../../../common/FormComponents/TextFormDateField';
 
 interface Image {
 	id: number;
@@ -297,8 +298,19 @@ function VehicleEditModel({ isOpen, toggleModal, clickedRowData, fetchAllShippin
 						<Grid item lg={3} md={3} sm={6} xs={12}>
 							<Typography>{t('Insurance Exp Date')}<span
 								className="text-red"> *</span></Typography>
-							<Field name="insurance_expiry_date" component={TextFormField} fullWidth
-								   size="small" />
+							<TextFormDateField
+								name="dateField"
+								id="dateFieldId"
+								placeholder="Select a date"
+								type="date"
+								min={new Date().toISOString().split('T')[0]}
+								max="2025-12-31"
+								changeInput={(value, form) => {
+									console.log(value);
+								}}
+							/>
+
+
 						</Grid>
 
 						<Grid item lg={3} md={3} sm={6} xs={12}>

@@ -20,6 +20,7 @@ import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { ShippingCreateType } from '../types/ShippingTypes';
+import TextFormDateField from '../../../../../common/FormComponents/TextFormDateField';
 
 interface Image {
 	id: number;
@@ -85,7 +86,17 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>
 									<Typography>{t('Booking Date')}<span className="text-red"> *</span></Typography>
-									<Field name="bookingDate" component={TextFormField} fullWidth size="small" />
+									<TextFormDateField
+										name="bookingDate"
+										id="dateFieldId"
+										placeholder="Select a date"
+										type="date"
+										min={new Date().toISOString().split('T')[0]} // Set min to today's date (23rd)
+										max="2025-12-31"
+										changeInput={(value, form) => {
+											console.log(value);
+										}}
+									/>
 								</Grid>
 
 								<Grid item lg={4} md={4} sm={6} xs={12}>

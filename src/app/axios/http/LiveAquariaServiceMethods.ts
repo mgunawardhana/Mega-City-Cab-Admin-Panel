@@ -17,6 +17,11 @@ export async function get<T>(url: string, config: AxiosRequestConfig = {}): Prom
 }
 
 export async function post<T>(url: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
+	const accessToken = getAccessToken();
+	console.log('2',accessToken)
+	if(accessToken != null){
+		config.headers = {...config.headers, Authorization: `Bearer ${accessToken}`  };
+	}
 	const response = await axiosApi.post<T>(url, data, config);
 	return response.data;
 }

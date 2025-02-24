@@ -150,17 +150,50 @@ function BookingType() {
 	};
 
 
+	// const exportAsExcel = async () => {
+	// 	setIsDownloading(true);
+	// 	try {
+	// 		const response = await axiosApiAuth.get('api/v1/booking/export', { responseType: 'blob' });
+	// 		const url = window.URL.createObjectURL(new Blob([response.data]));
+	// 		const link = document.createElement('a');
+	// 		link.href = url;
+	// 		link.setAttribute('download', 'bookings.xlsx');
+	// 		document.body.appendChild(link);
+	// 		link.click();
+	// 		link.remove();
+	// 	} catch (error) {
+	// 		console.error('Error fetching the Excel file:', error);
+	// 		toast.error('Error downloading the Excel file');
+	// 	} finally {
+	// 		setIsDownloading(false);
+	// 	}
+	// };
+
 	const exportAsExcel = async () => {
 		setIsDownloading(true);
 		try {
-			const response = await axiosApiAuth.get('api/v1/booking/export', { responseType: 'blob' });
-			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const response = await axiosApiAuth.get('api/v1/booking/export', {
+				responseType: 'blob',
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('jwt_access_token')}`, // Ensure token is included
+					'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+				}
+			});
+
+			// Create a Blob from the response data
+			const blob = new Blob([response.data], { type: response.headers['content-type'] });
+			const url = window.URL.createObjectURL(blob);
+
+			// Create a link and trigger download
 			const link = document.createElement('a');
 			link.href = url;
 			link.setAttribute('download', 'bookings.xlsx');
 			document.body.appendChild(link);
 			link.click();
-			link.remove();
+
+			// Cleanup
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
 		} catch (error) {
 			console.error('Error fetching the Excel file:', error);
 			toast.error('Error downloading the Excel file');
@@ -168,6 +201,7 @@ function BookingType() {
 			setIsDownloading(false);
 		}
 	};
+
 
 	const fetchAllShippingTypes = async () => {
 		setSampleData([]);
@@ -305,12 +339,13 @@ function BookingType() {
 								className="flex justify-end items-center gap-[10px] pt-[5px!important] ml-auto mt-12"
 							>
 								<Button
-									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-deep-orange-600 hover:bg-deep-orange-600/80"
+									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-deep-orange-600 hover:bg-deep-orange-600/80 flex justify-between"
 									type="submit"
 									variant="contained"
 									size="medium"
 								>
-									{t('Advanced Filter')}<SearchIcon className="text-white text-[20px] ml-2" />
+									{t('Advanced Filter')}
+									<SearchIcon className="text-white text-[20px] ml-10" />
 								</Button>
 								<Button
 									className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-green-900 hover:bg-green-900/80 flex items-center gap-2"
