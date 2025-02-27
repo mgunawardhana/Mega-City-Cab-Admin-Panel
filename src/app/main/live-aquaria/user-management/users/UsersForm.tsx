@@ -866,53 +866,53 @@ function UsersForm(props: Props) {
 									/>
 								</Grid>
 
-								<Grid item md={6} xs={12}>
-									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
-										{t('Upload Thumbnail Image')}
-									</Typography>
-									<div className="relative flex gap-[10px] overflow-x-auto"
-										 style={{ whiteSpace: 'nowrap' }}>
-										{images.map((image) => (<div
-											key={image.id}
-											className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
-										>
-											<img
-												src={image.link.startsWith('data:image') ? image.link : `data:image/jpeg;base64,${image.link}`}
-												alt={`Thumbnail ${image.id}`}
-												className="w-full h-full rounded-[10px] object-contain object-center"
-											/>
-
-											<IconButton
-												size="small"
-												className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
-												onClick={() => handleRemoveImage(image.id)}
-											>
-												<CancelIcon fontSize="small" />
-											</IconButton>
-										</div>))}
-
-										{images.length < maxImageCount && (<div
-											className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
-											<IconButton
-												className="text-primaryBlue"
-												onClick={() => document.getElementById('imageUpload')?.click()}
-											>
-												<AddCircleIcon fontSize="large" />
-											</IconButton>
-											<input
-												id="imageUpload"
-												type="file"
-												accept="image/*"
-												style={{ display: 'none' }}
-												multiple
-												onChange={handleImageUpload}
-											/>
-										</div>)}
-									</div>
-									<span className="text-[10px] text-gray-700 italic">
-                                        <b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
-                                    </span>
-								</Grid>
+							<Grid item md={6} xs={12}>
+										<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
+											{t('Upload Thumbnail Image')}
+										</Typography>
+										<div className="relative flex gap-[10px] overflow-x-auto" style={{ whiteSpace: 'nowrap' }}>
+											{images.map((image) => (
+												<div
+													key={image.id}
+													className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+												>
+													<img
+														src={image.link}
+														alt={`Thumbnail ${image.id}`}
+														className="w-full h-full rounded-[10px] object-contain object-center"
+													/>
+													<IconButton
+														size="small"
+														className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
+														onClick={() => handleRemoveImage(image.id)}
+													>
+														<CancelIcon fontSize="small" />
+													</IconButton>
+												</div>
+											))}
+											{images.length < maxImageCount && (
+												<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
+													<IconButton
+														className="text-primaryBlue"
+														onClick={() => document.getElementById('imageUpload')?.click()}
+													>
+														<AddCircleIcon fontSize="large" />
+													</IconButton>
+													<input
+														id="imageUpload"
+														type="file"
+														accept="image/*"
+														style={{ display: 'none' }}
+														multiple
+														onChange={handleImageUpload}
+													/>
+												</div>
+											)}
+										</div>
+										<span className="text-[10px] text-gray-700 italic">
+											<b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
+										</span>
+									</Grid>
 							</>
 
 
