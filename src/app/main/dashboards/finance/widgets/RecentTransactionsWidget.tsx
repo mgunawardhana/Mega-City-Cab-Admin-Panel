@@ -13,6 +13,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import {
 	handleFilterForRecentCompletedBookings
 } from '../../../../axios/services/mega-city-services/bookings/BookingService';
+import stripeVerifiedPartner from './../../../../assets/Stripe-Verified-Partner-Synthesis.webp';
 
 function RecentTransactionsWidget() {
 	const [isLoading, setIsLoading] = useState(true);
@@ -52,14 +53,17 @@ function RecentTransactionsWidget() {
 	}
 
 	return (
-		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden">
-			<div>
-				<Typography className="mr-16 text-lg font-medium tracking-tight leading-6 truncate">
-					Recent Bookings
-				</Typography>
-				<Typography className="font-medium" color="text.secondary">
-					{rows.length} completed bookings
-				</Typography>
+		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden relative">
+			<div className="flex justify-between items-center">
+				<div>
+					<Typography className="mr-16 text-lg font-medium tracking-tight leading-6 truncate">
+						Recent Bookings
+					</Typography>
+					<Typography className="font-medium" color="text.secondary">
+						{rows.length} completed bookings
+					</Typography>
+				</div>
+				<img src={stripeVerifiedPartner} alt="Stripe Verified Partner" className="max-h-144 w-auto" />
 			</div>
 
 			<div className="table-responsive mt-24">

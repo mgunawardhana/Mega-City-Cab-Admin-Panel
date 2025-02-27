@@ -150,7 +150,7 @@ function UsersForm(props: Props) {
 // Update the role once it's available
 	useEffect(() => {
 		if (selectedRow?.role) {
-			setProfilePic(selectedRow.driver_profile_picture);
+			setProfilePic(selectedRow.user_profile_pic);
 			setValues(selectedRow);
 			setSelectedRole(selectedRow.role);  // Set the role from selectedRow if available
 		}
