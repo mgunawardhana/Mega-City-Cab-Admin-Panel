@@ -22,6 +22,7 @@ import { axiosApiAuth } from '../../../../axios/axios_instances';
 import TextFormField from '../../../../common/FormComponents/FormTextField';
 import SearchIcon from '@mui/icons-material/Search';
 import { handleAdvancedFiltrationAPI } from '../../../../axios/services/mega-city-services/bookings/BookingService';
+import TextFormDateField from '../../../../common/FormComponents/TextFormDateField';
 
 interface AdvanceFilteringTypes {
 	bookingDate: string;
@@ -293,37 +294,56 @@ function BookingType() {
 							spacing={2}
 							className="pt-[10px] pr-[30px] mx-auto"
 						>
-							<Grid item lg={2} md={2} sm={6} xs={12}>
+							{/*<Grid item lg={2} md={2} sm={6} xs={12}>*/}
+							{/*	<Typography>{t('Booking Date')}</Typography>*/}
+							{/*	<Field name="bookingDate" component={TextFormField}*/}
+							{/*		   fullWidth size="small" />*/}
+							{/*</Grid>*/}
+							<Grid item lg={3} md={2} sm={2} xs={12}>
 								<Typography>{t('Booking Date')}</Typography>
-								<Field name="bookingDate" component={TextFormField}
-									   fullWidth size="small" />
+								<TextFormDateField
+									name="bookingDate"
+									id="dateFieldId"
+									placeholder="Select a date"
+									type="date"
+									changeInput={(value, form) => {
+										form.setFieldValue('bookingDate', value);
+									}}
+								/>
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={12}>
+							<Grid item lg={3} md={3} sm={4} xs={12}>
 								<Typography>{t('Created Date')}</Typography>
-								<Field name="createdDate" component={TextFormField}
-									   fullWidth size="small" />
+								<TextFormDateField
+									name="creatingDate"
+									id="creatingDate"
+									placeholder="Select a date"
+									type="date"
+									changeInput={(value, form) => {
+										form.setFieldValue('creatingDate', value);
+									}}
+								/>
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={12}>
+							<Grid item lg={3} md={2} sm={4} xs={12}>
 								<Typography>{t('Pickup Location')}</Typography>
 								<Field name="pickupLocation" component={TextFormField}
 									   fullWidth size="small" />
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={12}>
+							<Grid item lg={3} md={2} sm={4} xs={12}>
 								<Typography>{t('Drop Off Location')}</Typography>
 								<Field name="dropOffLocation" component={TextFormField}
 									   fullWidth size="small" />
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={12}>
+							<Grid item lg={3} md={2} sm={4} xs={12}>
 								<Typography>{t('Car Number')}</Typography>
 								<Field name="carNumber" component={TextFormField}
 									   fullWidth size="small" />
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={4}>
+							<Grid item lg={3} md={2} sm={4} xs={4}>
 								<Typography>{t('Driver Name')}</Typography>
 								<Field name="driverName" component={TextFormField}
 									   fullWidth size="small" />
 							</Grid>
-							<Grid item lg={2} md={2} sm={4} xs={4}>
+							<Grid item lg={3} md={2} sm={4} xs={4}>
 								<Typography>{t('Status')}</Typography>
 								<Field name="status" component={TextFormField}
 									   fullWidth size="small" />

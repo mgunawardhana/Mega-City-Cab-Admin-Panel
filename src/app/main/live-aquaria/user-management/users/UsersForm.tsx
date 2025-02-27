@@ -156,7 +156,26 @@ function UsersForm(props: Props) {
 		}
 	}, [selectedRow]);
 
-	console.log('*****************', values);
+	if (values?.license_images) {
+		try {
+			console.log('*****************', values.license_images); // Check the content
+
+			// Attempt to parse the JSON
+			const licenseImages = JSON.parse(values.license_images);
+
+			// Process the images
+			const base64Strings = licenseImages.map(image =>
+				image.split('data:image/jpeg;base64,').filter(Boolean)[1]
+			);
+			setImages(base64Strings)
+			console.log(base64Strings); // This will print both base64 images
+		} catch (error) {
+			console.error("Invalid JSON:", error);
+		}
+	}
+
+
+	// setImages()
 	const { control, handleSubmit, formState } = useForm({
 		defaultValues: {
 			role: initialRole,
@@ -188,11 +207,11 @@ function UsersForm(props: Props) {
 
 	const onSubmit = async (data) => {
 		console.log('Form Data Submitted:', data);
-		console.log('profile pic:', profilePic);
 		console.log('license', images);
 
 		try {
-
+			// Extract only base64 values
+			const licenseBase64Images = images.map(img => img.base64);
 
 			const userInfo = {
 				address: data?.address || '',
@@ -214,29 +233,26 @@ function UsersForm(props: Props) {
 				driverNIC: data?.driverNIC || '',
 				licenseNumber: data?.licenseNumber || '222223333',
 				driverAddress: data?.driverAddress || '',
-				licenseImages: images || []
+				licenseImages: licenseBase64Images
 			};
-
 
 			console.log('formData checking now :', userInfo);
 			await handleSaveUsers(userInfo);
-			toast.success('user created successfully');
-			// toggleModal?.
-			// fetchAllShippingTypes?.();
+			toast.success('User created successfully');
 
 		} catch (error) {
 			console.error('Error saving user:', error);
 			toast.error('Error while saving user');
-		} finally {
-			// setDataLoading(false);
 		}
 	};
 
 
 	useEffect(() => {
-		setUserRoles([{ value: 'ADMIN', label: t('ADMIN') }, {
-			value: 'CUSTOMER', label: t('CUSTOMER')
-		}, { value: 'DRIVER', label: t('DRIVER') }]);
+		setUserRoles([
+			{ value: 'ADMIN', label: t('ADMIN') },
+			{value: 'CUSTOMER', label: t('CUSTOMER')
+		}, { value: 'DRIVER', label: t('DRIVER') }
+		]);
 	}, [t]);
 
 	useEffect(() => {
@@ -861,10 +877,11 @@ function UsersForm(props: Props) {
 											className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
 										>
 											<img
-												src={image.link}
+												src={image.link.startsWith('data:image') ? image.link : `data:image/jpeg;base64,${image.link}`}
 												alt={`Thumbnail ${image.id}`}
 												className="w-full h-full rounded-[10px] object-contain object-center"
 											/>
+
 											<IconButton
 												size="small"
 												className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
