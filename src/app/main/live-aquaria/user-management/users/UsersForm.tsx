@@ -55,7 +55,7 @@ interface SingleUserSaveResponse {
 interface Image {
 	id: number;
 	link: string;
-	file: File;
+	file: File | null;
 	base64: string;
 }
 
@@ -70,12 +70,14 @@ const schema = z
 			.email('Invalid email')
 			.min(5, 'Must be at least 5 characters')
 			.max(50, 'Must be maximum 50 characters')
-			.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov)$/, 'Email must end with .com, .org, .net, .edu, or .gov'),
+			.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov)$/,
+				'Email must end with .com, .org, .net, .edu, or .gov'),
 		password: z
 			.string()
 			.min(1, 'Please enter your password.')
 			.min(8, 'Password is too short - should be 8 characters minimum.')
-			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.')
+			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+				'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.')
 			.regex(/^[^;/=+_-]*$/, 'Password should not contain ;/=+_- special characters'),
 		passwordConfirm: z.string().min(1, 'Password confirmation is required'),
 		customerAddress: z.string().min(3, 'Please enter your address'),
@@ -156,23 +158,37 @@ function UsersForm(props: Props) {
 		}
 	}, [selectedRow]);
 
-	if (values?.license_images) {
-		try {
-			console.log('*****************', values.license_images); // Check the content
+	useEffect(() => {
+		if (values?.license_images) {
+			try {
+				console.log('RAW license_images:', values.license_images);
 
-			// Attempt to parse the JSON
-			const licenseImages = JSON.parse(values.license_images);
+				// Ensure it's an array, parse JSON if necessary
+				const licenseImages = typeof values.license_images === 'string'
+					? JSON.parse(values.license_images)
+					: values.license_images;
 
-			// Process the images
-			const base64Strings = licenseImages.map(image =>
-				image.split('data:image/jpeg;base64,').filter(Boolean)[1]
-			);
-			setImages(base64Strings)
-			console.log(base64Strings); // This will print both base64 images
-		} catch (error) {
-			console.error("Invalid JSON:", error);
+				console.log('Parsed licenseImages:', licenseImages);
+
+				// Ensure it's an array and contains valid base64 images
+				if (Array.isArray(licenseImages) && licenseImages.length > 0) {
+					const formattedImages = licenseImages.map((image: string, index: number) => ({
+						id: index,
+						link: image, // Use full base64 string
+						file: null,
+						base64: image.split(',')[1] // Extract base64 part
+					}));
+
+					console.log('Final Processed Images:', formattedImages);
+					setImages(formattedImages);
+				} else {
+					console.warn('No valid images found');
+				}
+			} catch (error) {
+				console.error('Invalid JSON:', error);
+			}
 		}
-	}
+	}, [values?.license_images]); // ✅ Runs only when `license_images` changes
 
 
 	// setImages()
@@ -213,6 +229,8 @@ function UsersForm(props: Props) {
 			// Extract only base64 values
 			const licenseBase64Images = images.map(img => img.base64);
 
+			console.log('fucking values', licenseBase64Images[0]);
+
 			const userInfo = {
 				address: data?.address || '',
 				dateOfBirth: data?.dateOfBirth || '',
@@ -231,9 +249,10 @@ function UsersForm(props: Props) {
 				vehicleAssigned: data?.vehicleAssigned || '',
 				driverProfilePicture: profilePic || '',
 				driverNIC: data?.driverNIC || '',
-				licenseNumber: data?.licenseNumber || '222223333',
+				licenseNumber: data?.licenseNumber || '',
 				driverAddress: data?.driverAddress || '',
-				licenseImages: licenseBase64Images
+				licenseImageFront: licenseBase64Images[0] || '',
+				licenseImageBack: licenseBase64Images[1] || ''
 			};
 
 			console.log('formData checking now :', userInfo);
@@ -250,8 +269,9 @@ function UsersForm(props: Props) {
 	useEffect(() => {
 		setUserRoles([
 			{ value: 'ADMIN', label: t('ADMIN') },
-			{value: 'CUSTOMER', label: t('CUSTOMER')
-		}, { value: 'DRIVER', label: t('DRIVER') }
+			{
+				value: 'CUSTOMER', label: t('CUSTOMER')
+			}, { value: 'DRIVER', label: t('DRIVER') }
 		]);
 	}, [t]);
 
@@ -866,53 +886,57 @@ function UsersForm(props: Props) {
 									/>
 								</Grid>
 
-							<Grid item md={6} xs={12}>
-										<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
-											{t('Upload Thumbnail Image')}
-										</Typography>
-										<div className="relative flex gap-[10px] overflow-x-auto" style={{ whiteSpace: 'nowrap' }}>
-											{images.map((image) => (
-												<div
-													key={image.id}
-													className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+								<Grid item md={6} xs={12}>
+									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
+										{t('Upload Thumbnail Image')}
+									</Typography>
+									<div className="relative flex gap-[10px] overflow-x-auto"
+										 style={{ whiteSpace: 'nowrap' }}>
+										{images.map((image) => (
+											<div
+												key={image.id}
+												className="relative inline-block w-[550px] h-[240px] border-[2px] border-[#ccc] rounded-[10px] overflow-hidden"
+											>
+												<img
+													src={image.link} // ✅ Full base64 string
+													alt={`Thumbnail ${image.id}`}
+													className="w-full h-full rounded-[10px] object-contain object-center"
+												/>
+												<IconButton
+													size="small"
+													className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
+													onClick={() => handleRemoveImage(image.id)}
 												>
-													<img
-														src={image.link}
-														alt={`Thumbnail ${image.id}`}
-														className="w-full h-full rounded-[10px] object-contain object-center"
-													/>
-													<IconButton
-														size="small"
-														className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
-														onClick={() => handleRemoveImage(image.id)}
-													>
-														<CancelIcon fontSize="small" />
-													</IconButton>
-												</div>
-											))}
-											{images.length < maxImageCount && (
-												<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
-													<IconButton
-														className="text-primaryBlue"
-														onClick={() => document.getElementById('imageUpload')?.click()}
-													>
-														<AddCircleIcon fontSize="large" />
-													</IconButton>
-													<input
-														id="imageUpload"
-														type="file"
-														accept="image/*"
-														style={{ display: 'none' }}
-														multiple
-														onChange={handleImageUpload}
-													/>
-												</div>
-											)}
-										</div>
-										<span className="text-[10px] text-gray-700 italic">
+													<CancelIcon fontSize="small" />
+												</IconButton>
+											</div>
+										))}
+
+
+										{images.length < maxImageCount && (
+											<div
+												className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
+												<IconButton
+													className="text-amber-700"
+													onClick={() => document.getElementById('imageUpload')?.click()}
+												>
+													<AddCircleIcon fontSize="large" />
+												</IconButton>
+												<input
+													id="imageUpload"
+													type="file"
+													accept="image/*"
+													style={{ display: 'none' }}
+													multiple
+													onChange={handleImageUpload}
+												/>
+											</div>
+										)}
+									</div>
+									<span className="text-[10px] text-gray-700 italic">
 											<b className="text-red">Note:</b> Image dimensions must be 2:1, and size ≤ 5MB.
 										</span>
-									</Grid>
+								</Grid>
 							</>
 
 
