@@ -8,109 +8,119 @@ import ReactApexChart from 'react-apexcharts';
 import Box from '@mui/material/Box';
 import { ApexOptions } from 'apexcharts';
 import FuseLoading from '@fuse/core/FuseLoading';
-import GithubIssuesDataType from './types/GithubIssuesDataType';
-import { useGetProjectDashboardWidgetsQuery } from '../../../ProjectDashboardApi';
+import { businessSummery } from '../../../../../../axios/services/mega-city-services/reporting/BusinessDetailsService';
+
+interface BusinessSummary {
+	taxes: number;
+	tax_without_cost: number;
+	total_income: number;
+	status: string;
+	row_count: number;
+}
 
 /**
- * The GithubIssuesWidget widget.
+ * The BusinessSummaryWidget widget.
  */
-function GithubIssuesWidget() {
+function BusinessSummaryWidget() {
 	const theme = useTheme();
 	const [awaitRender, setAwaitRender] = useState(true);
 	const [tabValue, setTabValue] = useState(0);
+	const [businessData, setBusinessData] = useState<BusinessSummary[] | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const { data: widgets, isLoading } = useGetProjectDashboardWidgetsQuery();
+	useEffect(() => {
+		fetchBusinessSummary();
+		setAwaitRender(false);
+	}, []);
 
-	if (isLoading) {
+	const fetchBusinessSummary = async () => {
+		try {
+			const response = await businessSummery();
+			setBusinessData(response.result); // Store the API response result
+			console.log('Business summary widget:', response);
+		} catch (error) {
+			console.error('Error fetching business summary:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	if (isLoading || !businessData) {
 		return <FuseLoading />;
 	}
 
-	const widget = widgets?.githubIssues as GithubIssuesDataType;
-
-	if (!widget) {
-		return null;
-	}
-
-	const { overview, series, ranges, labels } = widget;
-	const currentRange = Object.keys(ranges)[tabValue];
+	// Prepare chart data from API response
+	const statuses = businessData.map((item) => item.status);
+	const totalIncome = businessData.map((item) => item.total_income);
+	const taxes = businessData.map((item) => item.taxes);
+	const taxWithoutCost = businessData.map((item) => item.tax_without_cost);
 
 	const chartOptions: ApexOptions = {
 		chart: {
 			fontFamily: 'inherit',
 			foreColor: 'inherit',
 			height: '100%',
-			type: 'line',
+			type: 'bar', // Bar chart for comparison
 			toolbar: {
-				show: false
+				show: false,
 			},
 			zoom: {
-				enabled: false
-			}
+				enabled: false,
+			},
 		},
-		colors: [theme.palette.primary.main, theme.palette.secondary.main],
-		labels,
-		dataLabels: {
-			enabled: true,
-			enabledOnSeries: [0],
-			background: {
-				borderWidth: 0
-			}
-		},
-		grid: {
-			borderColor: theme.palette.divider
-		},
-		legend: {
-			show: false
-		},
-		plotOptions: {
-			bar: {
-				columnWidth: '50%'
-			}
-		},
-		states: {
-			hover: {
-				filter: {
-					type: 'darken',
-					value: 0.75
-				}
-			}
-		},
-		stroke: {
-			width: [3, 0]
-		},
-		tooltip: {
-			followCursor: true,
-			theme: theme.palette.mode
-		},
+		colors: [theme.palette.primary.main, theme.palette.secondary.main, theme.palette.error.main],
 		xaxis: {
-			axisBorder: {
-				show: false
-			},
-			axisTicks: {
-				color: theme.palette.divider
-			},
+			categories: statuses, // e.g., ['CLOSED', 'CANCELLED', 'COMPLETED', 'PENDING']
 			labels: {
 				style: {
-					colors: theme.palette.text.secondary
-				}
+					colors: theme.palette.text.secondary,
+				},
 			},
-			tooltip: {
-				enabled: false
-			}
 		},
 		yaxis: {
 			labels: {
 				offsetX: -16,
 				style: {
-					colors: theme.palette.text.secondary
-				}
-			}
-		}
+					colors: theme.palette.text.secondary,
+				},
+			},
+			title: {
+				text: 'Amount ($)',
+			},
+		},
+		plotOptions: {
+			bar: {
+				columnWidth: '50%',
+			},
+		},
+		dataLabels: {
+			enabled: false, // Disable data labels for cleaner look
+		},
+		grid: {
+			borderColor: theme.palette.divider,
+		},
+		tooltip: {
+			theme: theme.palette.mode,
+		},
+		legend: {
+			show: true,
+		},
 	};
 
-	useEffect(() => {
-		setAwaitRender(false);
-	}, []);
+	const chartSeries = [
+		{
+			name: 'Total Income',
+			data: totalIncome, // e.g., [152032.86, 145126.82, 156285.5, 149772.5]
+		},
+		{
+			name: 'Taxes',
+			data: taxes, // e.g., [12548.93, 12583.89, 13067.57, 12319.2]
+		},
+		{
+			name: 'Tax Without Cost',
+			data: taxWithoutCost, // e.g., [4748.00, 4948.13, 5145.75, 4902.6]
+		},
+	];
 
 	if (awaitRender) {
 		return null;
@@ -120,131 +130,73 @@ function GithubIssuesWidget() {
 		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden">
 			<div className="flex flex-col sm:flex-row items-start justify-between">
 				<Typography className="text-lg font-medium tracking-tight leading-6 truncate">
-					Customer Complaint Summary
+					Business Summary by Status
 				</Typography>
 				<div className="mt-12 sm:mt-0 sm:ml-8">
 					<Tabs
 						value={tabValue}
 						onChange={(ev, value: number) => setTabValue(value)}
-						indicatorColor="secondary"
+						indicatorColor="primary" // Use a subtle indicator color
 						textColor="inherit"
 						variant="scrollable"
 						scrollButtons={false}
 						className="-mx-4 min-h-40"
-						classes={{ indicator: 'flex justify-center bg-transparent w-full h-full' }}
 						TabIndicatorProps={{
-							children: (
-								<Box
-									sx={{ bgcolor: 'text.disabled' }}
-									className="w-full h-full rounded-full opacity-20"
-								/>
-							)
+							style: {
+								display: 'none', // Hide the indicator completely to remove the blue box
+							},
 						}}
 					>
-						{Object.entries(ranges).map(([key, label]) => (
-							<Tab
-								className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
-								disableRipple
-								key={key}
-								label={label}
-							/>
-						))}
+						<Tab
+							className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
+							disableRipple
+							label="All Statuses"
+						/>
 					</Tabs>
 				</div>
 			</div>
 			<div className="grid grid-cols-1 lg:grid-cols-2 grid-flow-row gap-24 w-full mt-32 sm:mt-16">
 				<div className="flex flex-col flex-auto">
-					<Typography
-						className="font-medium"
-						color="text.secondary"
-					>
-						New vs. Closed
+					<Typography className="font-medium" color="text.secondary">
+						Income and Tax Breakdown by Status
 					</Typography>
 					<div className="flex flex-col flex-auto">
 						<ReactApexChart
 							className="flex-auto w-full"
 							options={chartOptions}
-							series={series[currentRange]}
+							series={chartSeries}
 							height={320}
+							type="bar"
 						/>
 					</div>
 				</div>
 				<div className="flex flex-col">
-					<Typography
-						className="font-medium"
-						color="text.secondary"
-					>
-						Overview
+					<Typography className="font-medium" color="text.secondary">
+						Status Overview
 					</Typography>
-					<div className="flex-auto grid grid-cols-4 gap-16 mt-24">
-						<div className="col-span-2 flex flex-col items-center justify-center py-32 px-4 rounded-2xl bg-indigo-50 text-indigo-800">
-							<Typography className="text-5xl sm:text-7xl font-semibold leading-none tracking-tight">
-								{overview[currentRange]['new-issues']}
-							</Typography>
-							<Typography className="mt-4 text-sm sm:text-lg font-medium">New Issues</Typography>
-						</div>
-						<div className="col-span-2 flex flex-col items-center justify-center py-32 px-4 rounded-2xl bg-green-50 text-green-800">
-							<Typography className="text-5xl sm:text-7xl font-semibold leading-none tracking-tight">
-								{overview[currentRange]['closed-issues']}
-							</Typography>
-							<Typography className="mt-4 text-sm sm:text-lg font-medium">Closed</Typography>
-						</div>
-						<Box
-							sx={{
-								backgroundColor: (_theme) =>
-									_theme.palette.mode === 'light'
-										? lighten(theme.palette.background.default, 0.4)
-										: lighten(theme.palette.background.default, 0.02)
-							}}
-							className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-32 px-4 rounded-2xl"
-						>
-							<Typography className="text-5xl font-semibold leading-none tracking-tight">
-								{overview[currentRange].fixed}
-							</Typography>
-							<Typography className="mt-4 text-sm font-medium text-center">Fixed</Typography>
-						</Box>
-						<Box
-							sx={{
-								backgroundColor: (_theme) =>
-									_theme.palette.mode === 'light'
-										? lighten(theme.palette.background.default, 0.4)
-										: lighten(theme.palette.background.default, 0.02)
-							}}
-							className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-32 px-4 rounded-2xl"
-						>
-							<Typography className="text-5xl font-semibold leading-none tracking-tight">
-								{overview[currentRange]['wont-fix']}
-							</Typography>
-							<Typography className="mt-4 text-sm font-medium text-center">Won't Fix</Typography>
-						</Box>
-						<Box
-							sx={{
-								backgroundColor: (_theme) =>
-									_theme.palette.mode === 'light'
-										? lighten(theme.palette.background.default, 0.4)
-										: lighten(theme.palette.background.default, 0.02)
-							}}
-							className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-32 px-4 rounded-2xl"
-						>
-							<Typography className="text-5xl font-semibold leading-none tracking-tight">
-								{overview[currentRange]['re-opened']}
-							</Typography>
-							<Typography className="mt-4 text-sm font-medium text-center">Re-opened</Typography>
-						</Box>
-						<Box
-							sx={{
-								backgroundColor: (_theme) =>
-									_theme.palette.mode === 'light'
-										? lighten(theme.palette.background.default, 0.4)
-										: lighten(theme.palette.background.default, 0.02)
-							}}
-							className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-32 px-4 rounded-2xl"
-						>
-							<Typography className="text-5xl font-semibold leading-none tracking-tight">
-								{overview[currentRange]['needs-triage']}
-							</Typography>
-							<Typography className="mt-4 text-sm font-medium text-center">Needs Triage</Typography>
-						</Box>
+					<div className="flex-auto grid grid-cols-2 gap-16 mt-24">
+						{businessData.map((item, index) => (
+							<Box
+								key={index}
+								sx={{
+									backgroundColor: lighten(theme.palette.background.default, 0.4),
+								}}
+								className="flex flex-col items-center justify-center py-32 px-4 rounded-2xl"
+							>
+								<Typography className="text-3xl font-semibold leading-none tracking-tight">
+									{item.row_count}
+								</Typography>
+								<Typography className="mt-4 text-sm font-medium text-center">
+									{item.status} Rows
+								</Typography>
+								<Typography className="mt-2 text-sm text-secondary">
+									Income: ${item.total_income.toLocaleString()}
+								</Typography>
+								<Typography className="mt-2 text-sm text-secondary">
+									Taxes: ${item.taxes.toLocaleString()}
+								</Typography>
+							</Box>
+						))}
 					</div>
 				</div>
 			</div>
@@ -252,4 +204,4 @@ function GithubIssuesWidget() {
 	);
 }
 
-export default memo(GithubIssuesWidget);
+export default memo(BusinessSummaryWidget);

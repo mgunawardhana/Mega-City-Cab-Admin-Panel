@@ -8,94 +8,131 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import { ApexOptions } from 'apexcharts';
 import FuseLoading from '@fuse/core/FuseLoading';
-import { useGetProjectDashboardWidgetsQuery } from '../../../ProjectDashboardApi';
-import TaskDistributionDataType from './types/TaskDistributionDataType';
+import { businessSummery } from '../../../../../../axios/services/mega-city-services/reporting/BusinessDetailsService';
+
+interface BusinessSummary {
+	taxes: number;
+	tax_without_cost: number;
+	total_income: number;
+	status: string;
+	row_count: number;
+}
 
 /**
  * The TaskDistributionWidget widget.
  */
 function TaskDistributionWidget() {
-	const { data: widgets, isLoading } = useGetProjectDashboardWidgetsQuery();
+	const theme = useTheme();
+	const [awaitRender, setAwaitRender] = useState(true);
+	const [tabValue, setTabValue] = useState(0);
+	const [businessData, setBusinessData] = useState<BusinessSummary[] | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const widget = widgets?.taskDistribution as TaskDistributionDataType;
+	useEffect(() => {
+		fetchBusinessSummary();
+		setAwaitRender(false);
+	}, []);
 
-	if (isLoading) {
+	const fetchBusinessSummary = async () => {
+		try {
+			const response = await businessSummery();
+			setBusinessData(response.result); // Store the API response result
+			console.log('Business summary widget:', response);
+		} catch (error) {
+			console.error('Error fetching business summary:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	if (isLoading || !businessData) {
 		return <FuseLoading />;
 	}
 
-	if (!widget) {
-		return null;
-	}
-
-	const { overview, series, labels, ranges } = widget;
-	const [tabValue, setTabValue] = useState(0);
-	const currentRange = Object.keys(ranges)[tabValue];
-	const [awaitRender, setAwaitRender] = useState(true);
-
-	const theme = useTheme();
+	// Prepare chart data from API response
+	const statuses = businessData.map((item) => item.status); // e.g., ['CLOSED', 'CANCELLED', 'COMPLETED', 'PENDING']
+	const rowCounts = businessData.map((item) => item.row_count); // e.g., [492, 503, 519, 486]
 
 	const chartOptions: ApexOptions = {
 		chart: {
 			fontFamily: 'inherit',
 			foreColor: 'inherit',
 			height: '100%',
-			type: 'polarArea',
+			type: 'polarArea', // Keep polar area chart for task distribution
 			toolbar: {
-				show: false
+				show: false,
 			},
 			zoom: {
-				enabled: false
-			}
+				enabled: false,
+			},
+			animations: {
+				enabled: true, // Enable animations
+				easing: 'easeinout', // Smooth easing for animations
+				speed: 800, // Animation duration in milliseconds
+				animateGradually: {
+					enabled: true,
+					delay: 150, // Delay between animating each element
+				},
+				dynamicAnimation: {
+					enabled: true,
+					speed: 350, // Speed for dynamic updates
+				},
+			},
 		},
-		labels,
+		labels: statuses, // Use statuses as labels for the polar area chart
 		legend: {
-			position: 'bottom'
+			position: 'bottom',
 		},
 		plotOptions: {
 			polarArea: {
 				spokes: {
-					connectorColors: theme.palette.divider
+					connectorColors: theme.palette.divider,
 				},
 				rings: {
-					strokeColor: theme.palette.divider
-				}
-			}
+					strokeColor: theme.palette.divider,
+				},
+			},
 		},
 		states: {
 			hover: {
 				filter: {
 					type: 'darken',
-					value: 0.75
-				}
-			}
+					value: 0.75,
+				},
+			},
 		},
 		stroke: {
-			width: 2
+			width: 2,
 		},
 		theme: {
 			monochrome: {
 				enabled: true,
-				color: theme.palette.secondary.main,
+				color: theme.palette.success.main, // Use green color for the chart
 				shadeIntensity: 0.75,
-				shadeTo: 'dark'
-			}
+				shadeTo: 'dark',
+			},
 		},
 		tooltip: {
 			followCursor: true,
-			theme: 'dark'
+			theme: 'dark',
 		},
 		yaxis: {
 			labels: {
 				style: {
-					colors: theme.palette.text.secondary
-				}
-			}
-		}
+					colors: theme.palette.text.secondary,
+				},
+			},
+		},
 	};
 
-	useEffect(() => {
-		setAwaitRender(false);
-	}, []);
+	const chartSeries = rowCounts; // Use row_count as the data for the polar area chart
+
+	// Function to handle tab change with animation
+	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+		setTabValue(newValue);
+		// Force chart update with animation by re-rendering
+		setBusinessData([...businessData]); // Trigger re-render to animate
+	};
 
 	if (awaitRender) {
 		return null;
@@ -105,35 +142,28 @@ function TaskDistributionWidget() {
 		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden h-full">
 			<div className="flex flex-col sm:flex-row items-start justify-between">
 				<Typography className="text-lg font-medium tracking-tight leading-6 truncate">
-					Task Distribution
+					Business Status Distribution
 				</Typography>
 				<div className="mt-3 sm:mt-0 sm:ml-2">
 					<Tabs
 						value={tabValue}
-						onChange={(ev, value: number) => setTabValue(value)}
-						indicatorColor="secondary"
+						onChange={handleTabChange} // Use custom handler for animation
+						indicatorColor="primary" // Use a subtle indicator color
 						textColor="inherit"
 						variant="scrollable"
 						scrollButtons={false}
 						className="-mx-4 min-h-40"
-						classes={{ indicator: 'flex justify-center bg-transparent w-full h-full' }}
 						TabIndicatorProps={{
-							children: (
-								<Box
-									sx={{ bgcolor: 'text.disabled' }}
-									className="w-full h-full rounded-full opacity-20"
-								/>
-							)
+							style: {
+								display: 'none', // Hide the indicator completely to avoid any unwanted boxes
+							},
 						}}
 					>
-						{Object.entries(ranges).map(([key, label]) => (
-							<Tab
-								className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
-								disableRipple
-								key={key}
-								label={label}
-							/>
-						))}
+						<Tab
+							className="text-14 font-semibold min-h-40 min-w-64 mx-4 px-12"
+							disableRipple
+							label="All Statuses"
+						/>
 					</Tabs>
 				</div>
 			</div>
@@ -141,7 +171,7 @@ function TaskDistributionWidget() {
 				<ReactApexChart
 					className="flex-auto w-full"
 					options={chartOptions}
-					series={series[currentRange]}
+					series={chartSeries}
 					type={chartOptions?.chart?.type}
 				/>
 			</div>
@@ -150,21 +180,21 @@ function TaskDistributionWidget() {
 					backgroundColor: (_theme) =>
 						_theme.palette.mode === 'light'
 							? lighten(theme.palette.background.default, 0.4)
-							: lighten(theme.palette.background.default, 0.02)
+							: lighten(theme.palette.background.default, 0.02),
 				}}
 				className="grid grid-cols-2 border-t divide-x -m-24 mt-16"
 			>
 				<div className="flex flex-col items-center justify-center p-24 sm:p-32">
 					<div className="text-5xl font-semibold leading-none tracking-tighter">
-						{overview[currentRange].new}
+						{businessData.reduce((sum, item) => sum + item.row_count, 0)}
 					</div>
-					<Typography className="mt-4 text-center text-secondary">New tasks</Typography>
+					<Typography className="mt-4 text-center text-secondary">Total Rows</Typography>
 				</div>
 				<div className="flex flex-col items-center justify-center p-6 sm:p-8">
 					<div className="text-5xl font-semibold leading-none tracking-tighter">
-						{overview[currentRange].completed}
+						{businessData.reduce((sum, item) => sum + item.total_income, 0).toLocaleString()}
 					</div>
-					<Typography className="mt-4 text-center text-secondary">Completed tasks</Typography>
+					<Typography className="mt-4 text-center text-secondary">Total Income ($)</Typography>
 				</div>
 			</Box>
 		</Paper>

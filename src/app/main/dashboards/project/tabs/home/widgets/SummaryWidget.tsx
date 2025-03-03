@@ -1,3 +1,4 @@
+//ts-nocheck
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Select, { SelectChangeEvent } from '@mui/material/Select';

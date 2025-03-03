@@ -400,7 +400,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 										{images.length < maxImageCount && (
 											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
 												<IconButton
-													className="text-primaryBlue"
+													className="text-amber-700"
 													onClick={() => document.getElementById('vehicleImage')?.click()}
 												>
 													<AddCircleIcon fontSize="large" />

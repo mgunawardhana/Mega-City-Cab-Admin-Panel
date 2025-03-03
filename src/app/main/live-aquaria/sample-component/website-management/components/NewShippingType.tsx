@@ -51,7 +51,7 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		title: yup.string().required(t('Title is required')),
 		description: yup.string().required(t('Description is required')),
 		author: yup.string().required(t('Author is required')),
-		ratings: yup.number().required(t('Ratings are required')).min(0).max(10),
+		discount: yup.number().required(t('Ratings are required')).min(0).max(10),
 		is_active: yup.boolean()
 	});
 	const convertToBase64 = (file: File): Promise<string> => {
@@ -221,7 +221,7 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 										{images.length < maxImageCount && (
 											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
 												<IconButton
-													className="text-primaryBlue"
+													className="text-amber-700"
 													onClick={() => document.getElementById('imageUpload')?.click()}
 												>
 													<AddCircleIcon fontSize="large" />
