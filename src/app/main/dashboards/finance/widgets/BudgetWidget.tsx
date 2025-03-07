@@ -24,7 +24,7 @@ interface Completed {
  */
 function BudgetWidget() {
 	const { data: widgets, isLoading } = useGetFinanceDashboardWidgetsQuery();
-	const [sampleData, setSampleData] = useState<Completed | null>(null);
+	const [sampleData, setSampleData] = useState<any>(null);
 
 	useEffect(() => {
 		fetchAllShippingTypes();

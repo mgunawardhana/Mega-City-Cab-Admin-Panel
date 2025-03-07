@@ -27,11 +27,7 @@ function ShippingTypeDeleteAlertForm({ toggleModal, isOpen, clickedRowData, hand
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
-					Are you sure you want to delete{' '}
-					<span className="font-bold">
-						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
-					</span>{' '}
-					this Article ?
+					Are you sure you want to delete this Booking ?
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>

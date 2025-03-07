@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { get } from '../../../http/LiveAquariaServiceMethods';
+import { del, get } from '../../../http/LiveAquariaServiceMethods';
 import * as url from '../url_helper';
+import { DELETE_BOOKING } from '../url_helper';
 
 export const handleAdvancedFiltrationAPI = (
 	bookingDate: any,
@@ -45,3 +46,7 @@ export const handleFilterForRecentCompletedBookings = (
 		.join('&');
 	return get(`${url.ADVANCED_FILTERING}?${filteredParams}`);
 };
+
+
+export const deleteBooking = (id: string | number) =>
+	del(`${url.DELETE_BOOKING}${id}`);

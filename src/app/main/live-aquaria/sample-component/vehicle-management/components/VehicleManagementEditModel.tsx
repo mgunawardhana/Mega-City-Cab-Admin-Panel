@@ -23,6 +23,7 @@ import {
 	handleUpdateVehicleAPI
 } from '../../../../../axios/services/mega-city-services/vehicle-service/VehicleService';
 
+// Interface Definitions
 interface Image {
 	id: number;
 	link: string;
@@ -31,11 +32,11 @@ interface Image {
 }
 
 interface Props {
-	isOpen?: boolean;
-	toggleModal?: () => void;
+	isOpen: boolean;
+	toggleModal: () => void;
 	clickedRowData: any;
 	fetchAllShippingTypes?: () => void;
-	isTableMode?: string;
+	isTableMode?: 'view' | 'edit' | 'create';
 }
 
 interface VehicleFormValues {
@@ -58,19 +59,24 @@ interface VehicleFormValues {
 	seating_capacity: string;
 	license_plate_number: string;
 	permit_type: string;
-	air_conditioning: boolean;
+	airConditioning: boolean;
 	additional_features: string;
+	status: string;
+	vehicleImage?: string;
 }
 
-function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
-
-	console.log('clickedRowData:', clickedRowData);
-
+function NewVehicleManagement({
+								  isOpen,
+								  toggleModal,
+								  clickedRowData,
+								  fetchAllShippingTypes,
+								  isTableMode = 'create'
+							  }: Props) {
 	const { t } = useTranslation('shippingTypes');
 	const [images, setImages] = useState<Image[]>([]);
+	const [isDataLoading, setDataLoading] = useState(false);
 	const maxImageCount = 1;
 	const maxImageSize = 20 * 1024 * 1024; // 20MB
-	const [isDataLoading, setDataLoading] = useState(false);
 
 	useEffect(() => {
 		if (clickedRowData?.vehicleImage) {
@@ -98,29 +104,28 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			const img = new Image();
 			img.src = URL.createObjectURL(file);
 			img.onload = () => {
-				if (file.size <= maxImageSize) {
-					resolve(true);
-				} else {
-					toast.error('Image upload failed: Size should be <= 20MB.');
-					resolve(false);
-				}
+				resolve(file.size <= maxImageSize);
+			};
+			img.onerror = () => {
+				toast.error('Invalid image file');
+				resolve(false);
 			};
 		});
 	};
 
 	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { files } = event.target;
+		const files = event.target.files;
+		if (!files) return;
 
-		if (files) {
-			if (images.length + files.length > maxImageCount) {
-				toast.error(`You can only upload a maximum of ${maxImageCount} images.`);
-				return;
-			}
+		if (images.length + files.length > maxImageCount) {
+			toast.error(`You can only upload a maximum of ${maxImageCount} images.`);
+			return;
+		}
 
+		try {
 			const validImages: Image[] = [];
 			for (const file of Array.from(files)) {
 				const isValid = await validateImageDimensions(file);
-
 				if (isValid) {
 					const base64 = await convertToBase64(file);
 					validImages.push({
@@ -129,17 +134,19 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 						file,
 						base64,
 					});
+				} else {
+					toast.error('Image upload failed: Size should be ≤ 20MB.');
 				}
 			}
-
-			if (validImages.length > 0) {
-				setImages(validImages);
-			}
+			setImages(validImages);
+		} catch (error) {
+			toast.error('Error processing image upload');
+			console.error('Image upload error:', error);
 		}
 	};
 
 	const handleRemoveImage = (id: number) => {
-		setImages([]);
+		setImages(images.filter(image => image.id !== id));
 	};
 
 	const schema = yup.object().shape({
@@ -159,15 +166,14 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		seating_capacity: yup.string().required(t('seating capacity required')),
 		license_plate_number: yup.string().required(t('License plate number required')),
 		permit_type: yup.string().required(t('Permit type required')),
+		status: yup.string().required(t('Status is required')),
 	});
 
 	const handleSubmit = async (values: VehicleFormValues) => {
 		setDataLoading(true);
-
-		console.log('values for image:', images[0]?.base64);
 		try {
 			const formData = {
-				id: clickedRowData?.id,
+				id: values.id || undefined,
 				registrationNumber: values.registration_number,
 				make: values.make,
 				model: values.model,
@@ -186,26 +192,22 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 				seatingCapacity: values.seating_capacity,
 				licensePlateNumber: values.license_plate_number,
 				permitType: values.permit_type,
-				airConditioning: values.air_conditioning,
+				airConditioning: values.airConditioning,
 				additionalFeatures: values.additional_features,
-				vehicleImage: images[0]?.base64 || ''
+				vehicleImage: images[0]?.base64 || '',
+				status: values.status
 			};
 
-			console.log('formData:', formData);
-
-			if (clickedRowData?.id) {
+			if (formData.id) {
 				await handleUpdateVehicleAPI(formData);
 				toast.success('Vehicle updated successfully');
+			} else {
+				await handleSaveVehicleAPI(formData);
+				toast.success('Vehicle created successfully');
 			}
 
-			if (toggleModal) {
-				toggleModal();
-			}
-
-			if (fetchAllShippingTypes) {
-				fetchAllShippingTypes();
-			}
-
+			toggleModal();
+			fetchAllShippingTypes?.();
 		} catch (error) {
 			console.error('Error saving vehicle:', error);
 			toast.error('Error while saving vehicle');
@@ -226,6 +228,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			</DialogTitle>
 			<DialogContent>
 				<Formik
+					enableReinitialize
 					initialValues={{
 						id: clickedRowData?.id || '',
 						registration_number: clickedRowData?.registrationNumber || '',
@@ -246,131 +249,248 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 						seating_capacity: clickedRowData?.seatingCapacity || '',
 						license_plate_number: clickedRowData?.licensePlateNumber || '',
 						permit_type: clickedRowData?.permitType || '',
-						air_conditioning: clickedRowData?.airConditioning || false,
+						airConditioning: clickedRowData?.airConditioning ?? false,
 						additional_features: clickedRowData?.additionalFeatures || '',
-						vehicleImage: clickedRowData.vehicleImage || ''
+						status: clickedRowData?.status || '',
+						vehicleImage: clickedRowData?.vehicleImage || ''
 					}}
 					onSubmit={handleSubmit}
 					validationSchema={schema}
 				>
-					{({ setFieldValue, errors, touched }) => (
+					{({ setFieldValue, values }) => (
 						<Form>
 							<Grid container spacing={2}>
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Registration Number')}<span className="text-red"> *</span></Typography>
-									<Field name="registration_number" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field
+										name="registration_number"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Make')}</Typography>
-									<Field name="make" disabled={isTableMode === 'view'} component={TextFormField} fullWidth size="small" />
+									<Field
+										name="make"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Model')}<span className="text-red"> *</span></Typography>
-									<Field name="model" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="model"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Year of Manufacturer')}<span className="text-red"> *</span></Typography>
-									<Field type="number" name="year_of_manufacture"  component={TextFormField} fullWidth size="small" />
+									<Field
+										type="number"
+										name="year_of_manufacture"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
-
-
-
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Color')}<span className="text-red"> *</span></Typography>
-									<Field name="color" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="color"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Fuel Type')}<span className="text-red"> *</span></Typography>
-									<Field name="fuel_type" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="fuel_type"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Engine Capacity')}<span className="text-red"> *</span></Typography>
-									<Field name="engine_capacity" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="engine_capacity"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Chassis Number')}<span className="text-red"> *</span></Typography>
-									<Field  name="chassis_number" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="chassis_number"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
-
-
-
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Vehicle Type')}<span className="text-red"> *</span></Typography>
-									<Field name="vehicle_type" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="vehicle_type"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Owner Name')}<span className="text-red"> *</span></Typography>
-									<Field name="owner_name" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="owner_name"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Owner Contact')}<span className="text-red"> *</span></Typography>
-									<Field name="owner_contact" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="owner_contact"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Owner Address')}<span className="text-red"> *</span></Typography>
-									<Field  name="owner_address" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="owner_address"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
-
-
-
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Insurance Provider')}<span className="text-red"> *</span></Typography>
-									<Field name="insurance_provider" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="insurance_provider"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Insurance Policy Number')}<span className="text-red"> *</span></Typography>
-									<Field name="insurance_policy_number" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="insurance_policy_number"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Insurance Exp Date')}<span className="text-red"> *</span></Typography>
-									<Field name="insurance_expiry_date" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="insurance_expiry_date"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Seating Capacity')}<span className="text-red"> *</span></Typography>
-									<Field type="number" name="seating_capacity" component={TextFormField} fullWidth size="small" />
+									<Field
+										type="number"
+										name="seating_capacity"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
-
-
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('License Plate Number')}<span className="text-red"> *</span></Typography>
-									<Field name="license_plate_number" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="license_plate_number"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Permit Type')}<span className="text-red"> *</span></Typography>
-									<Field name="permit_type" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="permit_type"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
+								</Grid>
+
+								<Grid item lg={3} md={3} sm={6} xs={12}>
+									<Typography>{t('Status')}<span className="text-red"> *</span></Typography>
+									<Field
+										name="status"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12} className="flex items-center">
-									<Typography className="mr-3">{t('Air Condition')}<span
-										className="text-red"> *</span></Typography>
+									<Typography className="mr-3">{t('Air Condition')}<span className="text-red"> *</span></Typography>
 									<Checkbox
 										color="primary"
-										onChange={(event) => setFieldValue('air_conditioning', event.target.checked)}
+										checked={values.airConditioning}
+										disabled={isTableMode === 'view'}
+										onChange={(event) => setFieldValue('airConditioning', event.target.checked)}
 									/>
 								</Grid>
 
 								<Grid item lg={3} md={3} sm={6} xs={12}>
 									<Typography>{t('Additional Features')}</Typography>
-									<Field name="additional_features" component={TextFormField} fullWidth size="small" />
+									<Field
+										name="additional_features"
+										disabled={isTableMode === 'view'}
+										component={TextFormField}
+										fullWidth
+										size="small"
+									/>
 								</Grid>
-
 
 								<Grid item md={6} xs={12}>
 									<Typography className="text-[10px] sm:text-[12px] lg:text-[14px] font-600 mb-[5px]">
@@ -387,17 +507,19 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 													alt={`Thumbnail ${image.id}`}
 													className="w-full h-full rounded-[10px] object-contain object-center"
 												/>
-												<IconButton
-													size="small"
-													className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
-													onClick={() => handleRemoveImage(image.id)}
-												>
-													<CancelIcon fontSize="small" />
-												</IconButton>
+												{isTableMode !== 'view' && (
+													<IconButton
+														size="small"
+														className="absolute top-0 right-0 text-white p-[2px] rounded-full bg-black/5 hover:text-red"
+														onClick={() => handleRemoveImage(image.id)}
+													>
+														<CancelIcon fontSize="small" />
+													</IconButton>
+												)}
 											</div>
 										))}
 
-										{images.length < maxImageCount && (
+										{images.length < maxImageCount && isTableMode !== 'view' && (
 											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
 												<IconButton
 													className="text-amber-700"
@@ -421,15 +543,17 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 								</Grid>
 
 								<Grid item lg={12} className="flex justify-end gap-2">
-									<Button
-										type="submit"
-										variant="contained"
-										className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
-										disabled={isTableMode === 'view' || isDataLoading}
-									>
-										{t('Save')}
-										{isDataLoading && <CircularProgress size={24} className="ml-2" />}
-									</Button>
+									{isTableMode !== 'view' && (
+										<Button
+											type="submit"
+											variant="contained"
+											className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-yellow-800 hover:bg-yellow-800/80"
+											disabled={isDataLoading}
+										>
+											{t('Save')}
+											{isDataLoading && <CircularProgress size={24} className="ml-2" />}
+										</Button>
+									)}
 									<Button
 										variant="contained"
 										className="min-w-[100px] min-h-[36px] max-h-[36px] text-[10px] sm:text-[12px] lg:text-[14px] text-white font-500 py-0 rounded-[6px] bg-grey-300 hover:bg-grey-300/80"

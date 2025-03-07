@@ -1,5 +1,4 @@
 // @ts-nocheck
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
@@ -21,7 +20,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { axiosApiAuth } from '../../../../axios/axios_instances';
 import TextFormField from '../../../../common/FormComponents/FormTextField';
 import SearchIcon from '@mui/icons-material/Search';
-import { handleAdvancedFiltrationAPI } from '../../../../axios/services/mega-city-services/bookings/BookingService';
+import {
+	deleteBooking,
+	handleAdvancedFiltrationAPI
+} from '../../../../axios/services/mega-city-services/bookings/BookingService';
 import TextFormDateField from '../../../../common/FormComponents/TextFormDateField';
 
 interface AdvanceFilteringTypes {
@@ -136,7 +138,6 @@ function BookingType() {
 
 	const handleConfirmStatusChange = async () => {
 		toggleActiveModal();
-
 		const id = selectedActiveRowData?.id ?? null;
 		try {
 			const data = {
@@ -150,25 +151,18 @@ function BookingType() {
 		}
 	};
 
-
-	// const exportAsExcel = async () => {
-	// 	setIsDownloading(true);
-	// 	try {
-	// 		const response = await axiosApiAuth.get('api/v1/booking/export', { responseType: 'blob' });
-	// 		const url = window.URL.createObjectURL(new Blob([response.data]));
-	// 		const link = document.createElement('a');
-	// 		link.href = url;
-	// 		link.setAttribute('download', 'bookings.xlsx');
-	// 		document.body.appendChild(link);
-	// 		link.click();
-	// 		link.remove();
-	// 	} catch (error) {
-	// 		console.error('Error fetching the Excel file:', error);
-	// 		toast.error('Error downloading the Excel file');
-	// 	} finally {
-	// 		setIsDownloading(false);
-	// 	}
-	// };
+	const handleAlertForm = async () => {
+		toggleDeleteModal();
+		console.log("selectedDeleteRowData", selectedDeleteRowData)
+		try {
+			await deleteBooking(selectedDeleteRowData.bookingNumber);
+			await fetchAllShippingTypes();
+			toast.success('Booking deleted successfully');
+		} catch (error) {
+			console.error('Error deleting booking:', error);
+			toast.error('Error deleting booking');
+		}
+	};
 
 	const exportAsExcel = async () => {
 		setIsDownloading(true);
@@ -176,23 +170,18 @@ function BookingType() {
 			const response = await axiosApiAuth.get('api/v1/booking/export', {
 				responseType: 'blob',
 				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('jwt_access_token')}`, // Ensure token is included
+					'Authorization': `Bearer ${localStorage.getItem('jwt_access_token')}`,
 					'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 				}
 			});
 
-			// Create a Blob from the response data
 			const blob = new Blob([response.data], { type: response.headers['content-type'] });
 			const url = window.URL.createObjectURL(blob);
-
-			// Create a link and trigger download
 			const link = document.createElement('a');
 			link.href = url;
 			link.setAttribute('download', 'bookings.xlsx');
 			document.body.appendChild(link);
 			link.click();
-
-			// Cleanup
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
 		} catch (error) {
@@ -202,7 +191,6 @@ function BookingType() {
 			setIsDownloading(false);
 		}
 	};
-
 
 	const fetchAllShippingTypes = async () => {
 		setSampleData([]);
@@ -294,11 +282,6 @@ function BookingType() {
 							spacing={2}
 							className="pt-[10px] pr-[30px] mx-auto"
 						>
-							{/*<Grid item lg={2} md={2} sm={6} xs={12}>*/}
-							{/*	<Typography>{t('Booking Date')}</Typography>*/}
-							{/*	<Field name="bookingDate" component={TextFormField}*/}
-							{/*		   fullWidth size="small" />*/}
-							{/*</Grid>*/}
 							<Grid item lg={3} md={2} sm={2} xs={12}>
 								<Typography>{t('Booking Date')}</Typography>
 								<TextFormDateField
@@ -314,12 +297,12 @@ function BookingType() {
 							<Grid item lg={3} md={3} sm={4} xs={12}>
 								<Typography>{t('Created Date')}</Typography>
 								<TextFormDateField
-									name="creatingDate"
+									name="createdDate"  // Fixed name to match initialValues
 									id="creatingDate"
 									placeholder="Select a date"
 									type="date"
 									changeInput={(value, form) => {
-										form.setFieldValue('creatingDate', value);
+										form.setFieldValue('createdDate', value);
 									}}
 								/>
 							</Grid>
@@ -439,52 +422,53 @@ function BookingType() {
 						records={sampleData}
 						tableRowViewHandler={handleView}
 						tableRowEditHandler={handleEdit}
-					tableRowDeleteHandler={handleRowDelete}
-				/>
+						tableRowDeleteHandler={handleRowDelete}
+					/>
+				</Grid>
 			</Grid>
-		</Grid>
 
-		{/* New Shipping Type Modal */}
-		{isOpenNewShippingTypeModal && (<NewShippingTypeModel
-			isOpen={isOpenNewShippingTypeModal}
-			toggleModal={toggleNewShippingTypeModal}
-			clickedRowData={{}}
-			isTableMode="new"
-			fetchAllShippingTypes={fetchAllShippingTypes}
-		/>)}
+			{/* New Shipping Type Modal */}
+			{isOpenNewShippingTypeModal && (<NewShippingTypeModel
+				isOpen={isOpenNewShippingTypeModal}
+				toggleModal={toggleNewShippingTypeModal}
+				clickedRowData={{}}
+				isTableMode="new"
+				fetchAllShippingTypes={fetchAllShippingTypes}
+			/>)}
 
-		{/* View Modal */}
-		{isOpenShippingTypeViewModal && (<ShippingTypeEditModal
-			isOpen={isOpenShippingTypeViewModal}
-			toggleModal={toggleShippingTypeViewModal}
-			clickedRowData={selectedViewRowData}
-			isTableMode="view"
-			fetchAllShippingTypes={fetchAllShippingTypes}
-		/>)}
+			{/* View Modal */}
+			{isOpenShippingTypeViewModal && (<ShippingTypeEditModal
+				isOpen={isOpenShippingTypeViewModal}
+				toggleModal={toggleShippingTypeViewModal}
+				clickedRowData={selectedViewRowData}
+				isTableMode="view"
+				fetchAllShippingTypes={fetchAllShippingTypes}
+			/>)}
 
-		{/* Edit Modal */}
-		{isOpenShippingTypeEditModal && (<ShippingTypeEditModal
-			isOpen={isOpenShippingTypeEditModal}
-			toggleModal={toggleShippingTypeEditModal}
-			clickedRowData={selectedEditRowData}
-			isTableMode="edit"
-			fetchAllShippingTypes={fetchAllShippingTypes}
-		/>)}
+			{/* Edit Modal */}
+			{isOpenShippingTypeEditModal && (<ShippingTypeEditModal
+				isOpen={isOpenShippingTypeEditModal}
+				toggleModal={toggleShippingTypeEditModal}
+				clickedRowData={selectedEditRowData}
+				isTableMode="edit"
+				fetchAllShippingTypes={fetchAllShippingTypes}
+			/>)}
 
-		{isOpenActiveModal && (<ShippingTypeActiveComp
-			toggleModal={toggleActiveModal}
-			isOpen={isOpenActiveModal}
-			clickedRowData={selectedActiveRowData}
-			handleAlertForm={handleConfirmStatusChange}
-		/>)}
+			{isOpenActiveModal && (<ShippingTypeActiveComp
+				toggleModal={toggleActiveModal}
+				isOpen={isOpenActiveModal}
+				clickedRowData={selectedActiveRowData}
+				handleAlertForm={handleConfirmStatusChange}
+			/>)}
 
-		{isOpenDeleteModal && (<ShippingTypeDeleteAlertForm
-			toggleModal={toggleDeleteModal}
-			isOpen={isOpenDeleteModal}
-			clickedRowData={selectedDeleteRowData}
-			handleAlertForm={handleAlertForm}
-		/>)}
-	</div>);
+			{isOpenDeleteModal && (<ShippingTypeDeleteAlertForm
+				toggleModal={toggleDeleteModal}
+				isOpen={isOpenDeleteModal}
+				clickedRowData={selectedDeleteRowData}
+				handleAlertForm={handleAlertForm}
+			/>)}
+		</div>
+	);
 }
 
 export default BookingType;

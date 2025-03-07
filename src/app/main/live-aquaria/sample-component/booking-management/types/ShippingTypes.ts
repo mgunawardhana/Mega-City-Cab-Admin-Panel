@@ -27,13 +27,13 @@ export type WebTypeApiResponse = {
 
 export type BookingDetails = {
 	bookingNumber: number;
-	bookingDate: string; // ISO 8601 date-time format
+	bookingDate: string;
 	pickupLocation: string;
 	dropOffLocation: string;
 	carNumber: string;
 	taxes: number;
 	distance: number;
-	estimatedTime: number; // in hours
+	estimatedTime: number;
 	taxWithoutCost: number;
 	totalAmount: number;
 	customerRegistrationNumber: string;
