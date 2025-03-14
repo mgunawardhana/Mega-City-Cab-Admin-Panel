@@ -226,7 +226,7 @@ function VehicleManagement() {
 
 			await handleDeleteAction(id);
 			fetchAllShippingTypes().then(r => (r));
-			toast.success('Shipping Type deleted successfully');
+			toast.success('Article deleted successfully');
 		} catch (e) {
 			toast.error('Error deleting vehicle Type');
 		}

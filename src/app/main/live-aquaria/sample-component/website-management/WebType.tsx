@@ -149,7 +149,7 @@ function WebType() {
 		try {
 			await deleteWebArticle(selectedDeleteRowData?.articleId);
 			await fetchAllShippingTypes();
-			toast.success('Shipping Type deleted successfully');
+			toast.success('Article deleted successfully');
 		} catch (e) {
 			toast.error('Error deleting website');
 		}

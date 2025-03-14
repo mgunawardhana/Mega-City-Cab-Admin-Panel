@@ -87,6 +87,7 @@ function GuidelineEditModel({ isOpen, toggleModal, clickedRowData, isTableMode, 
 				fetchAllGuidelines();
 				toast.success('Guideline created successfully');
 			}
+			toggleModal();
 		} catch (e) {
 			console.error('Error:', e);
 			toast.error('Error while saving guideline');

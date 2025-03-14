@@ -421,7 +421,7 @@ function BookingType() {
 						isColumnChoser
 						records={sampleData}
 						tableRowViewHandler={handleView}
-						tableRowEditHandler={handleEdit}
+						// tableRowEditHandler={handleEdit}
 						tableRowDeleteHandler={handleRowDelete}
 					/>
 				</Grid>
