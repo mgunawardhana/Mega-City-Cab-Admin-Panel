@@ -1,17 +1,24 @@
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import FuseLoading from '@fuse/core/FuseLoading';
 import { useGetProjectDashboardWidgetsQuery } from '../../../ProjectDashboardApi';
 import WidgetDataType from './types/WidgetDataType';
+import { businessSummery } from '../../../../../../axios/services/mega-city-services/reporting/BusinessDetailsService';
 
-/**
- * The IssuesWidget widget.
- */
+interface Pending {
+	taxes: number;
+	tax_without_cost: number;
+	status: string;
+	row_count: number;
+}
+
+
 function IssuesWidget() {
 	const { data: widgets, isLoading } = useGetProjectDashboardWidgetsQuery();
+	const [sampleData, setSampleData] = useState<Pending>();
 
 	const widget = widgets?.issues as WidgetDataType;
 
@@ -24,6 +31,20 @@ function IssuesWidget() {
 	}
 
 	const { data, title } = widget;
+	useEffect(() => {
+		fetchAllShippingTypes().then(r => (r));
+	}, []);
+
+	const fetchAllShippingTypes = async () => {
+		try {
+			const response = await businessSummery();
+			setSampleData(response.result);
+			console.log('Business summery:', sampleData[3]);
+		} catch (error) {
+			console.error('Error fetching shipping types:', error);
+		} finally {
+		}
+	};
 
 	return (
 		<Paper className="flex flex-col flex-auto shadow rounded-2xl overflow-hidden">
@@ -32,7 +53,7 @@ function IssuesWidget() {
 					className="px-16 text-lg font-medium tracking-tight leading-6 truncate"
 					color="text.secondary"
 				>
-					{title}
+					Bookings for Upcoming Days
 				</Typography>
 				<IconButton
 					aria-label="more"
@@ -43,15 +64,15 @@ function IssuesWidget() {
 			</div>
 			<div className="text-center mt-8">
 				<Typography className="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">
-					{String(data.count)}
+					{sampleData?.[3]?.row_count}
 				</Typography>
-				<Typography className="text-lg font-medium text-amber-600">{data.name}</Typography>
+				<Typography className="text-lg font-medium text-amber-600">{sampleData?.[3]?.status}</Typography>
 			</div>
 			<Typography
 				className="flex items-baseline justify-center w-full mt-20 mb-24"
 				color="text.secondary"
 			>
-				<span className="truncate">{data.extra.name}</span>:<b className="px-8">{String(data.extra.count)}</b>
+				<span className="truncate">estimated profit</span>:<b className="px-8">{sampleData?.[3]?.total_income}</b>
 			</Typography>
 		</Paper>
 	);

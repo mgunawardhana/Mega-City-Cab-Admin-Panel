@@ -6,12 +6,12 @@ import { DialogContentText } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
-import { ShippingTypeModifiedData } from '../types/GuidelineTypes';
+import { ShippingTypeModifiedData, VehicleResp } from '../types/GuidelineTypes';
 
 interface Props {
 	toggleModal: () => void;
 	isOpen: boolean;
-	clickedRowData: ShippingTypeModifiedData;
+	clickedRowData: VehicleResp;
 	handleAlertForm: () => void;
 }
 
@@ -29,7 +29,7 @@ function NewVehicleDeleteAlertForm({ toggleModal, isOpen, clickedRowData, handle
 				<DialogContentText className="text-[10px] sm:text-[12px] lg:text-[14px]">
 					Are you sure you want to delete{' '}
 					<span className="font-bold">
-						{clickedRowData?.shipping_type_name ? clickedRowData?.shipping_type_name : ''}
+						{clickedRowData?.make ? clickedRowData?.licensePlateNumber : ''}
 					</span>{' '}
 					this Vehicle ?
 				</DialogContentText>

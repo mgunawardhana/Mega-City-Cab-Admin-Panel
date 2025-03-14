@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const MaterialTableWrapper = (props: any) => {
   const {
     disablePagination, // New prop to disable pagination
-    disableSearch = true,
+    disableSearch = false,
     filterChanged,
     handleColumnFilter,
     tableColumns,

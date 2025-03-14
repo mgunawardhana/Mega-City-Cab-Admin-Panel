@@ -18,11 +18,12 @@ import WebSiteRoot from '../main/live-aquaria/sample-component/website-managemen
 import VehicleManagementRoot from '../main/live-aquaria/sample-component/vehicle-management/VehicleManagementRoot';
 import GuidelineManagementRoot
 	from '../main/live-aquaria/sample-component/guideline-management/GuidelineManagementRoot';
+import BookingRoot from '../main/live-aquaria/sample-component/booking-management/BookingRoot';
 
 const routeConfigs: FuseRouteConfigsType = [SignOutConfig, SignInConfig, // SignUpConfig,
 	DocumentationConfig, ...PagesConfigs, ...UserInterfaceConfigs, ...DashboardsConfigs, ...GuidelineManagementRoot, // ...AppsConfigs,
 	...authRoleExamplesConfigs, ...userManagementConfigs, // ...ticketManagementConfigs,
-	...customerManagementConfigs, ...WebSiteRoot, ...VehicleManagementRoot];
+	...customerManagementConfigs, ...WebSiteRoot, ...VehicleManagementRoot, ...BookingRoot];
 
 /**
  * The routes of the application.

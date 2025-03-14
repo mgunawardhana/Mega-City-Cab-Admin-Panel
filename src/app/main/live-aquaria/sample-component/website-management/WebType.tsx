@@ -8,12 +8,12 @@ import NavigationViewComp from '../../../../common/FormComponents/NavigationView
 import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTableWrapper';
 import ShippingTypeEditModal from './components/ShippingTypeEditModel';
 import NewShippingTypeModel from './components/NewShippingType';
-import {
-	deleteShippingType, fetchAllShippingTypesData, updateShippingTypeStatus
+import { fetchAllShippingTypesData, updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
 import { ShippingTypeModifiedData, WebTypeResp } from './types/ShippingTypes';
 import ShippingTypeActiveComp from './components/ShippingTypeActiveComp';
 import ShippingTypeDeleteAlertForm from './components/ShippingTypeDeleteAlertForm';
+import { deleteWebArticle } from '../../../../axios/services/mega-city-services/web-article/WebArticleService';
 
 function WebType() {
 	const { t } = useTranslation('shippingTypes');
@@ -142,14 +142,16 @@ function WebType() {
 	};
 
 	const handleAlertForm = async () => {
+
+		console.log('selectedDeleteRowData', selectedDeleteRowData);
+
 		toggleDeleteModal();
-		const id = selectedDeleteRowData?.id ?? null;
 		try {
-			await deleteShippingType(id);
-			fetchAllShippingTypes();
-			toast.success('Shipping Type deleted successfully');
+			await deleteWebArticle(selectedDeleteRowData?.articleId);
+			await fetchAllShippingTypes();
+			toast.success('Article deleted successfully');
 		} catch (e) {
-			toast.error('Error deleting Shipping Type');
+			toast.error('Error deleting website');
 		}
 	};
 
@@ -262,7 +264,7 @@ function WebType() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Website Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -283,7 +285,6 @@ function WebType() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}

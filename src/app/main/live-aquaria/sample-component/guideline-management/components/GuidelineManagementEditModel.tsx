@@ -19,7 +19,7 @@ import * as yup from 'yup';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { ShippingCreateType } from '../types/GuidelineTypes';
+import { GuideType } from '../types/GuidelineTypes';
 
 interface Image {
 	id: number;
@@ -122,7 +122,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
 	};
 
-	const handleUpdateShippingType = async (values: ShippingCreateType) => {
+	const handleUpdateShippingType = async (values: GuideType) => {
 		const data = {
 			discount: values.discount,
 			title: values.title,
@@ -148,7 +148,7 @@ function NewVehicleManagement({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			<DialogContent>
 				<Formik
 					initialValues={{}}
-					onSubmit={(values: ShippingCreateType) => handleUpdateShippingType(values)}
+					onSubmit={(values: GuideType) => handleUpdateShippingType(values)}
 					validationSchema={schema}
 				>
 					{({ setFieldValue }) => (

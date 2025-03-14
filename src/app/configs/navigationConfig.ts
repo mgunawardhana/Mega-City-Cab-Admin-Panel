@@ -84,7 +84,7 @@ const navigationConfig: FuseNavItemType[] = [
 		title: 'Booking',
 		type: 'item',
 		icon: 'heroicons-outline:bookmark',
-		url: '/apps/booking',
+		url: '/web/booking-type',
 		end: true,
 		translate: 'Bookings'
 	},
