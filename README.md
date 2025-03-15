@@ -12,6 +12,13 @@
 
 </div>
 
+<div align="center">
+ <h3>USED TECHNOLOGIES & TOOLS</h3>
+     <img src="https://skillicons.dev/icons?i=ts,nodejs,react,tailwind,materialui,webstorm,git,github,netlify" />
+
+</div>
+
+
 <br><br>
 <div align="center">
 
