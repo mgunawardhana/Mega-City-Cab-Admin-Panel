@@ -1,28 +1,50 @@
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import FuseLoading from '@fuse/core/FuseLoading';
 import WidgetDataType from './types/WidgetDataType';
 import { useGetProjectDashboardWidgetsQuery } from '../../../ProjectDashboardApi';
+import { businessSummery } from '../../../../../../axios/services/mega-city-services/reporting/BusinessDetailsService';
 
 /**
  * The FeaturesWidget widget.
  */
+
+interface Closed {
+	taxes: number;
+	tax_without_cost: number;
+	status: string;
+	row_count: number;
+}
+
 function FeaturesWidget() {
 	const { data: widgets, isLoading } = useGetProjectDashboardWidgetsQuery();
 
 	if (isLoading) {
 		return <FuseLoading />;
 	}
-
+	const [sampleData, setSampleData] = useState<Closed>();
 	const widget = widgets?.features as WidgetDataType;
 
 	if (!widget) {
 		return null;
 	}
+	useEffect(() => {
+		fetchAllShippingTypes().then(r => (r));
+	}, []);
 
+	const fetchAllShippingTypes = async () => {
+		try {
+			const response = await businessSummery();
+			setSampleData(response.result);
+			console.log('Business summery:', sampleData[0]);
+		} catch (error) {
+			console.error('Error fetching shipping types:', error);
+		} finally {
+		}
+	};
 	const { data, title } = widget;
 
 	return (
@@ -32,7 +54,7 @@ function FeaturesWidget() {
 					className="px-16 text-lg font-medium tracking-tight leading-6 truncate"
 					color="text.secondary"
 				>
-					{title}
+					Transaction Completed
 				</Typography>
 				<IconButton
 					aria-label="more"
@@ -43,15 +65,15 @@ function FeaturesWidget() {
 			</div>
 			<div className="text-center mt-8">
 				<Typography className="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">
-					{String(data.count)}
+					{sampleData?.[0]?.row_count}
 				</Typography>
-				<Typography className="text-lg font-medium text-green-600">{data.name}</Typography>
+				<Typography className="text-lg font-medium text-green-600">{sampleData?.[0]?.status}</Typography>
 			</div>
 			<Typography
 				className="flex items-baseline justify-center w-full mt-20 mb-24"
 				color="text.secondary"
 			>
-				<span className="truncate">{data.extra.name}</span>:<b className="px-8">{String(data.extra.count)}</b>
+				<span className="truncate">earned profit</span>:<b className="px-8">{sampleData?.[0]?.total_income}</b>
 			</Typography>
 		</Paper>
 	);

@@ -19,7 +19,8 @@ import * as yup from 'yup';
 import TextFormField from '../../../../../common/FormComponents/FormTextField';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { ShippingCreateType } from '../types/ShippingTypes';
+import { WebContentType } from '../types/ShippingTypes';
+import { saveWebArticle } from '../../../../../axios/services/mega-city-services/web-article/WebArticleService';
 
 interface Image {
 	id: number;
@@ -37,16 +38,22 @@ interface Props {
 }
 
 function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShippingTypes, isTableMode }: Props) {
+
+	console.log('web edit');
+
 	const { t } = useTranslation('shippingTypes');
 	const [isDataLoading, setDataLoading] = useState(false);
 	const [images, setImages] = useState<Image[]>([]);
 	const maxImageCount = 1;
-	const maxImageSize = 5 * 1024 * 1024; // 5MB
+	const maxImageSize = 5 * 1024 * 1024;
 
 	const schema = yup.object().shape({
-		shippingType: yup.string().required(t('Shipping type name is required')),
+		title: yup.string().required(t('Title is required')),
+		description: yup.string().required(t('Description is required')),
+		author: yup.string().required(t('Author is required')),
+		discount: yup.number().required(t('Ratings are required')).min(0).max(10),
+		is_active: yup.boolean()
 	});
-
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -105,17 +112,31 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 		setImages((prevImages) => prevImages.filter((image) => image.id !== id));
 	};
 
-	const handleUpdateShippingType = async (values: ShippingCreateType) => {
+	const handleUpdateShippingType = async (values: WebContentType) => {
 		const data = {
-			discount: values.discount,
 			title: values.title,
 			description: values.description,
 			author: values.author,
+			ratings: values.ratings,
 			media: images.length > 0 ? images[0].base64 : null,
 			is_active: values.is_active,
 		};
 
-		console.log('Form Data:', data);
+		try{
+			await saveWebArticle(data);
+			toast.success('Article type updated successfully');
+
+			if (toggleModal) {
+				toggleModal();
+			}
+
+			if (fetchAllShippingTypes) {
+				fetchAllShippingTypes();
+			}
+
+		}catch (error) {
+			toast.error('Failed to update article type');
+		}
 	};
 
 	return (
@@ -130,8 +151,14 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 			</DialogTitle>
 			<DialogContent>
 				<Formik
-					initialValues={{}}
-					onSubmit={(values: ShippingCreateType) => handleUpdateShippingType(values)}
+					initialValues={{
+						title: '',
+						description: '',
+						author: '',
+						ratings:  0,
+						is_active: false
+					}}
+					onSubmit={(values: WebContentType) => handleUpdateShippingType(values)}
 					validationSchema={schema}
 				>
 					{({ setFieldValue }) => (
@@ -194,7 +221,7 @@ function NewShippingTypeModel({ isOpen, toggleModal, clickedRowData, fetchAllShi
 										{images.length < maxImageCount && (
 											<div className="relative flex justify-center items-center w-[100px] h-[100px] border-[2px] border-[#ccc] rounded-[10px]">
 												<IconButton
-													className="text-primaryBlue"
+													className="text-amber-700"
 													onClick={() => document.getElementById('imageUpload')?.click()}
 												>
 													<AddCircleIcon fontSize="large" />

@@ -20,7 +20,7 @@ function FuseSplashScreen() {
 				id="spinner"
 				sx={{
 					'& > div': {
-						backgroundColor: '#214674'
+						backgroundColor: '#dc8320'
 						// backgroundColor: 'palette.secondary.main'
 					}
 				}}

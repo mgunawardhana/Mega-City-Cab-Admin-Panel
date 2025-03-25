@@ -31,25 +31,41 @@ export type GuidelineType = {
 
 
 export type ShippingTypeModifiedData = {
-	allow_transit_delay?: string;
-	id?: string;
-	name?: string;
-	is_active?: number;
-	created_at?: string;
-	updated_at?: string;
-	item_category?: ShippingTypeItemCategoryResponse[];
-	shipping_type_name?: string;
-	product_category?: string[];
-	create_date?: string;
-	active?: boolean;
+
 };
 
-export type ShippingCreateType = {
-	ratings?: number;
+export type VehicleResp = {
+	id: number;
+	make: string;
+	model: string;
+	yearOfManufacture: number;
+	color: string;
+	engineCapacity: string;
+	fuelType: string;
+	seatingCapacity: number;
+	vehicleType: string;
+	registrationNumber: string;
+	licensePlateNumber: string;
+	chassisNumber: string;
+	permitType: string;
+	ownerName: string;
+	ownerContact: string;
+	ownerAddress: string;
+	insuranceProvider: string;
+	insurancePolicyNumber: string;
+	insuranceExpiryDate: string;
+	airConditioning: boolean;
+	additionalFeatures: string;
+	vehicleImage: string;
+	vehiclePhoto: string;
+};
+
+export type GuideType = {
+	guidanceId?: any;
 	title?: string;
 	description?: string;
-	author?: string;
-	media?: string;
-	is_active?: boolean;
+	category?: any;
+	priority?: any;
+	relatedTo?: any;
 };
 

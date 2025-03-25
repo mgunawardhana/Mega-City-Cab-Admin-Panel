@@ -9,15 +9,17 @@ import MaterialTableWrapper from '../../../../common/tableComponents/MaterialTab
 import VehicleEditModel from './components/GuidelineManagementEditModel';
 import NewVehicleManagement from './components/GuidelineEditModel';
 import {
-	deleteShippingType,
 	fetchAllShippingTypesData, fetchAllVehicleData,
 	updateShippingTypeStatus
 } from '../../../../axios/services/live-aquaria-services/shipping-services/ShippingTypeService';
-import { GuidelineType, ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/GuidelineTypes';
+import { GuidelineType, GuideType, ShippingTypeModifiedData, VehicleResp, WebTypeResp } from './types/GuidelineTypes';
 import NewGuidelineActiveComp from './components/NewGuidelineActiveComp';
 import NewGuidelineDeleteAlertForm from './components/NewGuidelineDeleteAlertForm';
 import Chip from '@mui/material/Chip';
-import { fetchAllGuideLines } from '../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
+import {
+	deleteGuideline,
+	fetchAllGuideLines
+} from '../../../../axios/services/mega-city-services/guideline-services/GuidelineService';
 import GuidelineEditModel from './components/GuidelineEditModel';
 
 function GuidelineManagement() {
@@ -39,7 +41,7 @@ function GuidelineManagement() {
 	const [sampleData, setSampleData] = useState<WebTypeResp[]>();
 	const [isTableLoading, setTableLoading] = useState(false);
 	const [selectedActiveRowData, setSelectedActiveRowData] = useState<ShippingTypeModifiedData>(null);
-	const [selectedDeleteRowData, setSelectedDeleteRowData] = useState<ShippingTypeModifiedData>(null);
+	const [selectedDeleteRowData, setSelectedDeleteRowData] = useState<GuideType>(null);
 	const [selectedViewRowData, setSelectedViewRowData] = useState<ShippingTypeModifiedData>(null);
 	const [selectedEditRowData, setSelectedEditRowData] = useState<ShippingTypeModifiedData>(null);
 	const [isOpenActiveModal, setOpenActiveModal] = useState(false);
@@ -194,20 +196,20 @@ function GuidelineManagement() {
 	};
 
 
-	const handleRowDelete = async (rowData: ShippingTypeModifiedData) => {
+	const handleRowDelete = async (rowData: GuideType) => {
 		setSelectedDeleteRowData(rowData);
 		toggleDeleteModal();
 	};
 
 	const handleAlertForm = async () => {
 		toggleDeleteModal();
-		const id = selectedDeleteRowData?.id ?? null;
+		console.log('selectedDeleteRowData:', selectedDeleteRowData);
 		try {
-			await deleteShippingType(id);
-			fetchAllGuidelines();
-			toast.success('Shipping Type deleted successfully');
+			await deleteGuideline(selectedDeleteRowData.guidanceId);
+			await fetchAllGuidelines();
+			toast.success('Guideline deleted successfully');
 		} catch (e) {
-			toast.error('Error deleting Shipping Type');
+			toast.error('Error deleting Guideline');
 		}
 	};
 
@@ -320,7 +322,7 @@ function GuidelineManagement() {
 				className="pt-[5px!important]"
 			>
 				<MaterialTableWrapper
-					title=""
+					title="Guideline Management Table"
 					filterChanged={null}
 					handleColumnFilter={null}
 					tableColumns={tableColumns}
@@ -341,7 +343,6 @@ function GuidelineManagement() {
 					selection={false}
 					selectionExport={null}
 					isColumnChoser
-					disableSearch
 					records={sampleData}
 					tableRowViewHandler={handleView}
 					tableRowEditHandler={handleEdit}
@@ -356,7 +357,7 @@ function GuidelineManagement() {
 			toggleModal={toggleNewShippingTypeModal}
 			isTableMode="new"
 			clickedRowData={{}}
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{/* View Modal */}
@@ -365,7 +366,7 @@ function GuidelineManagement() {
 			toggleModal={toggleShippingTypeViewModal}
 			clickedRowData={selectedViewRowData}
 			isTableMode="view"
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{/* Edit Modal */}
@@ -374,7 +375,7 @@ function GuidelineManagement() {
 			toggleModal={toggleShippingTypeEditModal}
 			clickedRowData={selectedEditRowData}
 			isTableMode="edit"
-			fetchAllShippingTypes={fetchAllGuidelines}
+			fetchAllGuidelines={fetchAllGuidelines}
 		/>)}
 
 		{isOpenActiveModal && (<NewGuidelineActiveComp
